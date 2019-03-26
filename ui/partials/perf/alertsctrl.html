@@ -210,6 +210,7 @@
         </span>
       </p>
     </div>
+    <alert-controls alert-summary="alertSummary" ></alert-controls>
     <div class="card-body button-panel" uib-collapse="!anySelected(alertSummary.alerts) && !(alertSummary.notes)">
       <div ng-show="anySelected(alertSummary.alerts)">
         <button ng-if="anySelectedAndTriaged(alertSummary.alerts)" class="btn btn-warning" role="button"
