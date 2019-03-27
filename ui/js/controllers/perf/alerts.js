@@ -295,7 +295,7 @@ perf.controller('AlertsCtrl', [
             });
             $scope.numFilteredAlertSummaries = $scope.alertSummaries.filter(summary => !summary.anyVisible).length;
         }
-
+        // TODO delete these helpers
         // these methods handle the business logic of alert selection and
         // unselection
         $scope.anySelected = function (alerts) {
@@ -320,6 +320,7 @@ perf.controller('AlertsCtrl', [
             } else {
                 alertSummary.allSelected = false;
             }
+
         };
 
         $scope.copyTextToClipboard = function (alertSummary) {
