@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { react2angular } from 'react2angular/index.es2015';
-import { Col, Row, Container, Button } from 'reactstrap';
+import { Container, Button } from 'reactstrap';
 
 import perf from '../../js/perf';
 import {
@@ -54,19 +54,16 @@ export class AlertControls extends React.Component {
       )
       .some(x => x);
 
-  // updateAlertSummary = alertSummary => {
-  //   refreshAlertSummary(alertSummary).then(() => {
-  //     // TODO this needs to be extracted from alerts.js or added to scope
-  //       updateAlertVisibility();
-  //       // $scope.$digest();
-  //   });
-  // }
+  updateAlertSummary = alertSummary =>
+    refreshAlertSummary(alertSummary).then(() =>
+      this.props.updateAlertVisibility(),
+    );
 
   resetAlerts = () => {
     // We need to update not only the summary when resetting the alert,
     // but other summaries affected by the change
     const { alertSummaries, alertSummary } = this.props;
-
+    // TODO this seems a little convoluted since it's doing the same thing in modifySelectedUpdates
     const selectedAlerts = alertSummary.alerts
       .filter(alert => alert.selected)
       .map(alert =>
@@ -76,13 +73,16 @@ export class AlertControls extends React.Component {
       )
       .filter(alertSummary => alertSummary !== undefined);
 
-    const summariesToUpdate = [... [alertSummary], ...selectedAlerts];
-    console.log(summariesToUpdate);
+    const summariesToUpdate = [...[alertSummary], ...selectedAlerts];
 
-    // modifySelectedAlerts(alertSummary, {
-    //     status: phAlertStatusMap.UNTRIAGED.id,
-    //     related_summary_id: null,
-    // }).then(() => summariesToUpdate.forEach((alertSummary) => this.updateAlertSummary(alertSummary)));
+    modifySelectedAlerts(alertSummary, {
+      status: phAlertStatusMap.UNTRIAGED.id,
+      related_summary_id: null,
+    }).then(() =>
+      summariesToUpdate.forEach(alertSummary =>
+        this.updateAlertSummary(alertSummary),
+      ),
+    );
   };
 
   render() {
@@ -121,23 +121,19 @@ export class AlertControls extends React.Component {
     // </div>
     // </div>
     const { alertSummary, isAlertSelected } = this.props;
-    console.log(isAlertSelected);
+
     return (
       <Container fluid className="card-body button-panel">
-        {isAlertSelected && (
-          <React.Fragment>
-            {/* {this.anySelectedAndTriaged(alertSummary.alerts) && ( */}
-            <SimpleTooltip
-              text={
-                <Button color="secondary" onClick={this.resetAlerts}>
-                  {' '}
-                  Reset
-                </Button>
-              }
-              tooltipText="Reset selected alerts to untriaged"
-            />
-            {/* )} */}
-          </React.Fragment>
+        {this.anySelectedAndTriaged(alertSummary.alerts) && (
+          <SimpleTooltip
+            text={
+              <Button color="warning" onClick={this.resetAlerts}>
+                {' '}
+                Reset
+              </Button>
+            }
+            tooltipText="Reset selected alerts to untriaged"
+          />
         )}
       </Container>
     );
@@ -150,6 +146,7 @@ AlertControls.propTypes = {
   alertSummary: PropTypes.shape({}),
   isAlertSelected: PropTypes.bool.isRequired,
   alertSummaries: PropTypes.arrayOf(PropTypes.string),
+  updateAlertVisibility: PropTypes.func.isRequired,
 };
 
 AlertControls.defaultProps = {
@@ -163,8 +160,13 @@ perf.component(
   'alertControls',
   react2angular(
     AlertControls,
-    ['alertSummary', 'isAlertSelected', 'alertSummaries'],
-    ['$stateParams', '$state', '$scope'],
+    [
+      'alertSummary',
+      'isAlertSelected',
+      'alertSummaries',
+      'updateAlertVisibility',
+    ],
+    ['$stateParams', '$state'],
   ),
 );
 
