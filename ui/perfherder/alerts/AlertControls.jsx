@@ -54,29 +54,36 @@ export class AlertControls extends React.Component {
       )
       .some(x => x);
 
-    updateAlertSummary = alertSummary => {
-      refreshAlertSummary(alertSummary).then(() => {
-        // TODO this needs to be extracted from alerts.js or added to scope
-          updateAlertVisibility();
-          // $scope.$digest();
-      });
-    }
+  // updateAlertSummary = alertSummary => {
+  //   refreshAlertSummary(alertSummary).then(() => {
+  //     // TODO this needs to be extracted from alerts.js or added to scope
+  //       updateAlertVisibility();
+  //       // $scope.$digest();
+  //   });
+  // }
 
-    resetAlerts = alertSummary => {
-      // We need to update not only the summary when resetting the alert,
-      // but other summaries affected by the change
-      const { alertSummaries } = this.props;
-      const summariesToUpdate = [alertSummary].concat((
-          alertSummary.alerts.filter(alert => alert.selected).map(
-          alert => (alertSummaries.find(alertSummary =>
-                  alertSummary.id === alert.related_summary_id)),
-          )).filter(alertSummary => alertSummary !== undefined));
+  resetAlerts = () => {
+    // We need to update not only the summary when resetting the alert,
+    // but other summaries affected by the change
+    const { alertSummaries, alertSummary } = this.props;
 
-      modifySelectedAlerts(alertSummary, {
-          status: phAlertStatusMap.UNTRIAGED.id,
-          related_summary_id: null,
-      }).then(() => summariesToUpdate.forEach((alertSummary) => this.updateAlertSummary(alertSummary)));
-    };
+    const selectedAlerts = alertSummary.alerts
+      .filter(alert => alert.selected)
+      .map(alert =>
+        alertSummaries.find(
+          alertSummary => alertSummary.id === alert.related_summary_id,
+        ),
+      )
+      .filter(alertSummary => alertSummary !== undefined);
+
+    const summariesToUpdate = [... [alertSummary], ...selectedAlerts];
+    console.log(summariesToUpdate);
+
+    // modifySelectedAlerts(alertSummary, {
+    //     status: phAlertStatusMap.UNTRIAGED.id,
+    //     related_summary_id: null,
+    // }).then(() => summariesToUpdate.forEach((alertSummary) => this.updateAlertSummary(alertSummary)));
+  };
 
   render() {
     // TODO first div condition
@@ -114,24 +121,24 @@ export class AlertControls extends React.Component {
     // </div>
     // </div>
     const { alertSummary, isAlertSelected } = this.props;
-    console.log(isAlertSelected, alertSummary.notes);
+    console.log(isAlertSelected);
     return (
-      <Container fluid className="bg-lightgray">
-      {isAlertSelected &&
-        <React.Fragment>
-          {/* {this.anySelectedAndTriaged(alertSummary.alerts) && ( */}
+      <Container fluid className="card-body button-panel">
+        {isAlertSelected && (
+          <React.Fragment>
+            {/* {this.anySelectedAndTriaged(alertSummary.alerts) && ( */}
             <SimpleTooltip
               text={
-                <Button outline color="secondary" onClick={this.resetAlerts(alertSummary)}>
+                <Button color="secondary" onClick={this.resetAlerts}>
                   {' '}
                   Reset
                 </Button>
               }
               tooltipText="Reset selected alerts to untriaged"
             />
-          {/* )} */}
-        </React.Fragment>
-        }
+            {/* )} */}
+          </React.Fragment>
+        )}
       </Container>
     );
   }
@@ -142,7 +149,7 @@ AlertControls.propTypes = {
   $state: PropTypes.shape({}),
   alertSummary: PropTypes.shape({}),
   isAlertSelected: PropTypes.bool.isRequired,
-  alertSummaries: PropTypes.shape({}),
+  alertSummaries: PropTypes.arrayOf(PropTypes.string),
 };
 
 AlertControls.defaultProps = {
