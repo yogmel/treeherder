@@ -418,26 +418,26 @@ perf.controller('AlertsCtrl', [
                 });
         };
 
-        $scope.resetAlerts = function (alertSummary) {
-            // We need to update not only the summary when resetting the alert,
-            // but other summaries affected by the change
-            const summariesToUpdate = [alertSummary].concat((
-                alertSummary.alerts.filter(alert => alert.selected).map(
-                alert => ($scope.alertSummaries.find(alertSummary =>
-                        alertSummary.id === alert.related_summary_id)),
-                )).filter(alertSummary => alertSummary !== undefined));
+        // $scope.resetAlerts = function (alertSummary) {
+        //     // We need to update not only the summary when resetting the alert,
+        //     // but other summaries affected by the change
+        //     const summariesToUpdate = [alertSummary].concat((
+        //         alertSummary.alerts.filter(alert => alert.selected).map(
+        //         alert => ($scope.alertSummaries.find(alertSummary =>
+        //                 alertSummary.id === alert.related_summary_id)),
+        //         )).filter(alertSummary => alertSummary !== undefined));
 
-            modifySelectedAlerts(alertSummary, {
-                status: phAlertStatusMap.UNTRIAGED.id,
-                related_summary_id: null,
-            }).then(
-                function () {
-                    // update the alert summaries appropriately
-                    summariesToUpdate.forEach((alertSummary) => {
-                        updateAlertSummary(alertSummary);
-                    });
-                });
-        };
+        //     modifySelectedAlerts(alertSummary, {
+        //         status: phAlertStatusMap.UNTRIAGED.id,
+        //         related_summary_id: null,
+        //     }).then(
+        //         function () {
+        //             // update the alert summaries appropriately
+        //             summariesToUpdate.forEach((alertSummary) => {
+        //                 updateAlertSummary(alertSummary);
+        //             });
+        //         });
+        // };
 
         function addAlertSummaries(alertSummaries, getMoreAlertSummariesHref) {
             $scope.getMoreAlertSummariesHref = getMoreAlertSummariesHref;
