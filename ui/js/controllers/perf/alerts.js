@@ -307,12 +307,14 @@ perf.controller('AlertsCtrl', [
         $scope.allSelectedAreConfirming = function (alerts) {
             return alerts.filter(alert => alert.selected).map(alert => alertIsOfState(alert, phAlertStatusMap.CONFIRMING)).every(x => x);
         };
+        $scope.isAlertSelected = false;
         $scope.selectNoneOrSelectAll = function (alertSummary) {
             // if some are not selected, then select all if checked
             // otherwise select none
             alertSummary.alerts.forEach(function (alert) {
                 alert.selected = alert.visible && alertSummary.allSelected;
             });
+            $scope.isAlertSelected = !$scope.isAlertSelected;
         };
         $scope.alertSelected = function (alertSummary) {
             if (alertSummary.alerts.every(alert => !alert.visible || alert.selected)) {
@@ -320,7 +322,7 @@ perf.controller('AlertsCtrl', [
             } else {
                 alertSummary.allSelected = false;
             }
-
+            $scope.isAlertSelected = !$scope.isAlertSelected;            
         };
 
         $scope.copyTextToClipboard = function (alertSummary) {

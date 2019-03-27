@@ -6,36 +6,35 @@ import { Col, Row, Container, Button } from 'reactstrap';
 import perf from '../../js/perf';
 import {
   alertIsOfState,
-  alertSummaryIsOfState,
-  alertSummaryMarkAs,
-  assignBug,
-  editingNotes,
-  getAlertStatusText,
-  getAlertSummaries,
-  getAlertSummary,
-  getAlertSummaryTitle,
-  getAlertSummaryStatusText,
-  getGraphsURL,
-  getIssueTrackerUrl,
-  getSubtestsURL,
-  getTextualSummary,
-  getTitle,
-  isResolved,
-  modifySelectedAlerts,
-  refreshAlertSummary,
-  saveNotes,
-  toggleStar,
-  unassignBug,
+  // alertSummaryIsOfState,
+  // alertSummaryMarkAs,
+  // assignBug,
+  // editingNotes,
+  // getAlertStatusText,
+  // getAlertSummaries,
+  // getAlertSummary,
+  // getAlertSummaryTitle,
+  // getAlertSummaryStatusText,
+  // getGraphsURL,
+  // getIssueTrackerUrl,
+  // getSubtestsURL,
+  // getTextualSummary,
+  // getTitle,
+  // isResolved,
+  // modifySelectedAlerts,
+  // refreshAlertSummary,
+  // saveNotes,
+  // toggleStar,
+  // unassignBug,
 } from '../helpers';
 import {
-  thDateFormat,
-  phTimeRanges,
-  phDefaultTimeRangeValue,
-  phTimeRangeValues,
-  phAlertSummaryStatusMap,
+  // thDateFormat,
+  // phTimeRanges,
+  // phDefaultTimeRangeValue,
+  // phTimeRangeValues,
+  // phAlertSummaryStatusMap,
   phAlertStatusMap,
-} from '../constants';
-
+} from '../../helpers/constants';
 import SimpleTooltip from '../../shared/SimpleTooltip';
 
 // TODO remove $stateParams and $state after switching to react router
@@ -90,23 +89,26 @@ export class AlertControls extends React.Component {
     //   </span>
     // </div>
     // </div>
-    const { alertSummary, $scope } = this.props;
-    console.log(this.props.alertSummary);
+    const { alertSummary, isAlertSelected } = this.props;
+
     return (
       // <Container fluid className="bg-lightgray">
       // this.anySelected(alertSummary.alerts) && alertSummary.notes
       <Container fluid>
         {/* {this.anySelected(alertSummary.alerts) && ( */}
-          <React.Fragment>
+        <React.Fragment>
+          {this.anySelectedAndTriaged(alertSummary.alerts) && (
             <SimpleTooltip
               text={
-              <Button outline color="secondary">
-                {' '}
-                Reset
-              </Button>}
+                <Button outline color="secondary">
+                  {' '}
+                  Reset
+                </Button>
+              }
               tooltipText="Reset selected alerts to untriaged"
             />
-          </React.Fragment>
+          )}
+        </React.Fragment>
         {/* )} */}
       </Container>
     );
@@ -117,16 +119,22 @@ AlertControls.propTypes = {
   $stateParams: PropTypes.shape({}),
   $state: PropTypes.shape({}),
   alertSummary: PropTypes.shape({}),
+  isAlertSelected: PropTypes.bool.isRequired,
 };
 
 AlertControls.defaultProps = {
   $stateParams: null,
   $state: null,
+  alertSummary: null,
 };
 
 perf.component(
   'alertControls',
-  react2angular(AlertControls, ['alertSummary'], ['$stateParams', '$state', '$scope']),
+  react2angular(
+    AlertControls,
+    ['alertSummary', 'isAlertSelected'],
+    ['$stateParams', '$state', '$scope'],
+  ),
 );
 
 export default AlertControls;
