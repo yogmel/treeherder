@@ -11,7 +11,7 @@ import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 
 import { getIssueTrackerUrl, getTitle } from '../helpers';
 
-const AlertHeader = ({ alertSummary }) => (
+const StatusDropdown = ({ alertSummary }) => (
   <div className="pl-2">
     <a
       className={`text-dark font-weight-bold align-middle ${
@@ -65,25 +65,25 @@ const AlertHeader = ({ alertSummary }) => (
           </DropdownMenu>
         </UncontrolledDropdown>
         {alertSummary.bug_number && (
-          <span>
-            <span className="align-middle"> · </span>
-            <a
-              className="text-info align-middle"
-              href={getIssueTrackerUrl(alertSummary)}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {`Bug ${alertSummary.bug_number}`}
-            </a>
-          </span>
+        <span>
+          <span className="align-middle"> · </span>
+          <a
+            className="text-info align-middle"
+            href={getIssueTrackerUrl(alertSummary)}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {`Bug ${alertSummary.bug_number}`}
+          </a>
+        </span>
         )}
       </span>
     )}
   </div>
 );
 
-AlertHeader.propTypes = {
+StatusDropdown.propTypes = {
   alertSummary: PropTypes.shape({}).isRequired,
 };
 
-export default AlertHeader;
+export default StatusDropdown;
