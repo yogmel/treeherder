@@ -46,6 +46,7 @@ import OptionCollectionModel from '../../../models/optionCollection';
 import PushModel from '../../../models/push';
 import RepositoryModel from '../../../models/repository';
 
+// TODO remove
 perf.factory('PhBugs', [
     '$http', '$httpParamSerializer', '$interpolate', '$rootScope', 'dateFilter',
     function ($http, $httpParamSerializer, $interpolate, $rootScope, dateFilter) {
@@ -55,7 +56,8 @@ perf.factory('PhBugs', [
                     const template = response.data[0];
                     const repo = $rootScope.repos.find(repo =>
                         repo.name === alertSummary.repository);
-                    const compiledText = $interpolate(template.text)({
+
+                        const compiledText = $interpolate(template.text)({
                         revisionHref: repo.getPushLogHref(alertSummary.resultSetMetadata.revision),
                         alertHref: window.location.origin + '/perf.html#/alerts?id=' +
                             alertSummary.id,
@@ -321,11 +323,11 @@ perf.controller('AlertsCtrl', [
                 alertSummary.allSelected = false;
             }
         };
-
+        // TODO remove
         $scope.copyTextToClipboard = function (alertSummary) {
             clipboard.copyText(getTextualSummary(alertSummary, true));
         };
-
+        // TODO remove
         $scope.fileBug = function (alertSummary) {
             PhBugs.fileBug(alertSummary);
         };

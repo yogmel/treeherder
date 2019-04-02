@@ -26,6 +26,7 @@ import // alertIsOfState,
 import perf from '../../js/perf';
 
 import AlertHeader from './AlertHeader';
+import StatusDropdown from './StatusDropdown';
 
 // TODO remove $stateParams and $state after switching to react router
 export class AlertTable extends React.Component {
@@ -46,7 +47,7 @@ export class AlertTable extends React.Component {
   };
 
   render() {
-    const { user, alertSummary } = this.props;
+    const { user, alertSummary, repos } = this.props;
     return (
       <Container fluid>
         <Form>
@@ -73,7 +74,7 @@ export class AlertTable extends React.Component {
                 <th />
                 <th />
                 <th className="table-width-sm align-top font-weight-normal">
-                  Placeholder
+                  <StatusDropdown alertSummary={alertSummary} repos={repos} />
                 </th>
               </tr>
             </thead>
@@ -92,6 +93,7 @@ AlertTable.propTypes = {
   $state: PropTypes.shape({}),
   alertSummary: PropTypes.shape({}),
   user: PropTypes.shape({}),
+  repos: PropTypes.arrayOf(PropTypes.shape({})),
 };
 
 AlertTable.defaultProps = {
@@ -99,13 +101,14 @@ AlertTable.defaultProps = {
   $state: null,
   alertSummary: null,
   user: null,
+  repos: null,
 };
 
 perf.component(
   'alertTable',
   react2angular(
     AlertTable,
-    ['alertSummary', 'user'],
+    ['alertSummary', 'user', 'repos'],
     ['$stateParams', '$state'],
   ),
 );
