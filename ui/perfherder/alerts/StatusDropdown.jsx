@@ -15,10 +15,34 @@ import {
 } from '../helpers';
 import { getData } from '../../helpers/http';
 import { getApiUrl, bzBaseUrl, createQueryParams } from '../../helpers/url';
+import { endpoints } from '../constants';
 
-const StatusDropdown = ({ alertSummary, repos }) => {
+import ModifyAlertsModal from './ModifyAlertsModal';
 
-  const fillTemplate = (template, replacement) => {
+export default class StatusDropdown extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      showModal: false,
+      issueTrackers: [],
+      issueTrackersError: null,
+    };
+  }
+
+  // TODO this is something else that can be moved to the parent level component
+  // so it is only fetching this once per page
+  getIssueTrackers = async () => {
+    const { data, failureStatus } = await getData(
+      getApiUrl(endpoints.issueTrackers),
+    );
+    this.setState(prevState => ({
+      showModal: !prevState.showModal,
+      issueTrackers: data,
+      issueTrackersError: failureStatus,
+    }));
+  };
+
+  fillTemplate = (template, replacement) => {
     let newTemplate = template;
     const regex = {
       revisionHref: /{+\srevisionHref\s}+/g,
@@ -34,7 +58,8 @@ const StatusDropdown = ({ alertSummary, repos }) => {
     return newTemplate;
   };
 
-  const fileBug = async () => {
+  fileBug = async () => {
+    const { alertSummary, repos } = this.props;
     // TODO it seems like it'd make more sense to fetch this once and customize/cache it for future use rather than
     // fetching this template each time someone clicks on 'file bug' - regardless of test framework
     const { data, failureStatus } = await getData(
@@ -56,7 +81,7 @@ const StatusDropdown = ({ alertSummary, repos }) => {
         }`,
         alertSummary: getTextualSummary(alertSummary),
       };
-      const template = fillTemplate(result.text, templateArgs);
+      const template = this.fillTemplate(result.text, templateArgs);
 
       const pushDate = moment(
         alertSummary.resultSetMetadata.push_timestamp * 1000,
@@ -80,35 +105,60 @@ const StatusDropdown = ({ alertSummary, repos }) => {
     }
   };
 
-  const copySummary = () => {
-    const summary = getTextualSummary(alertSummary, true);
+  copySummary = () => {
+    const summary = getTextualSummary(this.props.alertSummary, true);
     // can't access the clipboardData on event unless it's done from react's
     // onCopy, onCut or onPaste props
     navigator.clipboard.writeText(summary).then(() => {});
-  }
+  };
 
-  return (
-    <UncontrolledDropdown tag="span">
-      <DropdownToggle
-        className="btn-link text-info p-0"
-        color="transparent"
-        caret
-      >
-        {getAlertSummaryStatusText(alertSummary)}
-      </DropdownToggle>
-      <DropdownMenu>
-        <DropdownItem onClick={copySummary}> Copy Summary</DropdownItem>
-        <DropdownItem onClick={fileBug}>File bug</DropdownItem>
-        {/* <DropdownItem>
-        </DropdownItem> */}
-      </DropdownMenu>
-    </UncontrolledDropdown>
-  );
-};
+  toggle = () => {
+    this.setState(prevState => ({
+      showModal: !prevState.showModal,
+    }));
+  };
+
+  render() {
+    const { alertSummary, user, updateAlertVisibility } = this.props;
+    const { showModal, issueTrackers, issueTrackersError } = this.state;
+    return (
+      <React.Fragment>
+        <ModifyAlertsModal
+          showModal={showModal}
+          toggle={this.toggle}
+          issueTrackers={issueTrackers}
+          issueTrackersError={issueTrackersError}
+          alertSummary={alertSummary}
+          updateAlertVisibility={updateAlertVisibility}
+        />
+        <UncontrolledDropdown tag="span">
+          <DropdownToggle
+            className="btn-link text-info p-0"
+            color="transparent"
+            caret
+          >
+            {getAlertSummaryStatusText(alertSummary)}
+          </DropdownToggle>
+          <DropdownMenu>
+            <DropdownItem onClick={this.copySummary}>Copy Summary</DropdownItem>
+            {!alertSummary.bug_number && (
+              <DropdownItem onClick={this.fileBug}>File bug</DropdownItem>
+            )}
+            {!alertSummary.bug_number && user.isStaff && (
+              <DropdownItem onClick={this.getIssueTrackers}>
+                Link to bug
+              </DropdownItem>
+            )}
+          </DropdownMenu>
+        </UncontrolledDropdown>
+      </React.Fragment>
+    );
+  }
+}
 
 StatusDropdown.propTypes = {
   alertSummary: PropTypes.shape({}).isRequired,
-  repos: PropTypes.arrayOf(PropTypes.string).isRequired,
+  repos: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  user: PropTypes.shape({}).isRequired,
+  updateAlertVisibility: PropTypes.func.isRequired,  
 };
-
-export default StatusDropdown;

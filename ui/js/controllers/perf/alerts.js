@@ -258,7 +258,7 @@ perf.controller('AlertsCtrl', [
         $scope.statuses = Object.values(phAlertSummaryStatusMap);
         $scope.statuses = $scope.statuses.concat({ id: -1, text: 'all' });
 
-        function updateAlertVisibility() {
+        $scope.updateAlertVisibility = function() {
             $scope.alertSummaries.forEach(function (alertSummary) {
                 alertSummary.alerts.forEach(function (alert) {
                     // only show alert if it passes all filter criteria
@@ -331,6 +331,7 @@ perf.controller('AlertsCtrl', [
         $scope.fileBug = function (alertSummary) {
             PhBugs.fileBug(alertSummary);
         };
+        // TODO remove along with associated partial and controller
         $scope.linkToBug = function (alertSummary) {
             $uibModal.open({
                 template: modifyAlertsCtrlTemplate,
@@ -342,12 +343,12 @@ perf.controller('AlertsCtrl', [
                     },
                 },
             }).result.then(function () {
-                updateAlertVisibility();
+                $scope.updateAlertVisibility();
             });
         };
         $scope.unlinkBug = function (alertSummary) {
             unassignBug(alertSummary).then(function () {
-                updateAlertVisibility();
+                $scope.updateAlertVisibility();
                 $scope.$digest();
             });
         };
@@ -365,7 +366,7 @@ perf.controller('AlertsCtrl', [
                     },
                 },
             }).result.then(function () {
-                updateAlertVisibility();
+                $scope.updateAlertVisibility();
             });
         };
         $scope.reassignAlerts = function (alertSummary) {
@@ -382,13 +383,13 @@ perf.controller('AlertsCtrl', [
                     },
                 },
             }).result.then(function () {
-                updateAlertVisibility();
+                $scope.updateAlertVisibility();
             });
         };
 
         function updateAlertSummary(alertSummary) {
             refreshAlertSummary(alertSummary).then(function () {
-                updateAlertVisibility();
+                $scope.updateAlertVisibility();
                 $scope.$digest();
             });
         }
@@ -524,7 +525,7 @@ perf.controller('AlertsCtrl', [
                         ...$scope.alertSummaries,
                         ...alertSummaries])];
                 }
-                updateAlertVisibility();
+                $scope.updateAlertVisibility();
             });
         }
 
@@ -602,7 +603,7 @@ perf.controller('AlertsCtrl', [
                         $scope.alertSummaryCurrentPage = 1;
                     });
             } else {
-                updateAlertVisibility();
+                $scope.updateAlertVisibility();
             }
         };
 
