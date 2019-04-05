@@ -12,9 +12,9 @@ import {
   getAlertSummaryStatusText,
   getTextualSummary,
   getTitle,
-  unassignBug,
+  refreshAlertSummary,
 } from '../helpers';
-import { getData } from '../../helpers/http';
+import { getData, update } from '../../helpers/http';
 import { getApiUrl, bzBaseUrl, createQueryParams } from '../../helpers/url';
 import { endpoints } from '../constants';
 
@@ -119,10 +119,20 @@ export default class StatusDropdown extends React.Component {
     }));
   };
 
-  // TODO move unassignBug to here or refactor in helpers
-  unlinkBug = () => {
+  unlinkBug = async () => {
     const { alertSummary, updateAlertVisibility } = this.props;
-    unassignBug(alertSummary).then(() => updateAlertVisibility());
+    const { data, failureStatus } = await update(
+      getApiUrl(`${endpoints.alertSummary}${alertSummary.id}/`),
+      {
+        bug_number: null,
+      },
+    );
+    // TODO show error message
+    if (!failureStatus) {
+      refreshAlertSummary(alertSummary, data);
+      // TODO this doesn't work as expected in this component - replace
+      updateAlertVisibility();
+    }
   };
 
   render() {
@@ -157,7 +167,10 @@ export default class StatusDropdown extends React.Component {
               </DropdownItem>
             )}
             {alertSummary.bug_number && user.isStaff && (
-            <DropdownItem onClick={this.unlinkBug}>Unlink from bug</DropdownItem>)}
+              <DropdownItem onClick={this.unlinkBug}>
+                Unlink from bug
+              </DropdownItem>
+            )}
           </DropdownMenu>
         </UncontrolledDropdown>
       </React.Fragment>
@@ -169,5 +182,5 @@ StatusDropdown.propTypes = {
   alertSummary: PropTypes.shape({}).isRequired,
   repos: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   user: PropTypes.shape({}).isRequired,
-  updateAlertVisibility: PropTypes.func.isRequired,  
+  updateAlertVisibility: PropTypes.func.isRequired,
 };

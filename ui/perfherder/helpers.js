@@ -634,7 +634,7 @@ export const getTitle = alertSummary => {
   return title;
 };
 // TODO remove
-export const updateBugNumber = (alertSummary, taskNumber, issueTrackerId) =>
+export const assignBug= (alertSummary, taskNumber, issueTrackerId) =>
   update(getApiUrl(`/performance/alertsummary/${alertSummary.id}/`), {
     bug_number: taskNumber,
     issue_tracker: issueTrackerId,
