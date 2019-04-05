@@ -119,6 +119,7 @@ export default class StatusDropdown extends React.Component {
     }));
   };
 
+  // TODO move unassignBug to here or refactor in helpers
   unlinkBug = () => {
     const { alertSummary, updateAlertVisibility } = this.props;
     unassignBug(alertSummary).then(() => updateAlertVisibility());

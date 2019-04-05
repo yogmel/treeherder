@@ -579,17 +579,14 @@ export const isResolved = alertSummary =>
   alertSummaryIsOfState(alertSummary, phAlertSummaryStatusMap.WONTFIX) ||
   alertSummaryIsOfState(alertSummary, phAlertSummaryStatusMap.BACKEDOUT);
 
-export const refreshAlertSummary = alertSummary =>
-  getData(getApiUrl(`/performance/alertsummary/${alertSummary.id}/`)).then(
-    ({ data }) =>
-      OptionCollectionModel.getMap().then(optionCollectionMap => {
-        Object.assign(alertSummary, data);
-        alertSummary.alerts = getInitializedAlerts(
-          alertSummary,
-          optionCollectionMap,
-        );
-      }),
-  );
+export const refreshAlertSummary = (alertSummary, data) =>
+  OptionCollectionModel.getMap().then(optionCollectionMap => {
+    Object.assign(alertSummary, data);
+    alertSummary.alerts = getInitializedAlerts(
+      alertSummary,
+      optionCollectionMap,
+    );
+  });
 
 export const getTitle = alertSummary => {
   let title;
@@ -637,12 +634,13 @@ export const getTitle = alertSummary => {
   return title;
 };
 // TODO remove
-export const assignBug = (alertSummary, taskNumber, issueTrackerId) =>
+export const updateBugNumber = (alertSummary, taskNumber, issueTrackerId) =>
   update(getApiUrl(`/performance/alertsummary/${alertSummary.id}/`), {
     bug_number: taskNumber,
     issue_tracker: issueTrackerId,
   }).then(() => refreshAlertSummary(alertSummary));
 
+// TODO remove
 export const unassignBug = alertSummary =>
   update(getApiUrl(`/performance/alertsummary/${alertSummary.id}/`), {
     bug_number: null,

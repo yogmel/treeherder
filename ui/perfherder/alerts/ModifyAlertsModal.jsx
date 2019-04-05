@@ -28,6 +28,7 @@ export default class ModifyAlertsModal extends React.Component {
       inputValue: '',
       invalidInput: false,
       validated: false,
+      failureMessage: '',
     };
   }
 
@@ -61,7 +62,6 @@ export default class ModifyAlertsModal extends React.Component {
     );
   };
 
-  // TODO refresh alert summary is fetching all alerts after updating
   assignBug = async event => {
     event.preventDefault();
 
@@ -73,20 +73,25 @@ export default class ModifyAlertsModal extends React.Component {
     } = this.props;
     const { inputValue, selectedValue } = this.state;
     const tracker = issueTrackers.find(item => item.text === selectedValue);
-    // TODO handle error if this fails
-    await update(getApiUrl(`/performance/alertsummary/${alertSummary.id}/`), {
+
+    const { data, failureStatus } = await update(getApiUrl(`/performance/alertsummary/${alertSummary.id}/`), {
       bug_number: parseInt(inputValue, 10),
       issue_tracker: tracker.id,
     });
-    // TODO this doesn't work as expected in this component - replace
-    refreshAlertSummary(alertSummary);
-    updateAlertVisibility();
-    toggle();
+
+    if (!failureStatus) {
+      refreshAlertSummary(alertSummary, data);
+      // TODO this doesn't work as expected in this component - replace
+      updateAlertVisibility();
+      toggle();
+    } else {
+      this.setState({ failureMessage: data });
+    }
   };
 
   render() {
     const { showModal, toggle, issueTrackers, issueTrackersError } = this.props;
-    const { inputValue, invalidInput, validated, selectedValue } = this.state;
+    const { inputValue, invalidInput, validated, selectedValue, failureMessage } = this.state;
 
     return (
       <Modal isOpen={showModal} className="">
@@ -134,14 +139,23 @@ export default class ModifyAlertsModal extends React.Component {
             </FormGroup>
           </ModalBody>
           <ModalFooter>
-            <Button
-              color="secondary"
-              onClick={this.assignBug}
-              disabled={invalidInput || !inputValue.length || !validated}
-              type="submit"
-            >
-              Assign
-            </Button>
+              <Col>
+                {failureMessage.length > 0 && (
+                <p className="text-danger text-wrap text-center mb-1">
+                  {`Failed to assign bug: ${failureMessage}`}
+                </p>
+                )}
+              </Col>
+              <Col className="text-right" lg="auto">
+                <Button
+                  color="secondary"
+                  onClick={this.assignBug}
+                  disabled={invalidInput || !inputValue.length || !validated}
+                  type="submit"
+                >
+                  Assign
+                </Button>
+              </Col>
           </ModalFooter>
         </Form>
       </Modal>
