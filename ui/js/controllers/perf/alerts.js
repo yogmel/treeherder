@@ -346,6 +346,7 @@ perf.controller('AlertsCtrl', [
                 $scope.updateAlertVisibility();
             });
         };
+        // TODO remove
         $scope.unlinkBug = function (alertSummary) {
             unassignBug(alertSummary).then(function () {
                 $scope.updateAlertVisibility();

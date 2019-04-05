@@ -12,6 +12,7 @@ import {
   getAlertSummaryStatusText,
   getTextualSummary,
   getTitle,
+  unassignBug,
 } from '../helpers';
 import { getData } from '../../helpers/http';
 import { getApiUrl, bzBaseUrl, createQueryParams } from '../../helpers/url';
@@ -118,6 +119,11 @@ export default class StatusDropdown extends React.Component {
     }));
   };
 
+  unlinkBug = () => {
+    const { alertSummary, updateAlertVisibility } = this.props;
+    unassignBug(alertSummary).then(() => updateAlertVisibility());
+  };
+
   render() {
     const { alertSummary, user, updateAlertVisibility } = this.props;
     const { showModal, issueTrackers, issueTrackersError } = this.state;
@@ -149,6 +155,8 @@ export default class StatusDropdown extends React.Component {
                 Link to bug
               </DropdownItem>
             )}
+            {alertSummary.bug_number && user.isStaff && (
+            <DropdownItem onClick={this.unlinkBug}>Unlink from bug</DropdownItem>)}
           </DropdownMenu>
         </UncontrolledDropdown>
       </React.Fragment>
