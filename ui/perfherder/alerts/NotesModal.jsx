@@ -11,7 +11,6 @@ import {
   ModalBody,
   ModalFooter,
   Col,
-  Row,
 } from 'reactstrap';
 
 import { update } from '../../helpers/http';
@@ -21,9 +20,8 @@ import { endpoints } from '../constants';
 export default class NotesModal extends React.Component {
   constructor(props) {
     super(props);
-    this.issueTrackers = this.props.issueTrackers;
     this.state = {
-      inputValue: '',
+      inputValue: this.props.alertSummary.notes,
       failureMessage: '',
     };
   }
@@ -37,16 +35,17 @@ export default class NotesModal extends React.Component {
   editNotes = async event => {
     event.preventDefault();
     
-    const { alertSummary } = this.props;    
+    const { alertSummary, toggle } = this.props;
     const { data, failureStatus } = await update(
       getApiUrl(`${endpoints.alertSummary}${alertSummary.id}/`),
       {
-        notes: alertSummary.notes
+        notes: this.state.inputValue
       },
     );
-    console.log(data);
-    // TODO show error message
-    // controller is making a copy of alertSummary before modifying. why?
+    toggle()
+    // TODO this is updating the notes from the endpoint properly,
+    // but the properties on the changed alertSummary needs to be updated
+
     // if (!failureStatus) {
     //   alertSummary.originalNotes = alertSummary.notes;
     //   alertSummary.notesChanged = false;
@@ -66,12 +65,11 @@ export default class NotesModal extends React.Component {
         <Form>
           <ModalBody>
             <FormGroup>
-              <Label for="notes">Add or edit notes</Label>
+              <Label for="editableNotes">Add or edit notes</Label>
               <Input
                 value={inputValue}
                 onChange={this.updateInput}
-                name="notes"
-                placeholder=""
+                name="editableNotes"
                 type="textarea"
                 cols="50"
                 rows="10"
@@ -90,10 +88,10 @@ export default class NotesModal extends React.Component {
               <Button
                 color="secondary"
                 onClick={this.editNotes}
-                // disabled={invalidInput || !inputValue.length || !validated}
+                // disabled={inputValue === alertSummary.notes}
                 type="submit"
               >
-                Assign
+                Save
               </Button>
             </Col>
           </ModalFooter>
@@ -106,5 +104,7 @@ export default class NotesModal extends React.Component {
 NotesModal.propTypes = {
   showModal: PropTypes.bool.isRequired,
   toggle: PropTypes.func.isRequired,
-  alertSummary: PropTypes.shape({}).isRequired,
+  alertSummary: PropTypes.shape({
+    notes: PropTypes.string
+  }).isRequired,
 };
