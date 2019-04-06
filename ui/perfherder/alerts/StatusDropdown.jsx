@@ -19,12 +19,14 @@ import { getApiUrl, bzBaseUrl, createQueryParams } from '../../helpers/url';
 import { endpoints } from '../constants';
 
 import ModifyAlertsModal from './ModifyAlertsModal';
+import NotesModal from './NotesModal';
 
 export default class StatusDropdown extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      showModal: false,
+      showBugModal: false,
+      showNotesModal: false,
       issueTrackers: [],
       issueTrackersError: null,
     };
@@ -37,7 +39,7 @@ export default class StatusDropdown extends React.Component {
       getApiUrl(endpoints.issueTrackers),
     );
     this.setState(prevState => ({
-      showModal: !prevState.showModal,
+      showBugModal: !prevState.showBugModal,
       issueTrackers: data,
       issueTrackersError: failureStatus,
     }));
@@ -113,9 +115,9 @@ export default class StatusDropdown extends React.Component {
     navigator.clipboard.writeText(summary).then(() => {});
   };
 
-  toggle = () => {
+  toggle = (state) => {
     this.setState(prevState => ({
-      showModal: !prevState.showModal,
+      [state]: !prevState[state],
     }));
   };
 
@@ -137,16 +139,21 @@ export default class StatusDropdown extends React.Component {
 
   render() {
     const { alertSummary, user, updateAlertVisibility } = this.props;
-    const { showModal, issueTrackers, issueTrackersError } = this.state;
+    const { showBugModal, issueTrackers, issueTrackersError, showNotesModal } = this.state;
     return (
       <React.Fragment>
         <ModifyAlertsModal
-          showModal={showModal}
-          toggle={this.toggle}
+          showModal={showBugModal}
+          toggle={() => this.toggle('showBugModal')}
           issueTrackers={issueTrackers}
           issueTrackersError={issueTrackersError}
           alertSummary={alertSummary}
           updateAlertVisibility={updateAlertVisibility}
+        />
+        <NotesModal
+          showModal={showNotesModal}
+          toggle={() => this.toggle('showNotesModal')}
+          alertSummary={alertSummary}
         />
         <UncontrolledDropdown tag="span">
           <DropdownToggle
@@ -171,6 +178,10 @@ export default class StatusDropdown extends React.Component {
                 Unlink from bug
               </DropdownItem>
             )}
+            {user.isStaff &&
+            <DropdownItem onClick={() => this.toggle('showNotesModal')}>
+              {!alertSummary.notes ? 'Add notes' : 'Edit notes'}
+            </DropdownItem>}
           </DropdownMenu>
         </UncontrolledDropdown>
       </React.Fragment>

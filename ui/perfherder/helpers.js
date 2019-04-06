@@ -476,7 +476,7 @@ export const AlertSummary = async (alertSummaryData, optionCollectionMap) => {
     issueTrackers,
   );
 };
-
+// TODO remove
 const modifyAlertSummary = (alertSummary, modification) =>
   update(
     getApiUrl(`/performance/alertsummary/${alertSummary.id}/`),
@@ -663,7 +663,7 @@ export const getAlertSummaryStatusText = alertSummary =>
   Object.values(phAlertSummaryStatusMap).find(
     status => status.id === alertSummary.status,
   ).text;
-
+// TODO remove
 export const saveNotes = alertSummary =>
   modifyAlertSummary(alertSummary, { notes: alertSummary.notes }).then(() => {
     alertSummary.originalNotes = alertSummary.notes;
