@@ -20,7 +20,7 @@ import { update } from '../../helpers/http';
 import { getApiUrl } from '../../helpers/url';
 import { endpoints } from '../constants';
 
-export default class ModifyAlertsModal extends React.Component {
+export default class BugModal extends React.Component {
   constructor(props) {
     super(props);
     this.issueTrackers = this.props.issueTrackers;
@@ -111,7 +111,7 @@ export default class ModifyAlertsModal extends React.Component {
             <FormGroup>
               <Row>
                 <Col>
-                  <Label for="taskId">Enter Task</Label>
+                  <Label for="taskId">Enter Bug</Label>
                   <Input
                     value={inputValue}
                     onChange={this.updateInput}
@@ -173,7 +173,7 @@ export default class ModifyAlertsModal extends React.Component {
   }
 }
 
-ModifyAlertsModal.propTypes = {
+BugModal.propTypes = {
   showModal: PropTypes.bool.isRequired,
   toggle: PropTypes.func.isRequired,
   issueTrackers: PropTypes.arrayOf(
@@ -187,7 +187,7 @@ ModifyAlertsModal.propTypes = {
   updateAlertVisibility: PropTypes.func.isRequired,
 };
 
-ModifyAlertsModal.defaultProps = {
+BugModal.defaultProps = {
   issueTrackers: [],
   issueTrackersError: null,
 };
