@@ -21,7 +21,7 @@ export default class NotesModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      inputValue: this.props.alertSummary.notes || undefined,
+      inputValue: this.props.alertSummary.notes,
       failureMessage: '',
     };
   }
@@ -36,20 +36,23 @@ export default class NotesModal extends React.Component {
     event.preventDefault();
     
     const { alertSummary, toggle } = this.props;
+    const { inputValue } = this.state;
+
     const { data, failureStatus } = await update(
       getApiUrl(`${endpoints.alertSummary}${alertSummary.id}/`),
       {
-        notes: this.state.inputValue
+        notes: inputValue
       },
     );
-    toggle()
     // TODO this is updating the notes from the endpoint properly,
     // but the properties on the changed alertSummary needs to be updated
+
     // are originalNotes and notesChanged needed since we utilize props for comparison now?
     // if (!failureStatus) {
     //   alertSummary.originalNotes = alertSummary.notes;
     //   alertSummary.notesChanged = false;
     // }
+    toggle();
   }
 
   render() {
@@ -58,7 +61,7 @@ export default class NotesModal extends React.Component {
       inputValue,
       failureMessage,
     } = this.state;
-    console.log(alertSummary);
+    console.log(alertSummary.notes);
     return (
       <Modal isOpen={showModal} className="">
         <ModalHeader toggle={toggle}>Alert Notes</ModalHeader>
@@ -67,7 +70,7 @@ export default class NotesModal extends React.Component {
             <FormGroup>
               <Label for="editableNotes">Add or edit notes</Label>
               <Input
-                value={inputValue}
+                value={inputValue || ''}
                 onChange={this.updateInput}
                 name="editableNotes"
                 type="textarea"
