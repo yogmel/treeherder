@@ -17,7 +17,6 @@ import {
 import { getData, update } from '../../helpers/http';
 import { getApiUrl, bzBaseUrl, createQueryParams } from '../../helpers/url';
 import { endpoints, alertSummaryStatus } from '../constants';
-import { phAlertSummaryStatusMap } from '../../helpers/constants';
 
 import BugModal from './BugModal';
 import NotesModal from './NotesModal';
@@ -137,24 +136,23 @@ export default class StatusDropdown extends React.Component {
     }
   };
 
-  updateAlertStatus = async newStatus => {
+  updateAlertStatus = async status => {
     const { alertSummary } = this.props;
     await update(getApiUrl(`${endpoints.alertSummary}${alertSummary.id}/`), {
-      status: newStatus.id,
+      status,
     });
-    alertSummary.status = newStatus.id;
+    // TODO is this needed?
+    alertSummary.status = status;
   };
 
-  // alertSummaryIsOfState = (alertSummary, phAlertSummaryStatus) => alertSummary.status === phAlertSummaryStatus.id;
+  isResolved = alertStatus =>
+    alertStatus === 'backedout' ||
+    alertStatus === 'fixed' ||
+    alertStatus === 'wontfix';
 
-  // isResolved = alertSummary =>
-    // this.alertSummaryIsOfState(alertSummary, phAlertSummaryStatusMap.FIXED) ||
-    // this.alertSummaryIsOfState(alertSummary, phAlertSummaryStatusMap.WONTFIX) ||
-    // this.alertSummaryIsOfState(alertSummary, phAlertSummaryStatusMap.BACKEDOUT);
-
-  isResolved = alertStatus => (alertStatus.text === 'backedout' || alertStatus.text === 'fixed' || alertStatus.text === 'wontfix');
-
-  isValidStatus = (alertStatus, status) => (alertStatus.text === 'investigating' || (alertStatus.text !== status && this.isResolved(alertStatus)))
+  isValidStatus = (alertStatus, status) =>
+    alertStatus === 'investigating' ||
+    (alertStatus !== status && this.isResolved(alertStatus));
 
   render() {
     const { alertSummary, user, updateAlertVisibility } = this.props;
@@ -164,8 +162,10 @@ export default class StatusDropdown extends React.Component {
       issueTrackersError,
       showNotesModal,
     } = this.state;
-    // TODO make this state?
-    const alertStatus = alertSummaryStatus.find(item => alertSummary.status === item.id );
+
+    const alertStatus = Object.entries(alertSummaryStatus).find(
+      item => alertSummary.status === item[1],
+    )[0];
 
     return (
       <React.Fragment>
@@ -212,38 +212,41 @@ export default class StatusDropdown extends React.Component {
                 {this.isResolved(alertStatus) && (
                   <DropdownItem
                     onClick={() =>
-                      this.updateAlertStatus(
-                        phAlertSummaryStatusMap.INVESTIGATING,
-                      )
+                      this.updateAlertStatus(alertSummaryStatus.investigating)
                     }
                   >
                     Re-open
                   </DropdownItem>
                 )}
-                            {/* <li role="menuitem" ng-show="user.isStaff"
-                ng-if="alertSummaryIsOfState(alertSummary, phAlertSummaryStatusMap.INVESTIGATING) || (isResolved(alertSummary) && !alertSummaryIsOfState(alertSummary, phAlertSummaryStatusMap.WONTFIX))">
-              <a ng-click="alertSummaryMarkAs(alertSummary, phAlertSummaryStatusMap.WONTFIX)" class="dropdown-item">Mark as "won't fix"</a>
-            </li>
-            <li role="menuitem" ng-show="user.isStaff"
-                ng-if="alertSummaryIsOfState(alertSummary, phAlertSummaryStatusMap.INVESTIGATING) || (isResolved(alertSummary) && !alertSummaryIsOfState(alertSummary, phAlertSummaryStatusMap.BACKEDOUT))">
-              <a ng-click="alertSummaryMarkAs(alertSummary, phAlertSummaryStatusMap.BACKEDOUT)" class="dropdown-item">Mark as backed out</a>
-            </li>
-            <li role="menuitem" ng-show="user.isStaff"
-                ng-if="alertSummaryIsOfState(alertSummary, phAlertSummaryStatusMap.INVESTIGATING) || (isResolved(alertSummary) && !alertSummaryIsOfState(alertSummary, phAlertSummaryStatusMap.FIXED))">
-              <a ng-click="alertSummaryMarkAs(alertSummary, phAlertSummaryStatusMap.FIXED)" class="dropdown-item">Mark as fixed</a>
-            </li> */}
                 {this.isValidStatus(alertStatus, 'wontfix') && (
                   <DropdownItem
                     onClick={() =>
-                      this.updateAlertStatus(
-                        phAlertSummaryStatusMap.WONTFIX,
-                      )
+                      this.updateAlertStatus(alertSummaryStatus.wontfix)
                     }
                   >
-                    {"Mark as \"won't fix\""}
+                    {"Mark as won't fix"}
                   </DropdownItem>
                 )}
 
+                {this.isValidStatus(alertStatus, 'backedout') && (
+                  <DropdownItem
+                    onClick={() =>
+                      this.updateAlertStatus(alertSummaryStatus.backedout)
+                    }
+                  >
+                    Mark as backed out
+                  </DropdownItem>
+                )}
+
+                {this.isValidStatus(alertStatus, 'fixed') && (
+                  <DropdownItem
+                    onClick={() =>
+                      this.updateAlertStatus(alertSummaryStatus.fixed)
+                    }
+                  >
+                    Mark as fixed
+                  </DropdownItem>
+                )}
               </React.Fragment>
             )}
           </DropdownMenu>
