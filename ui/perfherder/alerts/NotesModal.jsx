@@ -27,21 +27,19 @@ export default class NotesModal extends React.Component {
   }
 
   updateInput = event => {
-    this.setState(
-      { inputValue: event.target.value }
-    );
+    this.setState({ inputValue: event.target.value });
   };
 
   editNotes = async event => {
     event.preventDefault();
-    
+
     const { alertSummary, toggle } = this.props;
     const { inputValue } = this.state;
 
-    const { data, failureStatus } = await update(
+    await update(
       getApiUrl(`${endpoints.alertSummary}${alertSummary.id}/`),
       {
-        notes: inputValue
+        notes: inputValue,
       },
     );
     // TODO this is updating the notes from the endpoint properly,
@@ -53,15 +51,12 @@ export default class NotesModal extends React.Component {
     //   alertSummary.notesChanged = false;
     // }
     toggle();
-  }
+  };
 
   render() {
     const { showModal, toggle, alertSummary } = this.props;
-    const {
-      inputValue,
-      failureMessage,
-    } = this.state;
-    console.log(alertSummary.notes);
+    const { inputValue, failureMessage } = this.state;
+
     return (
       <Modal isOpen={showModal} className="">
         <ModalHeader toggle={toggle}>Alert Notes</ModalHeader>
@@ -108,6 +103,6 @@ NotesModal.propTypes = {
   showModal: PropTypes.bool.isRequired,
   toggle: PropTypes.func.isRequired,
   alertSummary: PropTypes.shape({
-    notes: PropTypes.string
+    notes: PropTypes.string,
   }).isRequired,
 };

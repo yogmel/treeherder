@@ -115,7 +115,7 @@ export default class StatusDropdown extends React.Component {
     navigator.clipboard.writeText(summary).then(() => {});
   };
 
-  toggle = (state) => {
+  toggle = state => {
     this.setState(prevState => ({
       [state]: !prevState[state],
     }));
@@ -139,7 +139,12 @@ export default class StatusDropdown extends React.Component {
 
   render() {
     const { alertSummary, user, updateAlertVisibility } = this.props;
-    const { showBugModal, issueTrackers, issueTrackersError, showNotesModal } = this.state;
+    const {
+      showBugModal,
+      issueTrackers,
+      issueTrackersError,
+      showNotesModal,
+    } = this.state;
     return (
       <React.Fragment>
         <BugModal
@@ -168,20 +173,22 @@ export default class StatusDropdown extends React.Component {
             {!alertSummary.bug_number && (
               <DropdownItem onClick={this.fileBug}>File bug</DropdownItem>
             )}
-            {!alertSummary.bug_number && user.isStaff && (
-              <DropdownItem onClick={this.getIssueTrackers}>
-                Link to bug
-              </DropdownItem>
+            {user.isStaff && (
+              <React.Fragment>
+                {!alertSummary.bug_number ? (
+                  <DropdownItem onClick={this.getIssueTrackers}>
+                    Link to bug
+                  </DropdownItem>
+                ) : (
+                  <DropdownItem onClick={this.unlinkBug}>
+                    Unlink from bug
+                  </DropdownItem>
+                )}
+                <DropdownItem onClick={() => this.toggle('showNotesModal')}>
+                  {!alertSummary.notes ? 'Add notes' : 'Edit notes'}
+                </DropdownItem>
+              </React.Fragment>
             )}
-            {alertSummary.bug_number && user.isStaff && (
-              <DropdownItem onClick={this.unlinkBug}>
-                Unlink from bug
-              </DropdownItem>
-            )}
-            {user.isStaff &&
-            <DropdownItem onClick={() => this.toggle('showNotesModal')}>
-              {!alertSummary.notes ? 'Add notes' : 'Edit notes'}
-            </DropdownItem>}
           </DropdownMenu>
         </UncontrolledDropdown>
       </React.Fragment>
