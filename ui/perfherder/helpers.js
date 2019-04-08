@@ -669,7 +669,7 @@ export const saveNotes = alertSummary =>
     alertSummary.originalNotes = alertSummary.notes;
     alertSummary.notesChanged = false;
   });
-
+// TODO remove
 export const editingNotes = alertSummary => {
   alertSummary.notesChanged = alertSummary.notes !== alertSummary.originalNotes;
 };

@@ -21,7 +21,7 @@ export default class NotesModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      inputValue: this.props.alertSummary.notes,
+      inputValue: this.props.alertSummary.notes || undefined,
       failureMessage: '',
     };
   }
@@ -45,7 +45,7 @@ export default class NotesModal extends React.Component {
     toggle()
     // TODO this is updating the notes from the endpoint properly,
     // but the properties on the changed alertSummary needs to be updated
-
+    // are originalNotes and notesChanged needed since we utilize props for comparison now?
     // if (!failureStatus) {
     //   alertSummary.originalNotes = alertSummary.notes;
     //   alertSummary.notesChanged = false;
@@ -53,12 +53,12 @@ export default class NotesModal extends React.Component {
   }
 
   render() {
-    const { showModal, toggle } = this.props;
+    const { showModal, toggle, alertSummary } = this.props;
     const {
       inputValue,
       failureMessage,
     } = this.state;
-
+    console.log(alertSummary);
     return (
       <Modal isOpen={showModal} className="">
         <ModalHeader toggle={toggle}>Alert Notes</ModalHeader>
@@ -88,7 +88,7 @@ export default class NotesModal extends React.Component {
               <Button
                 color="secondary"
                 onClick={this.editNotes}
-                // disabled={inputValue === alertSummary.notes}
+                disabled={inputValue === alertSummary.notes}
                 type="submit"
               >
                 Save
