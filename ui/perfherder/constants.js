@@ -17,3 +17,16 @@ export const filterText = {
   hideUncomparable: 'Hide uncomparable results',
   inputPlaceholder: 'linux tp5o',
 };
+
+export const alertSummaryStatus = [
+  { id: 0, text: 'untriaged' },
+  { id: 1, text: 'downstream' },
+  { id: 2, text: 'reassigned' },
+  { id: 3, text: 'invalid' },
+  { id: 4, text: 'improvement' },
+  { id: 5, text: 'investigating' },
+  { id: 6, text: 'wontfix' },
+  { id: 7, text: 'fixed' },
+  { id: 8, text: 'backedout' },
+  { id: 9, text: 'confirming' },
+];

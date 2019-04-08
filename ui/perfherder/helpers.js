@@ -482,7 +482,7 @@ const modifyAlertSummary = (alertSummary, modification) =>
     getApiUrl(`/performance/alertsummary/${alertSummary.id}/`),
     modification,
   );
-
+// TODO remove
 export const alertSummaryIsOfState = (alertSummary, phAlertSummaryStatus) =>
   alertSummary.status === phAlertSummaryStatus.id;
 // TODO remove
@@ -573,7 +573,7 @@ export const getTextualSummary = (alertSummary, copySummary) => {
   }
   return resultStr;
 };
-
+// TDO remove
 export const isResolved = alertSummary =>
   alertSummaryIsOfState(alertSummary, phAlertSummaryStatusMap.FIXED) ||
   alertSummaryIsOfState(alertSummary, phAlertSummaryStatusMap.WONTFIX) ||

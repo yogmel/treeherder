@@ -200,7 +200,7 @@ export const phFrameworksWithRelatedBranches = [
   11, // js-bench
   12, // devtools
 ];
-// TODO move to Perfherder's own constant file
+// TODO replace with alertSummaryStatus perfherder's constant file?
 export const phAlertSummaryStatusMap = {
   UNTRIAGED: { id: 0, text: 'untriaged' },
   DOWNSTREAM: { id: 1, text: 'downstream' },

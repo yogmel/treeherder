@@ -13,11 +13,10 @@ import {
   getTextualSummary,
   getTitle,
   refreshAlertSummary,
-  isResolved,
 } from '../helpers';
 import { getData, update } from '../../helpers/http';
 import { getApiUrl, bzBaseUrl, createQueryParams } from '../../helpers/url';
-import { endpoints } from '../constants';
+import { endpoints, alertSummaryStatus } from '../constants';
 import { phAlertSummaryStatusMap } from '../../helpers/constants';
 
 import BugModal from './BugModal';
@@ -146,6 +145,17 @@ export default class StatusDropdown extends React.Component {
     alertSummary.status = newStatus.id;
   };
 
+  // alertSummaryIsOfState = (alertSummary, phAlertSummaryStatus) => alertSummary.status === phAlertSummaryStatus.id;
+
+  // isResolved = alertSummary =>
+    // this.alertSummaryIsOfState(alertSummary, phAlertSummaryStatusMap.FIXED) ||
+    // this.alertSummaryIsOfState(alertSummary, phAlertSummaryStatusMap.WONTFIX) ||
+    // this.alertSummaryIsOfState(alertSummary, phAlertSummaryStatusMap.BACKEDOUT);
+
+  isResolved = alertStatus => (alertStatus.text === 'backedout' || alertStatus.text === 'fixed' || alertStatus.text === 'wontfix');
+
+  isValidStatus = (alertStatus, status) => (alertStatus.text === 'investigating' || (alertStatus.text !== status && this.isResolved(alertStatus)))
+
   render() {
     const { alertSummary, user, updateAlertVisibility } = this.props;
     const {
@@ -154,6 +164,9 @@ export default class StatusDropdown extends React.Component {
       issueTrackersError,
       showNotesModal,
     } = this.state;
+    // TODO make this state?
+    const alertStatus = alertSummaryStatus.find(item => alertSummary.status === item.id );
+
     return (
       <React.Fragment>
         <BugModal
@@ -196,7 +209,7 @@ export default class StatusDropdown extends React.Component {
                 <DropdownItem onClick={() => this.toggle('showNotesModal')}>
                   {!alertSummary.notes ? 'Add notes' : 'Edit notes'}
                 </DropdownItem>
-                {isResolved(alertSummary) && (
+                {this.isResolved(alertStatus) && (
                   <DropdownItem
                     onClick={() =>
                       this.updateAlertStatus(
@@ -207,6 +220,30 @@ export default class StatusDropdown extends React.Component {
                     Re-open
                   </DropdownItem>
                 )}
+                            {/* <li role="menuitem" ng-show="user.isStaff"
+                ng-if="alertSummaryIsOfState(alertSummary, phAlertSummaryStatusMap.INVESTIGATING) || (isResolved(alertSummary) && !alertSummaryIsOfState(alertSummary, phAlertSummaryStatusMap.WONTFIX))">
+              <a ng-click="alertSummaryMarkAs(alertSummary, phAlertSummaryStatusMap.WONTFIX)" class="dropdown-item">Mark as "won't fix"</a>
+            </li>
+            <li role="menuitem" ng-show="user.isStaff"
+                ng-if="alertSummaryIsOfState(alertSummary, phAlertSummaryStatusMap.INVESTIGATING) || (isResolved(alertSummary) && !alertSummaryIsOfState(alertSummary, phAlertSummaryStatusMap.BACKEDOUT))">
+              <a ng-click="alertSummaryMarkAs(alertSummary, phAlertSummaryStatusMap.BACKEDOUT)" class="dropdown-item">Mark as backed out</a>
+            </li>
+            <li role="menuitem" ng-show="user.isStaff"
+                ng-if="alertSummaryIsOfState(alertSummary, phAlertSummaryStatusMap.INVESTIGATING) || (isResolved(alertSummary) && !alertSummaryIsOfState(alertSummary, phAlertSummaryStatusMap.FIXED))">
+              <a ng-click="alertSummaryMarkAs(alertSummary, phAlertSummaryStatusMap.FIXED)" class="dropdown-item">Mark as fixed</a>
+            </li> */}
+                {this.isValidStatus(alertStatus, 'wontfix') && (
+                  <DropdownItem
+                    onClick={() =>
+                      this.updateAlertStatus(
+                        phAlertSummaryStatusMap.WONTFIX,
+                      )
+                    }
+                  >
+                    {"Mark as \"won't fix\""}
+                  </DropdownItem>
+                )}
+
               </React.Fragment>
             )}
           </DropdownMenu>
