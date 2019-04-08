@@ -485,14 +485,14 @@ const modifyAlertSummary = (alertSummary, modification) =>
 
 export const alertSummaryIsOfState = (alertSummary, phAlertSummaryStatus) =>
   alertSummary.status === phAlertSummaryStatus.id;
-
+// TODO remove
 const updateAlertSummaryStatus = (alertSummary, newStatus) =>
   update(getApiUrl(`/performance/alertsummary/${alertSummary.id}/`), {
     status: newStatus.id,
   }).then(() => {
     alertSummary.status = newStatus.id;
   });
-
+// TODO remove
 export const alertSummaryMarkAs = (alertSummary, phAlertSummaryStatus) =>
   updateAlertSummaryStatus(alertSummary, phAlertSummaryStatus);
 

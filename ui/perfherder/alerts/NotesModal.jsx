@@ -36,12 +36,9 @@ export default class NotesModal extends React.Component {
     const { alertSummary, toggle } = this.props;
     const { inputValue } = this.state;
 
-    await update(
-      getApiUrl(`${endpoints.alertSummary}${alertSummary.id}/`),
-      {
-        notes: inputValue,
-      },
-    );
+    await update(getApiUrl(`${endpoints.alertSummary}${alertSummary.id}/`), {
+      notes: inputValue,
+    });
     // TODO this is updating the notes from the endpoint properly,
     // but the properties on the changed alertSummary needs to be updated
 

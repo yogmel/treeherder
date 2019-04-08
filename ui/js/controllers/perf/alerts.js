@@ -621,6 +621,7 @@ perf.controller('AlertsCtrl', [
         $scope.phAlertSummaryStatusMap = phAlertSummaryStatusMap;
 
         $scope.alertSummaryIsOfState = alertSummaryIsOfState;
+        // TODO remove
         $scope.alertSummaryMarkAs = (alertSummary, phAlertSummaryStatus) => {
             alertSummaryMarkAs(alertSummary, phAlertSummaryStatus).then(() => {
                 $scope.$digest();

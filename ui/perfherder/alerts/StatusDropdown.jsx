@@ -13,10 +13,12 @@ import {
   getTextualSummary,
   getTitle,
   refreshAlertSummary,
+  isResolved,
 } from '../helpers';
 import { getData, update } from '../../helpers/http';
 import { getApiUrl, bzBaseUrl, createQueryParams } from '../../helpers/url';
 import { endpoints } from '../constants';
+import { phAlertSummaryStatusMap } from '../../helpers/constants';
 
 import BugModal from './BugModal';
 import NotesModal from './NotesModal';
@@ -129,12 +131,19 @@ export default class StatusDropdown extends React.Component {
         bug_number: null,
       },
     );
-    // TODO show error message
     if (!failureStatus) {
       refreshAlertSummary(alertSummary, data);
       // TODO this doesn't work as expected in this component - replace
       updateAlertVisibility();
     }
+  };
+
+  updateAlertStatus = async newStatus => {
+    const { alertSummary } = this.props;
+    await update(getApiUrl(`${endpoints.alertSummary}${alertSummary.id}/`), {
+      status: newStatus.id,
+    });
+    alertSummary.status = newStatus.id;
   };
 
   render() {
@@ -187,6 +196,17 @@ export default class StatusDropdown extends React.Component {
                 <DropdownItem onClick={() => this.toggle('showNotesModal')}>
                   {!alertSummary.notes ? 'Add notes' : 'Edit notes'}
                 </DropdownItem>
+                {isResolved(alertSummary) && (
+                  <DropdownItem
+                    onClick={() =>
+                      this.updateAlertStatus(
+                        phAlertSummaryStatusMap.INVESTIGATING,
+                      )
+                    }
+                  >
+                    Re-open
+                  </DropdownItem>
+                )}
               </React.Fragment>
             )}
           </DropdownMenu>
