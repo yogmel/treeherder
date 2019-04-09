@@ -48,7 +48,7 @@ export class AlertTable extends React.Component {
   };
 
   render() {
-    const { user, alertSummary, repos, updateAlertVisibility, $rootScope } = this.props;
+    const { user, alertSummary } = this.props;
 
     return (
       <Container fluid className="px-0">
@@ -76,12 +76,7 @@ export class AlertTable extends React.Component {
                 <th />
                 <th />
                 <th className="table-width-sm align-top font-weight-normal">
-                  <StatusDropdown
-                    alertSummary={alertSummary}
-                    repos={repos}
-                    user={user}
-                    updateAlertVisibility={updateAlertVisibility}
-                    $rootScope={$rootScope}
+                  <StatusDropdown {...this.props}
                   />
                 </th>
               </tr>
@@ -103,7 +98,9 @@ AlertTable.propTypes = {
   user: PropTypes.shape({}),
   repos: PropTypes.arrayOf(PropTypes.shape({})),
   updateAlertVisibility: PropTypes.func.isRequired,
-  $rootScope: PropTypes.shape({}).isRequired,  
+  alertSummaryMarkAs: PropTypes.func.isRequired,
+  $rootScope: PropTypes.shape({}).isRequired,
+  updateStatus: PropTypes.bool.isRequired,  
 };
 
 AlertTable.defaultProps = {
@@ -118,7 +115,7 @@ perf.component(
   'alertTable',
   react2angular(
     AlertTable,
-    ['alertSummary', 'user', 'repos', 'updateAlertVisibility'],
+    ['alertSummary', 'user', 'repos', 'updateAlertVisibility', 'alertSummaryMarkAs', 'updateStatus'],
     ['$stateParams', '$state', '$rootScope'],
   ),
 );

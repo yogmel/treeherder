@@ -138,12 +138,14 @@ export default class StatusDropdown extends React.Component {
   };
 
   updateAlertStatus = async status => {
-    const { alertSummary } = this.props;
-    await update(getApiUrl(`${endpoints.alertSummary}${alertSummary.id}/`), {
+    const { alertSummary, alertSummaryMarkAs } = this.props;
+    const { failureStatus } = await update(getApiUrl(`${endpoints.alertSummary}${alertSummary.id}/`), {
       status,
     });
-    // TODO is this needed?
-    alertSummary.status = status;
+    if (!failureStatus) {
+      alertSummary.status = status;
+      alertSummaryMarkAs();
+    }
   };
 
   isResolved = alertStatus =>
@@ -264,4 +266,5 @@ StatusDropdown.propTypes = {
   user: PropTypes.shape({}).isRequired,
   updateAlertVisibility: PropTypes.func.isRequired,
   $rootScope: PropTypes.shape({}).isRequired,
+  alertSummaryMarkAs: PropTypes.func.isRequired,  
 };
