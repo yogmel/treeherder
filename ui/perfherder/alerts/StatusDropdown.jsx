@@ -122,7 +122,7 @@ export default class StatusDropdown extends React.Component {
   };
 
   unlinkBug = async () => {
-    const { alertSummary, updateAlertVisibility } = this.props;
+    const { alertSummary, updateAlertVisibility, $rootScope } = this.props;
     const { data, failureStatus } = await update(
       getApiUrl(`${endpoints.alertSummary}${alertSummary.id}/`),
       {
@@ -133,6 +133,7 @@ export default class StatusDropdown extends React.Component {
       refreshAlertSummary(alertSummary, data);
       // TODO this doesn't work as expected in this component - replace
       updateAlertVisibility();
+      $rootScope.$apply();
     }
   };
 
@@ -155,7 +156,7 @@ export default class StatusDropdown extends React.Component {
     (alertStatus !== status && this.isResolved(alertStatus));
 
   render() {
-    const { alertSummary, user, updateAlertVisibility } = this.props;
+    const { alertSummary, user, updateAlertVisibility, $rootScope } = this.props;
     const {
       showBugModal,
       issueTrackers,
@@ -181,6 +182,7 @@ export default class StatusDropdown extends React.Component {
           showModal={showNotesModal}
           toggle={() => this.toggle('showNotesModal')}
           alertSummary={alertSummary}
+          $rootScope={$rootScope}
         />
         <UncontrolledDropdown tag="span">
           <DropdownToggle
@@ -261,4 +263,5 @@ StatusDropdown.propTypes = {
   repos: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   user: PropTypes.shape({}).isRequired,
   updateAlertVisibility: PropTypes.func.isRequired,
+  $rootScope: PropTypes.shape({}).isRequired,
 };

@@ -33,20 +33,20 @@ export default class NotesModal extends React.Component {
   editNotes = async event => {
     event.preventDefault();
 
-    const { alertSummary, toggle } = this.props;
+    const { alertSummary, toggle, $rootScope } = this.props;
     const { inputValue } = this.state;
 
-    await update(getApiUrl(`${endpoints.alertSummary}${alertSummary.id}/`), {
+    const { failureStatus } = await update(getApiUrl(`${endpoints.alertSummary}${alertSummary.id}/`), {
       notes: inputValue,
     });
-    // TODO this is updating the notes from the endpoint properly,
-    // but the properties on the changed alertSummary needs to be updated
 
-    // are originalNotes and notesChanged needed since we utilize props for comparison now?
-    // if (!failureStatus) {
-    //   alertSummary.originalNotes = alertSummary.notes;
-    //   alertSummary.notesChanged = false;
-    // }
+    if (!failureStatus) {
+      alertSummary.notes = inputValue;
+      $rootScope.$apply();
+      // TODO originalNotes and notesChanged might not be needed since they're used for comparison purposes
+      // alertSummary.originalNotes = alertSummary.notes;
+      // alertSummary.notesChanged = false;
+    }
     toggle();
   };
 
@@ -102,4 +102,5 @@ NotesModal.propTypes = {
   alertSummary: PropTypes.shape({
     notes: PropTypes.string,
   }).isRequired,
+  $rootScope: PropTypes.shape({}).isRequired,  
 };

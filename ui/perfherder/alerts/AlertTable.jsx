@@ -36,18 +36,19 @@ export class AlertTable extends React.Component {
   }
 
   updateAlertSummary = () => {
-    const { alertSummary } = this.props;
+    const { alertSummary, $rootScope } = this.props;
     // TODO see about moving this to state, although it's also used in modifySelectedAlerts
     // (resets to false) which is used in many different parts
     alertSummary.allSelected = !alertSummary.allSelected;
-    // TODO should this be changed?
+
     alertSummary.alerts.forEach(function selectAlerts(alert) {
       alert.selected = alert.visible && alertSummary.allSelected;
     });
+    $rootScope.$apply();
   };
 
   render() {
-    const { user, alertSummary, repos, updateAlertVisibility } = this.props;
+    const { user, alertSummary, repos, updateAlertVisibility, $rootScope } = this.props;
 
     return (
       <Container fluid className="px-0">
@@ -64,7 +65,7 @@ export class AlertTable extends React.Component {
                         disabled={!user.isStaff}
                         onClick={this.updateAlertSummary}
                       />
-                      <AlertHeader alertSummary={alertSummary} />
+                      <AlertHeader alertSummary={alertSummary}/>
                     </Label>
                   </FormGroup>
                   {/* </div> */}
@@ -80,6 +81,7 @@ export class AlertTable extends React.Component {
                     repos={repos}
                     user={user}
                     updateAlertVisibility={updateAlertVisibility}
+                    $rootScope={$rootScope}
                   />
                 </th>
               </tr>
@@ -101,6 +103,7 @@ AlertTable.propTypes = {
   user: PropTypes.shape({}),
   repos: PropTypes.arrayOf(PropTypes.shape({})),
   updateAlertVisibility: PropTypes.func.isRequired,
+  $rootScope: PropTypes.shape({}).isRequired,  
 };
 
 AlertTable.defaultProps = {
@@ -116,7 +119,7 @@ perf.component(
   react2angular(
     AlertTable,
     ['alertSummary', 'user', 'repos', 'updateAlertVisibility'],
-    ['$stateParams', '$state'],
+    ['$stateParams', '$state', '$rootScope'],
   ),
 );
 
