@@ -15,21 +15,14 @@ import {
 } from 'reactstrap';
 import debounce from 'lodash/debounce';
 
-import { refreshAlertSummary } from '../helpers';
-import { update } from '../../helpers/http';
-import { getApiUrl } from '../../helpers/url';
-import { endpoints } from '../constants';
-
 export default class BugModal extends React.Component {
   constructor(props) {
     super(props);
-    this.issueTrackers = this.props.issueTrackers;
     this.state = {
       selectedValue: '',
       inputValue: '',
       invalidInput: false,
       validated: false,
-      failureMessage: '',
     };
   }
 
@@ -63,37 +56,17 @@ export default class BugModal extends React.Component {
     );
   };
 
-  assignBug = async event => {
-    event.preventDefault();
-
-    const {
-      alertSummary,
-      toggle,
-      issueTrackers,
-      updateBugNumber,
-    } = this.props;
-    const { inputValue, selectedValue } = this.state;
-    const tracker = issueTrackers.find(item => item.text === selectedValue);
-
-    updateBugNumber({
-      bug_number: parseInt(inputValue, 10),
-      issue_tracker: tracker.id,
-    })
-    toggle();
-  };
-
   render() {
-    const { showModal, toggle, issueTrackers, issueTrackersError, updateBugNumber, updateAndClose } = this.props;
+    const { showModal, toggle, issueTrackers, updateAndClose } = this.props;
     const {
       inputValue,
       invalidInput,
       validated,
       selectedValue,
-      failureMessage,
     } = this.state;
 
     const tracker = issueTrackers.find(item => item.text === selectedValue);
-    
+
     return (
       <Modal isOpen={showModal} className="">
         <ModalHeader toggle={toggle}>Link to Bug</ModalHeader>
@@ -121,7 +94,6 @@ export default class BugModal extends React.Component {
                     value={selectedValue}
                   >
                     {issueTrackers.length > 0 &&
-                      !issueTrackersError &&
                       issueTrackers.map(item => (
                         <option key={item.id}>{item.text}</option>
                       ))}
@@ -140,26 +112,23 @@ export default class BugModal extends React.Component {
             </FormGroup>
           </ModalBody>
           <ModalFooter>
-            <Col>
-              {failureMessage.length > 0 && (
-                <p className="text-danger text-wrap text-center mb-1">
-                  {`Failed to assign bug: ${failureMessage}`}
-                </p>
-              )}
-            </Col>
-            <Col className="text-right" lg="auto">
-              <Button
-                color="secondary"
-                onClick={(event) => updateAndClose(event, {
-                  bug_number: parseInt(inputValue, 10),
-                  issue_tracker: tracker.id,
-                }, 'showBugModal')}
-                disabled={invalidInput || !inputValue.length || !validated}
-                type="submit"
-              >
-                Assign
-              </Button>
-            </Col>
+            <Button
+              color="secondary"
+              onClick={event =>
+                updateAndClose(
+                  event,
+                  {
+                    bug_number: parseInt(inputValue, 10),
+                    issue_tracker: tracker.id,
+                  },
+                  'showBugModal',
+                )
+              }
+              disabled={invalidInput || !inputValue.length || !validated}
+              type="submit"
+            >
+              Assign
+            </Button>
           </ModalFooter>
         </Form>
       </Modal>
@@ -176,12 +145,10 @@ BugModal.propTypes = {
       id: PropTypes.number,
     }),
   ),
-  issueTrackersError: PropTypes.bool,
   alertSummary: PropTypes.shape({}).isRequired,
-  updateAlertVisibility: PropTypes.func.isRequired,
+  updateAndClose: PropTypes.func.isRequired,
 };
 
 BugModal.defaultProps = {
   issueTrackers: [],
-  issueTrackersError: null,
 };

@@ -126,11 +126,14 @@ export default class StatusDropdown extends React.Component {
     this.toggle(state);
   };
 
-  updateBugNumber = async (params) => {
+  updateBugNumber = async params => {
     const { alertSummary, updateAlertSummary } = this.props;
     // TODO error handling
-    await update(getApiUrl(`${endpoints.alertSummary}${alertSummary.id}/`), params);
-    updateAlertSummary({...alertSummary, ...params});
+    await update(
+      getApiUrl(`${endpoints.alertSummary}${alertSummary.id}/`),
+      params,
+    );
+    updateAlertSummary({ ...alertSummary, ...params });
   };
 
   updateAlertStatus = async status => {
@@ -157,11 +160,7 @@ export default class StatusDropdown extends React.Component {
     (alertStatus !== status && this.isResolved(alertStatus));
 
   render() {
-    const {
-      alertSummary,
-      user,
-      $rootScope,
-    } = this.props;
+    const { alertSummary, user, $rootScope } = this.props;
     const {
       showBugModal,
       issueTrackers,
@@ -175,15 +174,15 @@ export default class StatusDropdown extends React.Component {
 
     return (
       <React.Fragment>
-        <BugModal
-          showModal={showBugModal}
-          toggle={() => this.toggle('showBugModal')}
-          issueTrackers={issueTrackers}
-          issueTrackersError={issueTrackersError}
-          alertSummary={alertSummary}
-          updateBugNumber={this.updateBugNumber}
-          updateAndClose={this.updateAndClose}
-        />
+        {!issueTrackersError && (
+          <BugModal
+            showModal={showBugModal}
+            toggle={() => this.toggle('showBugModal')}
+            issueTrackers={issueTrackers}
+            alertSummary={alertSummary}
+            updateAndClose={this.updateAndClose}
+          />
+        )}
         <NotesModal
           showModal={showNotesModal}
           toggle={() => this.toggle('showNotesModal')}
@@ -210,10 +209,14 @@ export default class StatusDropdown extends React.Component {
                     Link to bug
                   </DropdownItem>
                 ) : (
-                  <DropdownItem onClick={() => this.updateBugNumber({
-                    bug_number: null,
-                    issue_tracker: null,
-                  })}>
+                  <DropdownItem
+                    onClick={() =>
+                      this.updateBugNumber({
+                        bug_number: null,
+                        issue_tracker: null,
+                      })
+                    }
+                  >
                     Unlink from bug
                   </DropdownItem>
                 )}
