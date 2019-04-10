@@ -36,9 +36,12 @@ export default class NotesModal extends React.Component {
     const { alertSummary, toggle, $rootScope } = this.props;
     const { inputValue } = this.state;
 
-    const { failureStatus } = await update(getApiUrl(`${endpoints.alertSummary}${alertSummary.id}/`), {
-      notes: inputValue,
-    });
+    const { failureStatus } = await update(
+      getApiUrl(`${endpoints.alertSummary}${alertSummary.id}/`),
+      {
+        notes: inputValue,
+      },
+    );
 
     if (!failureStatus) {
       alertSummary.notes = inputValue;
@@ -102,5 +105,5 @@ NotesModal.propTypes = {
   alertSummary: PropTypes.shape({
     notes: PropTypes.string,
   }).isRequired,
-  $rootScope: PropTypes.shape({}).isRequired,  
+  $rootScope: PropTypes.shape({}).isRequired,
 };

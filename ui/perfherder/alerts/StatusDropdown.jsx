@@ -120,14 +120,17 @@ export default class StatusDropdown extends React.Component {
     }));
   };
 
+  updateAndClose = async (event, params, state) => {
+    event.preventDefault();
+    this.updateBugNumber(params);
+    this.toggle(state);
+  };
+
   updateBugNumber = async (params) => {
     const { alertSummary, updateAlertSummary } = this.props;
+    // TODO error handling
     await update(getApiUrl(`${endpoints.alertSummary}${alertSummary.id}/`), params);
-    // TODO this doesn't work as expected in this component - replace
-    // refreshAlertSummary(alertSummary, data);
-    // updateAlertVisibility();
-    const newAlertSummary = {...alertSummary, ...params};
-    updateAlertSummary(newAlertSummary);
+    updateAlertSummary({...alertSummary, ...params});
   };
 
   updateAlertStatus = async status => {
@@ -179,6 +182,7 @@ export default class StatusDropdown extends React.Component {
           issueTrackersError={issueTrackersError}
           alertSummary={alertSummary}
           updateBugNumber={this.updateBugNumber}
+          updateAndClose={this.updateAndClose}
         />
         <NotesModal
           showModal={showNotesModal}

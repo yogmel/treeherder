@@ -70,31 +70,20 @@ export default class BugModal extends React.Component {
       alertSummary,
       toggle,
       issueTrackers,
-      updateAlertVisibility,
+      updateBugNumber,
     } = this.props;
     const { inputValue, selectedValue } = this.state;
     const tracker = issueTrackers.find(item => item.text === selectedValue);
 
-    const { data, failureStatus } = await update(
-      getApiUrl(`${endpoints.alertSummary}${alertSummary.id}/`),
-      {
-        bug_number: parseInt(inputValue, 10),
-        issue_tracker: tracker.id,
-      },
-    );
-
-    if (!failureStatus) {
-      refreshAlertSummary(alertSummary, data);
-      // TODO this doesn't work as expected in this component - replace
-      updateAlertVisibility();
-      toggle();
-    } else {
-      this.setState({ failureMessage: data });
-    }
+    updateBugNumber({
+      bug_number: parseInt(inputValue, 10),
+      issue_tracker: tracker.id,
+    })
+    toggle();
   };
 
   render() {
-    const { showModal, toggle, issueTrackers, issueTrackersError } = this.props;
+    const { showModal, toggle, issueTrackers, issueTrackersError, updateBugNumber, updateAndClose } = this.props;
     const {
       inputValue,
       invalidInput,
@@ -103,6 +92,8 @@ export default class BugModal extends React.Component {
       failureMessage,
     } = this.state;
 
+    const tracker = issueTrackers.find(item => item.text === selectedValue);
+    
     return (
       <Modal isOpen={showModal} className="">
         <ModalHeader toggle={toggle}>Link to Bug</ModalHeader>
@@ -159,7 +150,10 @@ export default class BugModal extends React.Component {
             <Col className="text-right" lg="auto">
               <Button
                 color="secondary"
-                onClick={this.assignBug}
+                onClick={(event) => updateAndClose(event, {
+                  bug_number: parseInt(inputValue, 10),
+                  issue_tracker: tracker.id,
+                }, 'showBugModal')}
                 disabled={invalidInput || !inputValue.length || !validated}
                 type="submit"
               >
