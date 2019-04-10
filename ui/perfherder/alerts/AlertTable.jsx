@@ -32,23 +32,26 @@ import StatusDropdown from './StatusDropdown';
 export class AlertTable extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      alertSummary: this.props.alertSummary,
+    };
   }
+  // TODO omponentDidUpdate
 
-  updateAlertSummary = () => {
-    const { alertSummary, $rootScope } = this.props;
-    // TODO see about moving this to state, although it's also used in modifySelectedAlerts
-    // (resets to false) which is used in many different parts
+  selectAlerts = () => {
+    const alertSummary = { ...this.state.alertSummary };
     alertSummary.allSelected = !alertSummary.allSelected;
 
     alertSummary.alerts.forEach(function selectAlerts(alert) {
       alert.selected = alert.visible && alertSummary.allSelected;
     });
-    $rootScope.$apply();
+    this.setState({ alertSummary });
+    this.props.$rootScope.$apply();
   };
 
   render() {
-    const { user, alertSummary } = this.props;
+    const { user, $rootScope, repos } = this.props;
+    const { alertSummary } = this.state;
 
     return (
       <Container fluid className="px-0">
@@ -57,18 +60,16 @@ export class AlertTable extends React.Component {
             <thead>
               <tr className="bg-lightgray">
                 <th className="text-left alert-summary-header-element">
-                  {/* <div className="justify-content-left"> */}
                   <FormGroup check>
                     <Label check>
                       <Input
                         type="checkbox"
                         disabled={!user.isStaff}
-                        onClick={this.updateAlertSummary}
+                        onClick={this.selectAlerts}
                       />
-                      <AlertHeader alertSummary={alertSummary}/>
+                      <AlertHeader alertSummary={alertSummary} />
                     </Label>
                   </FormGroup>
-                  {/* </div> */}
                 </th>
                 <th />
                 <th />
@@ -76,7 +77,14 @@ export class AlertTable extends React.Component {
                 <th />
                 <th />
                 <th className="table-width-sm align-top font-weight-normal">
-                  <StatusDropdown {...this.props}
+                  <StatusDropdown
+                    alertSummary={alertSummary}
+                    repos={repos}
+                    user={user}
+                    $rootScope={$rootScope}
+                    updateAlertSummary={alertSummary =>
+                      this.setState({ alertSummary })
+                    }
                   />
                 </th>
               </tr>
@@ -97,10 +105,8 @@ AlertTable.propTypes = {
   alertSummary: PropTypes.shape({}),
   user: PropTypes.shape({}),
   repos: PropTypes.arrayOf(PropTypes.shape({})),
-  updateAlertVisibility: PropTypes.func.isRequired,
   alertSummaryMarkAs: PropTypes.func.isRequired,
   $rootScope: PropTypes.shape({}).isRequired,
-  updateStatus: PropTypes.bool.isRequired,  
 };
 
 AlertTable.defaultProps = {
@@ -115,7 +121,14 @@ perf.component(
   'alertTable',
   react2angular(
     AlertTable,
-    ['alertSummary', 'user', 'repos', 'updateAlertVisibility', 'alertSummaryMarkAs', 'updateStatus'],
+    [
+      'alertSummary',
+      'user',
+      'repos',
+      'updateAlertVisibility',
+      'alertSummaryMarkAs',
+      'updateStatus',
+    ],
     ['$stateParams', '$state', '$rootScope'],
   ),
 );

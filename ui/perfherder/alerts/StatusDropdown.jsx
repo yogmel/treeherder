@@ -12,7 +12,6 @@ import {
   getAlertSummaryStatusText,
   getTextualSummary,
   getTitle,
-  refreshAlertSummary,
 } from '../helpers';
 import { getData, update } from '../../helpers/http';
 import { getApiUrl, bzBaseUrl, createQueryParams } from '../../helpers/url';
@@ -121,27 +120,24 @@ export default class StatusDropdown extends React.Component {
     }));
   };
 
-  unlinkBug = async () => {
-    const { alertSummary, updateAlertVisibility, $rootScope } = this.props;
-    const { data, failureStatus } = await update(
-      getApiUrl(`${endpoints.alertSummary}${alertSummary.id}/`),
-      {
-        bug_number: null,
-      },
-    );
-    if (!failureStatus) {
-      refreshAlertSummary(alertSummary, data);
-      // TODO this doesn't work as expected in this component - replace
-      updateAlertVisibility();
-      $rootScope.$apply();
-    }
+  updateBugNumber = async (params) => {
+    const { alertSummary, updateAlertSummary } = this.props;
+    await update(getApiUrl(`${endpoints.alertSummary}${alertSummary.id}/`), params);
+    // TODO this doesn't work as expected in this component - replace
+    // refreshAlertSummary(alertSummary, data);
+    // updateAlertVisibility();
+    const newAlertSummary = {...alertSummary, ...params};
+    updateAlertSummary(newAlertSummary);
   };
 
   updateAlertStatus = async status => {
     const { alertSummary, alertSummaryMarkAs } = this.props;
-    const { failureStatus } = await update(getApiUrl(`${endpoints.alertSummary}${alertSummary.id}/`), {
-      status,
-    });
+    const { failureStatus } = await update(
+      getApiUrl(`${endpoints.alertSummary}${alertSummary.id}/`),
+      {
+        status,
+      },
+    );
     if (!failureStatus) {
       alertSummary.status = status;
       alertSummaryMarkAs();
@@ -158,7 +154,11 @@ export default class StatusDropdown extends React.Component {
     (alertStatus !== status && this.isResolved(alertStatus));
 
   render() {
-    const { alertSummary, user, updateAlertVisibility, $rootScope } = this.props;
+    const {
+      alertSummary,
+      user,
+      $rootScope,
+    } = this.props;
     const {
       showBugModal,
       issueTrackers,
@@ -178,7 +178,7 @@ export default class StatusDropdown extends React.Component {
           issueTrackers={issueTrackers}
           issueTrackersError={issueTrackersError}
           alertSummary={alertSummary}
-          updateAlertVisibility={updateAlertVisibility}
+          updateBugNumber={this.updateBugNumber}
         />
         <NotesModal
           showModal={showNotesModal}
@@ -206,7 +206,10 @@ export default class StatusDropdown extends React.Component {
                     Link to bug
                   </DropdownItem>
                 ) : (
-                  <DropdownItem onClick={this.unlinkBug}>
+                  <DropdownItem onClick={() => this.updateBugNumber({
+                    bug_number: null,
+                    issue_tracker: null,
+                  })}>
                     Unlink from bug
                   </DropdownItem>
                 )}
@@ -264,7 +267,6 @@ StatusDropdown.propTypes = {
   alertSummary: PropTypes.shape({}).isRequired,
   repos: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   user: PropTypes.shape({}).isRequired,
-  updateAlertVisibility: PropTypes.func.isRequired,
   $rootScope: PropTypes.shape({}).isRequired,
-  alertSummaryMarkAs: PropTypes.func.isRequired,  
+  alertSummaryMarkAs: PropTypes.func.isRequired,
 };
