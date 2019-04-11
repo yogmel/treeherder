@@ -316,12 +316,20 @@ th {
   color: #23527c;
 }
 
+/* TODO remove
 .compare-table td.alert-labels a {
   visibility: hidden;
 }
 
 .compare-table tr:hover td.alert-labels a {
   visibility: visible;
+} */
+
+.alert-row td.alert-labels span {
+  visibility: hidden;  
+}
+.alert-row:hover td.alert-labels span {
+  visibility: visible;  
 }
 
 .button-panel {
@@ -386,7 +394,7 @@ th {
   width: 160px;
   text-align: right;
 }
-/* TODO replace with bootstrap colors */
+/* TODO remove all bar classes */
 .bar {
   height: 1em;
   margin-top: 0.25em;
@@ -409,12 +417,11 @@ th {
 button:disabled {
   cursor: not-allowed;
 }
-
 /* Table widths for alerts */
 td.alert-checkbox {
   width: 30px;
-  padding: 8px;
 }
+/* TODO remove */
 td.alert-labels {
   width: 30px;
   padding: 8px;
@@ -440,6 +447,7 @@ td.alert-confidence {
   width: 100px;
 }
 
+/* TODO remove these
 /* Various styles for individual alerts ("changes" in UI) */
 .alert-untriaged {
   color: #3c763d;

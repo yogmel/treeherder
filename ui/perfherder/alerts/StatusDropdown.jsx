@@ -12,6 +12,7 @@ import {
   getAlertSummaryStatusText,
   getTextualSummary,
   getTitle,
+  getAlertStatus,
 } from '../helpers';
 import { getData, update } from '../../helpers/http';
 import { getApiUrl, bzBaseUrl, createQueryParams } from '../../helpers/url';
@@ -153,10 +154,8 @@ export default class StatusDropdown extends React.Component {
       issueTrackersError,
       showNotesModal,
     } = this.state;
-
-    const alertStatus = Object.entries(alertSummaryStatus).find(
-      item => alertSummary.status === item[1],
-    )[0];
+    // TODO should this move to state?
+    const alertStatus = getAlertStatus(alertSummary);
 
     return (
       <React.Fragment>

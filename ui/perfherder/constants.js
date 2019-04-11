@@ -6,6 +6,7 @@ export const endpoints = {
   issueTrackers: '/performance/issue-tracker/',
   frameworks: '/performance/framework/',
   alertSummary: '/performance/alertsummary/',
+  alert: '/performance/alert/',
 };
 
 export const noiseMetricTitle = 'noise metric';

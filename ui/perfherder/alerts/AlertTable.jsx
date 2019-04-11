@@ -7,6 +7,7 @@ import perf from '../../js/perf';
 
 import AlertHeader from './AlertHeader';
 import StatusDropdown from './StatusDropdown';
+import AlertTableRow from './AlertTableRow';
 
 // TODO remove $stateParams and $state after switching to react router
 export class AlertTable extends React.Component {
@@ -36,10 +37,13 @@ export class AlertTable extends React.Component {
     return (
       <Container fluid className="px-0">
         <Form>
-          <Table>
+          <Table className="compare-table">
             <thead>
               <tr className="bg-lightgray">
-                <th className="text-left alert-summary-header-element">
+                <th
+                  colSpan="8"
+                  className="text-left alert-summary-header-element"
+                >
                   <FormGroup check>
                     <Label check>
                       <Input
@@ -51,11 +55,6 @@ export class AlertTable extends React.Component {
                     </Label>
                   </FormGroup>
                 </th>
-                <th />
-                <th />
-                <th />
-                <th />
-                <th />
                 <th className="table-width-sm align-top font-weight-normal">
                   <StatusDropdown
                     alertSummary={alertSummary}
@@ -70,7 +69,18 @@ export class AlertTable extends React.Component {
               </tr>
             </thead>
             <tbody>
-              <tr />
+              {/* // TODO orderBy: ['-starred', 'title'] */}
+              {alertSummary.alerts.map(
+                alert =>
+                  alert.visible && (
+                    <AlertTableRow
+                      key={alert.id}
+                      alertSummary={alertSummary}
+                      alert={alert}
+                      user={user}
+                    />
+                  ),
+              )}
             </tbody>
           </Table>
         </Form>

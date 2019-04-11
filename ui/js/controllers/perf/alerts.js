@@ -110,6 +110,7 @@ perf.controller('AlertsCtrl', [
                         dateFilter) {
         $scope.alertSummaries = undefined;
         $scope.getMoreAlertSummariesHref = null;
+        // TODO remove
         $scope.getCappedMagnitude = function (percent) {
             // arbitrary scale from 0-20% multiplied by 5, capped
             // at 100 (so 20% regression === 100% bad)
@@ -178,6 +179,7 @@ perf.controller('AlertsCtrl', [
                 alert.selected = alert.visible && alertSummary.allSelected;
             });
         };
+        // TODO remove
         $scope.alertSelected = function (alertSummary) {
             if (alertSummary.alerts.every(alert => !alert.visible || alert.selected)) {
                 alertSummary.allSelected = true;
@@ -443,7 +445,7 @@ perf.controller('AlertsCtrl', [
 
         // Alert functions
         $scope.phAlertStatusMap = phAlertStatusMap;
-
+        // TODO remove
         $scope.getAlertStatusText = getAlertStatusText;
         $scope.getGraphsURL = getGraphsURL;
         $scope.getSubtestsURL = getSubtestsURL;
