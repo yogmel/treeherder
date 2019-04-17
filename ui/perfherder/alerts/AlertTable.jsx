@@ -81,6 +81,19 @@ export class AlertTable extends React.Component {
                     />
                   ),
               )}
+              {alertSummary.downstreamSummaryIds.length &&
+              <tr>
+                <p className="text-muted">Downstream alert summaries:</p>
+                {alertSummary.downstreamSummaryIds.map(summaryId =>
+                <span className="text-muted">
+                  {/* <a href={`perf.html#/alerts?id=${summaryId}`} */}
+                      // ng-mouseenter="getSummaryTitle(summaryId)"
+                      // ng-mouseleave="resetSummaryTitle()"
+                      uib-tooltip-html="summaryTitle.html" >
+                    {/* #{{summaryId}}
+                  </a>{{$last ? '' : ', '}} */}
+                </span>)}
+              </tr>}
             </tbody>
           </Table>
         </Form>
@@ -88,6 +101,19 @@ export class AlertTable extends React.Component {
     );
   }
 }
+{/* <div class="card-body" ng-show="alertSummary.downstreamSummaryIds.length">
+<p class="text-muted">
+  Downstream alert summaries:
+  <span class="text-muted" ng-repeat="summaryId in alertSummary.downstreamSummaryIds" >
+      <a href="perf.html#/alerts?id={{summaryId}}"
+          ng-mouseenter="getSummaryTitle(summaryId)"
+          ng-mouseleave="resetSummaryTitle()"
+          uib-tooltip-html="summaryTitle.html" >
+         #{{summaryId}}
+      </a>{{$last ? '' : ', '}}
+  </span>
+</p>
+</div> */}
 
 AlertTable.propTypes = {
   $stateParams: PropTypes.shape({}),
