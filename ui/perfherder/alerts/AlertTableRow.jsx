@@ -116,7 +116,7 @@ export default class AlertTableRow extends React.Component {
     const numberFormat = new Intl.NumberFormat();
 
     return (
-      <tr className="alert-row justify-center">
+      <tr className="justify-center">
         <td className="alert-checkbox">
           <FormGroup check>
           {/* TODO aria label */}
