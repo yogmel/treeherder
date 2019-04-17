@@ -7,18 +7,13 @@ import perf from '../../perf';
 import { endpoints } from '../../../perfherder/constants';
 import {
     alertIsOfState,
-    getAlertStatusText,
     getAlertSummaries,
     getAlertSummary,
     getAlertSummaryTitle,
-    getAlertSummaryStatusText,
-    getGraphsURL,
     getIssueTrackerUrl,
-    getSubtestsURL,
     getTextualSummary,
     modifySelectedAlerts,
     refreshAlertSummary,
-    toggleStar,
 } from '../../../perfherder/helpers';
 import modifyAlertsCtrlTemplate from '../../../partials/perf/modifyalertsctrl.html';
 import { getApiUrl, getJobsUrl } from '../../../helpers/url';
@@ -110,12 +105,6 @@ perf.controller('AlertsCtrl', [
                         dateFilter) {
         $scope.alertSummaries = undefined;
         $scope.getMoreAlertSummariesHref = null;
-        // TODO remove
-        $scope.getCappedMagnitude = function (percent) {
-            // arbitrary scale from 0-20% multiplied by 5, capped
-            // at 100 (so 20% regression === 100% bad)
-            return Math.min(Math.abs(percent) * 5, 100);
-        };
 
         // can filter by alert statuses or just show everything
         $scope.statuses = Object.values(phAlertSummaryStatusMap);
@@ -179,14 +168,7 @@ perf.controller('AlertsCtrl', [
                 alert.selected = alert.visible && alertSummary.allSelected;
             });
         };
-        // TODO remove
-        $scope.alertSelected = function (alertSummary) {
-            if (alertSummary.alerts.every(alert => !alert.visible || alert.selected)) {
-                alertSummary.allSelected = true;
-            } else {
-                alertSummary.allSelected = false;
-            }
-        };
+
         // TODO replace usage of modifyAlertsCtrlTemplate with Bug Modal component
         $scope.markAlertsDownstream = function (alertSummary) {
             $uibModal.open({
@@ -443,19 +425,11 @@ perf.controller('AlertsCtrl', [
             }
         };
 
-        // Alert functions
         $scope.phAlertStatusMap = phAlertStatusMap;
-        // TODO remove
-        $scope.getAlertStatusText = getAlertStatusText;
-        $scope.getGraphsURL = getGraphsURL;
-        $scope.getSubtestsURL = getSubtestsURL;
         $scope.alertIsOfState = alertIsOfState;
-        $scope.toggleStar = toggleStar;
 
         // AlertSummary functions
         $scope.phAlertSummaryStatusMap = phAlertSummaryStatusMap;
-
-        $scope.getAlertSummaryStatusText = getAlertSummaryStatusText;
         $scope.getIssueTrackerUrl = getIssueTrackerUrl;
         $scope.getTextualSummary = getTextualSummary;
 

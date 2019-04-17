@@ -363,7 +363,7 @@ const Alert = (alertData, optionCollectionMap) => ({
     includePlatformInName: true,
   }),
 });
-// TODO remove
+// TODO move into graphs component or remove
 export const getAlertStatusText = alert =>
   Object.values(phAlertStatusMap).find(status => status.id === alert.status)
     .text;
@@ -422,15 +422,6 @@ const modifyAlert = (alert, modification) =>
 
 export const alertIsOfState = (alert, phAlertStatus) =>
   alert.status === phAlertStatus.id;
-// TODO remove
-export const toggleStar = alert => {
-  const toggledStar = !alert.starred;
-  modifyAlert(alert, {
-    starred: toggledStar,
-  }).then(() => {
-    alert.starred = toggledStar;
-  });
-};
 
 export const getAlertStatus = alertSummary =>
   Object.entries(alertSummaryStatus).find(
