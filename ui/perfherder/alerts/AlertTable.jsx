@@ -8,6 +8,7 @@ import perf from '../../js/perf';
 import AlertHeader from './AlertHeader';
 import StatusDropdown from './StatusDropdown';
 import AlertTableRow from './AlertTableRow';
+import DownstreamSummary from './DownstreamSummary';
 
 // TODO remove $stateParams and $state after switching to react router
 export class AlertTable extends React.Component {
@@ -31,9 +32,9 @@ export class AlertTable extends React.Component {
   };
 
   render() {
-    const { user, $rootScope, repos } = this.props;
+    const { user, $rootScope, repos, alertSummaries } = this.props;
     const { alertSummary } = this.state;
-
+    const summaryIdsLength = alertSummary.downstreamSummaryIds.length;
     return (
       <Container fluid className="px-0">
         <Form>
@@ -81,19 +82,21 @@ export class AlertTable extends React.Component {
                     />
                   ),
               )}
-              {alertSummary.downstreamSummaryIds.length &&
-              <tr>
-                <p className="text-muted">Downstream alert summaries:</p>
-                {alertSummary.downstreamSummaryIds.map(summaryId =>
-                <span className="text-muted">
-                  {/* <a href={`perf.html#/alerts?id=${summaryId}`} */}
-                      // ng-mouseenter="getSummaryTitle(summaryId)"
-                      // ng-mouseleave="resetSummaryTitle()"
-                      uib-tooltip-html="summaryTitle.html" >
-                    {/* #{{summaryId}}
-                  </a>{{$last ? '' : ', '}} */}
-                </span>)}
-              </tr>}
+              {summaryIdsLength > 0 && (
+                <tr>
+                  <td colSpan="8" className="text-left text-muted p-4">
+                    <span className="">Downstream alert summaries: </span>
+                    {alertSummary.downstreamSummaryIds.map((id, index) => (
+                      <DownstreamSummary
+                        key={id}                      
+                        id={id}
+                        alertSummaries={alertSummaries}
+                        position={(summaryIdsLength - 1) - index}
+                      />
+                    ))}
+                  </td>
+                </tr>
+              )}
             </tbody>
           </Table>
         </Form>
@@ -101,19 +104,6 @@ export class AlertTable extends React.Component {
     );
   }
 }
-{/* <div class="card-body" ng-show="alertSummary.downstreamSummaryIds.length">
-<p class="text-muted">
-  Downstream alert summaries:
-  <span class="text-muted" ng-repeat="summaryId in alertSummary.downstreamSummaryIds" >
-      <a href="perf.html#/alerts?id={{summaryId}}"
-          ng-mouseenter="getSummaryTitle(summaryId)"
-          ng-mouseleave="resetSummaryTitle()"
-          uib-tooltip-html="summaryTitle.html" >
-         #{{summaryId}}
-      </a>{{$last ? '' : ', '}}
-  </span>
-</p>
-</div> */}
 
 AlertTable.propTypes = {
   $stateParams: PropTypes.shape({}),
@@ -124,6 +114,7 @@ AlertTable.propTypes = {
   $rootScope: PropTypes.shape({
     $apply: PropTypes.func,
   }).isRequired,
+  alertSummaries: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
 };
 
 AlertTable.defaultProps = {
@@ -138,7 +129,7 @@ perf.component(
   'alertTable',
   react2angular(
     AlertTable,
-    ['alertSummary', 'user', 'repos'],
+    ['alertSummary', 'user', 'repos', 'alertSummaries'],
     ['$stateParams', '$state', '$rootScope'],
   ),
 );

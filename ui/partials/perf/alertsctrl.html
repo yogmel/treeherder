@@ -38,7 +38,7 @@
     No alerts for framework "{{filterOptions.framework.name}}" with status "{{filterOptions.status.text}}"
   </p>
   <div class="card alert-summary" ng-repeat="alertSummary in alertSummaries" ng-if="alertSummary.anyVisible">
-    <alert-table alert-summary="alertSummary" user="user" repos="repos"></alert-table>
+    <alert-table alert-summary="alertSummary" user="user" repos="repos" alert-summaries="alertSummaries"></alert-table>
     <div class="card-body" ng-show="alertSummary.downstreamSummaryIds.length">
       <p class="text-muted">
         Downstream alert summaries:
