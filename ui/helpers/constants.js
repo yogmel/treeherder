@@ -220,7 +220,7 @@ export const phTimeRanges = [
 ];
 
 export const phDefaultTimeRangeValue = 1209600;
-
+// TODO remove
 export const phDefaultFramework = 'talos';
 
 export const phFrameworksWithRelatedBranches = [
