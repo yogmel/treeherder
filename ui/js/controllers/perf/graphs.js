@@ -763,6 +763,7 @@ perf.controller('GraphsCtrl', [
             $scope.selectedDataPoint = null;
             hideTooltip();
             highlightDataPoints();
+            $scope.$digest();
         };
 
         // Alert functions
