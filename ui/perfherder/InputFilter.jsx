@@ -23,6 +23,7 @@ export default class InputFilter extends React.Component {
   };
 
   handleKeyPress = event => {
+    // event.preventDefault();
     const { input } = this.state;
     if (event.key === 'Enter' && input) {
       this.props.updateFilterText(input);

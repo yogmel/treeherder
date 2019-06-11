@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { react2angular } from 'react2angular/index.es2015';
-import { Container } from 'reactstrap';
+// import { UncontrolledTooltip } from 'reactstrap';
 
 import perf from '../../js/perf';
 // import { getData, processResponse } from '../../helpers/http';
@@ -18,15 +18,27 @@ export class GraphTooltip extends React.Component {
   }
 
   render() {
-    return <Container fluid />;
+    const { selectedDataPoint } = this.props;
+    return (
+      <div id="graph-tooltip" className={selectedDataPoint ? 'locked' : ''}>
+        <div className="body" />
+      </div>
+    );
   }
 }
 
-GraphTooltip.propTypes = {};
+GraphTooltip.propTypes = {
+  selectedDataPoint: PropTypes.shape({}).isRequired,
+  tooltipContent: PropTypes.shape({}),
+};
 
-// GraphTooltip.defaultProps = {
-// };
+GraphTooltip.defaultProps = {
+  tooltipContent: undefined,
+};
 
-perf.component('graphTooltip', react2angular(GraphTooltip, [], []));
+perf.component(
+  'graphTooltip',
+  react2angular(GraphTooltip, ['tooltipContent', 'selectedDataPoint'], []),
+);
 
 export default GraphTooltip;

@@ -54,8 +54,9 @@
     <div class="graph-right-padding"></div>
   </div>
 
-  <div id="graph-tooltip" ng-class="{locked: selectedDataPoint}">
-    <div class="body">
+  <!-- <div id="graph-tooltip" ng-class="{locked: selectedDataPoint}"> -->
+    <graph-tooltip tooltip-content="tooltipContent" selected-data-point="selectedDataPoint" />
+    <!-- <div class="body">
       <div>
         <button id="close-popup" type="button" class="close graphchooser-close"
                 ng-click="closePopup()"><span aria-hidden="true">&times;</span></button>
@@ -142,6 +143,6 @@
       <span ng-hide="selectedDataPoint">Click to lock</span>
       <span ng-show="selectedDataPoint">&nbsp;</span>
     </div>
-    <div class="tip"></div>
-  </div>
+    <div class="tip"></div> -->
+  <!-- </div> -->
 </div>
