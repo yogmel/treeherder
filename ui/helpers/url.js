@@ -118,5 +118,6 @@ export const bugzillaBugsApi = function bugzillaBugsApi(api, params) {
   return `${bzBaseUrl}rest/${api}${query}`;
 };
 
+// TODO remove
 export const getRevisionUrl = (revision, projectName) =>
   revision ? getJobsUrl({ repo: projectName, revision }) : '';
