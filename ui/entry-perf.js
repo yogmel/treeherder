@@ -62,6 +62,7 @@ import './perfherder/alerts/AlertTable';
 import './perfherder/alerts/AlertsView';
 import './perfherder/graphs/TestDataModal';
 import './perfherder/graphs/SelectedTestsContainer';
+import './perfherder/graphs/GraphsViewControls';
 
 config.showMissingIcons = true;
 

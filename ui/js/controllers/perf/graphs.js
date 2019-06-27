@@ -58,23 +58,23 @@ perf.controller('GraphsCtrl', [
                 $scope.creatingAlert = false;
             });
         };
+        // TODO remove - this functionality will be enabled later
+        // $scope.nudgeAlert = (dataPoint, direction) => {
+        //     $scope.nudgingAlert = true;
 
-        $scope.nudgeAlert = (dataPoint, direction) => {
-            $scope.nudgingAlert = true;
+        //     const resultSetData = dataPoint.series.flotSeries.resultSetData;
+        //     const towardsDataPoint = findPushIdNeighbours(dataPoint, resultSetData, direction);
 
-            const resultSetData = dataPoint.series.flotSeries.resultSetData;
-            const towardsDataPoint = findPushIdNeighbours(dataPoint, resultSetData, direction);
-
-            nudgeAlert(dataPoint, towardsDataPoint)
-                .then(alertSummaryId => refreshGraphData(alertSummaryId, dataPoint),
-                      (error) => {
-                          $scope.nudgingAlert = false;
-                          alertHttpError(error);
-                }).then(() => {
-                    deselectDataPoint();
-                    $scope.nudgingAlert = false;
-                });
-        };
+        //     nudgeAlert(dataPoint, towardsDataPoint)
+        //         .then(alertSummaryId => refreshGraphData(alertSummaryId, dataPoint),
+        //               (error) => {
+        //                   $scope.nudgingAlert = false;
+        //                   alertHttpError(error);
+        //         }).then(() => {
+        //             deselectDataPoint();
+        //             $scope.nudgingAlert = false;
+        //         });
+        // };
 
         function refreshGraphData(alertSummaryId, dataPoint) {
             return getAlertSummaries({
