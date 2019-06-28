@@ -18,6 +18,7 @@ class GraphsViewControls extends React.Component {
   componentDidMount() {
     this.getDefaultTimeRange();
   }
+
   // TODO should add a custom time range option based on query param
   getDefaultTimeRange = () => {
     const { $stateParams } = this.props;
