@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, Container, Col, Row } from 'reactstrap';
+import { Row } from 'reactstrap';
 
 class GraphsContainer extends React.Component {
   constructor(props) {
@@ -11,13 +11,22 @@ class GraphsContainer extends React.Component {
   componentDidMount() {}
 
   render() {
-    return <Container fluid className="justify-content-start"></Container>;
+    return (
+      <React.Fragment>
+        <Row>
+          <div id="overview-plot" />
+        </Row>
+        <Row>
+          <div id="graph" />
+        </Row>
+      </React.Fragment>
+    );
   }
 }
 
-GraphsContainer.propTypes = {
-  timeRange: PropTypes.shape({}).isRequired,
-};
+// GraphsContainer.propTypes = {
+//   timeRange: PropTypes.shape({}).isRequired,
+// };
 
 // GraphsContainer.defaultProps = {
 // };
