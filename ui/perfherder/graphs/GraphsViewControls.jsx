@@ -3,20 +3,42 @@ import PropTypes from 'prop-types';
 import { react2angular } from 'react2angular/index.es2015';
 import { Button, Container, Col, Row } from 'reactstrap';
 
+import { getData, processResponse } from '../../helpers/http';
+import { getApiUrl, repoEndpoint } from '../../helpers/url';
 import { createDropdowns } from '../FilterControls';
 import { phTimeRanges, phDefaultTimeRangeValue } from '../../helpers/constants';
 import perf from '../../js/perf';
+import { endpoints } from '../constants';
+
+import GraphsContainer from './GraphsContainer';
 
 class GraphsViewControls extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       timeRange: '',
+      frameworks: [],
+      projects: [],
+      errorMessages: [],
     };
   }
 
   componentDidMount() {
     this.getDefaultTimeRange();
+    this.fetchData();
+  }
+
+  async fetchData() {
+    const [projects, frameworks] = await Promise.all([
+      getData(getApiUrl(repoEndpoint)),
+      getData(getApiUrl(endpoints.frameworks)),
+    ]);
+
+    const updates = {
+      ...processResponse(projects, 'projects'),
+      ...processResponse(frameworks, 'frameworks'),
+    };
+    this.setState(updates);
   }
 
   // TODO should add a custom time range option based on query param
@@ -54,6 +76,7 @@ class GraphsViewControls extends React.Component {
             </Button>
           </Col>
         </Row>
+        <GraphsContainer timeRange={timeRange} />
       </Container>
     );
   }

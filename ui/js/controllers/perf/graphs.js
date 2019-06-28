@@ -921,6 +921,7 @@ perf.controller('GraphsCtrl', [
                         plotGraph();
                         $scope.loadingGraphs = false;
                     });
+                    console.log($scope.seriesList);
                     $scope.seriesList = [...$scope.seriesList];
                 });
             };
