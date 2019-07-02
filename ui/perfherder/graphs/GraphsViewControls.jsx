@@ -16,6 +16,11 @@ import { phTimeRanges, phDefaultTimeRangeValue } from '../../helpers/constants';
 import perf from '../../js/perf';
 import { endpoints } from '../constants';
 import DropdownMenuItems from '../../shared/DropdownMenuItems';
+import {
+  createApiUrl,
+  perfSummaryEndpoint,
+  createQueryParams,
+} from '../../helpers/url';
 
 import GraphsContainer from './GraphsContainer';
 
@@ -23,10 +28,15 @@ class GraphsViewControls extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      timeRange: '',
+      timeRange: {},
       frameworks: [],
       projects: [],
-      errorMessages: [],
+      zoom: null,
+      select: null,
+      selectedSeries: [],
+      highlightAlerts: null,
+      highlightedRevisions: ['', ''],
+      // errorMessages: [],
     };
   }
 
@@ -35,8 +45,19 @@ class GraphsViewControls extends React.Component {
     this.fetchData();
   }
 
+  // TODO should add a custom time range option based on query param
+  getDefaultTimeRange = () => {
+    const { $stateParams } = this.props;
+
+    const defaultValue = $stateParams.timerange
+      ? parseInt($stateParams.timerange, 10)
+      : phDefaultTimeRangeValue;
+    const timeRange = phTimeRanges.find(time => time.value === defaultValue);
+    this.setState({ timeRange });
+  };
+
   // TODO
-  // check for seriesList from TestDataModal or $stateParams for values
+  // check for selectedSeries from TestDataModal or $stateParams for values
   // call getSeriesData
   // set up object for graph
 
@@ -53,22 +74,90 @@ class GraphsViewControls extends React.Component {
     this.setState(updates);
   }
 
-  // TODO should add a custom time range option based on query param
-  getDefaultTimeRange = () => {
-    const { $stateParams } = this.props;
+  checkQueryParams = () => {
+    const {
+      series,
+      zoom,
+      select,
+      highlightAlerts,
+      highlightedRevisions,
+    } = this.props.$stateParams;
+    const updates = {};
 
-    const defaultValue = $stateParams.timerange
-      ? parseInt($stateParams.timerange, 10)
-      : phDefaultTimeRangeValue;
-    const timeRange = phTimeRanges.find(time => time.value === defaultValue);
-    this.setState({ timeRange });
+    if (series) {
+      updates.selectedSeries = typeof series === 'string' ? [series] : series;
+    }
+
+    if (highlightAlerts) {
+      updates.highlightAlerts = parseInt(highlightAlerts, 10);
+    }
+
+    if (highlightedRevisions) {
+      updates.highlightedRevisions =
+        typeof highlightedRevisions === 'string'
+          ? [highlightedRevisions]
+          : highlightedRevisions;
+    }
+
+    this.setState(updates);
+    if (updates.selectedSeries) {
+      const seriesParams = this.getSeriesParam(series);
+      this.fetchSeriesData(seriesParams);
+    }
   };
+
+  createSeriesParams = series => {
+    const { project, id, framework } = series;
+    const { timeRange } = this.state;
+
+    return { 
+      repository: project,
+      signature: id,
+      framework,
+      interval: timeRange.value,
+      all_data: true,
+    }
+  }
+
+  // we only store the signature, project name and framework in the url, which
+  // is used to fetch series data
+  fetchSeriesData = async seriesParams => {
+    const seriesData = await Promise.all(seriesParams.map(series => getData(createApiUrl(perfSummaryEndpoint, this.createSeriesParams(series)))));
+  };
+
+  getSeriesParam = series =>
+    series.map(encodedSeries => {
+      const partialSeriesString = decodeURIComponent(encodedSeries).replace(
+        /[[\]"]/g,
+        '',
+      );
+      const partialSeriesArray = partialSeriesString.split(',');
+      const partialSeriesObject = {
+        project: partialSeriesArray[0],
+        // TODO deprecate hash usage
+        // signature:
+        //   partialSeriesArray[1].length === 40
+        //     ? partialSeriesArray[1]
+        //     : undefined,
+        id:
+          partialSeriesArray[1].length === 40
+            ? undefined
+            : partialSeriesArray[1],
+        // TODO this affects the checkboxes in the legend
+        visible: partialSeriesArray[2] !== 0,
+        framework: partialSeriesArray[3],
+      };
+      return partialSeriesObject;
+    });
 
   render() {
     const { timeRange, projects, frameworks } = this.state;
 
     return (
       <Container fluid className="justify-content-start">
+        {/* TODO add TestDataModal - takes projects and frameworks as props
+        TODO move SelectedTestsContainer into here, TestCards take the selectedSeries
+        data as props (project name, platform name, test name, checkbox visibility) */}
         <Row className="pb-2">
           <Col sm="auto" className="py-2 pl-0 pr-2" key={timeRange}>
             <UncontrolledDropdown
@@ -95,14 +184,27 @@ class GraphsViewControls extends React.Component {
             </Button>
           </Col>
         </Row>
-        <GraphsContainer timeRange={timeRange} />
+        <GraphsContainer timeRange={timeRange} {...this.props} />
       </Container>
     );
   }
 }
 
 GraphsViewControls.propTypes = {
-  $stateParams: PropTypes.shape({}),
+  $stateParams: PropTypes.shape({
+    zoom: PropTypes.string,
+    highlightRevisions: PropTypes.string,
+    select: null,
+    series: PropTypes.oneOfType(
+      PropTypes.string,
+      PropTypes.arrayOf(PropTypes.string),
+    ),
+    highlightAlerts: PropTypes.string,
+    highlightedRevisions: PropTypes.oneOfType(
+      PropTypes.string,
+      PropTypes.arrayOf(PropTypes.string),
+    ),
+  }),
 };
 
 GraphsViewControls.defaultProps = {
