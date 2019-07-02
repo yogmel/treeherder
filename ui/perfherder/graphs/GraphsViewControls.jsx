@@ -16,7 +16,6 @@ import {
   repoEndpoint,
   createApiUrl,
   perfSummaryEndpoint,
-  createQueryParams,
 } from '../../helpers/url';
 import { phTimeRanges, phDefaultTimeRangeValue } from '../../helpers/constants';
 import perf from '../../js/perf';
@@ -24,31 +23,33 @@ import { endpoints } from '../constants';
 import DropdownMenuItems from '../../shared/DropdownMenuItems';
 
 import GraphsContainer from './GraphsContainer';
+import TestDataModal from './TestDataModal';
 
 class GraphsViewControls extends React.Component {
   constructor(props) {
     super(props);
+    this.colors = ['darkseagreen', 'lightseagreen', 'darkslateblue', 'darkgreen', 'steelblue', 'darkorchid', 'blue', 'darkcyan'];    
     this.state = {
       timeRange: this.getDefaultTimeRange(),
       frameworks: [],
       projects: [],
       zoom: null,
       select: null,
-      selectedSeries: [],
+      displayedTests: [],
       highlightAlerts: null,
       highlightedRevisions: ['', ''],
-      // errorMessages: [],
+      showModal: false,
     };
   }
 
   componentDidMount() {
-    this.fetchData();
+    this.getData();
     this.checkQueryParams();
   }
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.timeRange !== this.state.timeRange) {
-      this.fetchSeriesData();
+      this.getTestData();
     }
   }
 
@@ -63,10 +64,10 @@ class GraphsViewControls extends React.Component {
   };
 
   // TODO
-  // check for selectedSeries from TestDataModal
+  // check for displayedTests from TestDataModal
   // set up object for graph
 
-  async fetchData() {
+  async getData() {
     const [projects, frameworks] = await Promise.all([
       getData(getApiUrl(repoEndpoint)),
       getData(getApiUrl(endpoints.frameworks)),
@@ -82,8 +83,8 @@ class GraphsViewControls extends React.Component {
   checkQueryParams = () => {
     const {
       series,
-      zoom,
-      select,
+      // zoom,
+      // select,
       highlightAlerts,
       highlightedRevisions,
     } = this.props.$stateParams;
@@ -91,7 +92,7 @@ class GraphsViewControls extends React.Component {
 
     if (series) {
       const seriesParam = typeof series === 'string' ? [series] : series;
-      updates.selectedSeries = this.parseSeriesParam(seriesParam);
+      updates.displayedTests = this.parseSeriesParam(seriesParam);
     }
 
     if (highlightAlerts) {
@@ -106,8 +107,8 @@ class GraphsViewControls extends React.Component {
     }
 
     this.setState(updates, () => {
-      if (this.state.selectedSeries.length) {
-        this.fetchSeriesData();
+      if (this.state.displayedTests.length) {
+        this.getTestData();
       }
     });
   };
@@ -125,12 +126,10 @@ class GraphsViewControls extends React.Component {
     };
   };
 
-  // we only store the signature, project name and framework in the url, which
-  // is used to fetch series data
-  fetchSeriesData = async () => {
-    const { selectedSeries } = this.state;
+  getTestData = async () => {
+    const { displayedTests } = this.state;
     const seriesData = await Promise.all(
-      selectedSeries.map(series =>
+      displayedTests.map(series =>
         getData(
           createApiUrl(perfSummaryEndpoint, this.createSeriesParams(series)),
         ),
@@ -160,17 +159,49 @@ class GraphsViewControls extends React.Component {
         // TODO this affects the checkboxes in the legend
         visible: partialSeriesArray[2] !== 0,
         framework: partialSeriesArray[3],
+        color: this.colors.pop(),
       };
       return partialSeriesObject;
     });
 
-  render() {
-    const { timeRange, projects, frameworks } = this.state;
+  toggle = state => {
+    this.setState(prevState => ({
+      [state]: !prevState[state],
+    }));
+  };
 
+  submitData = selectedTests => {
+    const { displayedTests, colors } = this.state;
+    const newDisplayedTests = selectedTests.map(series => 
+      ({
+        id: series.id,
+        project: series.projectName,
+        framework: series.frameworkId,
+        hightlightedPoints: [],
+        visible: true,
+        color: this.colors.pop(),
+    }));
+
+    this.setState({ displayedTests: [...this.state.displayedTests, ...newDisplayedTests] });
+  }
+
+  render() {
+    const { timeRange, projects, frameworks, showModal, displayedTests } = this.state;
+    console.log(displayedTests);
     return (
       <Container fluid className="justify-content-start">
-        {/* TODO add TestDataModal - takes projects and frameworks as props
-        TODO move SelectedTestsContainer into here, TestCards take the selectedSeries
+        {projects.length > 0 && frameworks.length > 0 && (
+          <TestDataModal
+            showModal={showModal}
+            frameworks={frameworks}
+            projects={projects}
+            timeRange={timeRange.value}
+            options={{}}
+            submitData={this.submitData}
+            toggle={() => this.toggle('showModal')}
+          />
+        )}
+        {/* TODO move SelectedTestsContainer into here, TestCards take the displayedTests
         data as props (project name, platform name, test name, checkbox visibility) */}
         <Row className="pb-2">
           <Col sm="auto" className="py-2 pl-0 pr-2" key={timeRange}>
@@ -193,7 +224,10 @@ class GraphsViewControls extends React.Component {
             </UncontrolledDropdown>
           </Col>
           <Col sm="auto" className="p-2">
-            <Button color="info" onClick={() => {}}>
+            <Button
+              color="info"
+              onClick={() => this.setState({ showModal: true })}
+            >
               Add test data
             </Button>
           </Col>
