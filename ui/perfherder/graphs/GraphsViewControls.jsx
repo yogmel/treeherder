@@ -11,16 +11,17 @@ import {
 } from 'reactstrap';
 
 import { getData, processResponse } from '../../helpers/http';
-import { getApiUrl, repoEndpoint } from '../../helpers/url';
-import { phTimeRanges, phDefaultTimeRangeValue } from '../../helpers/constants';
-import perf from '../../js/perf';
-import { endpoints } from '../constants';
-import DropdownMenuItems from '../../shared/DropdownMenuItems';
 import {
+  getApiUrl,
+  repoEndpoint,
   createApiUrl,
   perfSummaryEndpoint,
   createQueryParams,
 } from '../../helpers/url';
+import { phTimeRanges, phDefaultTimeRangeValue } from '../../helpers/constants';
+import perf from '../../js/perf';
+import { endpoints } from '../constants';
+import DropdownMenuItems from '../../shared/DropdownMenuItems';
 
 import GraphsContainer from './GraphsContainer';
 
@@ -28,7 +29,7 @@ class GraphsViewControls extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      timeRange: {},
+      timeRange: this.getDefaultTimeRange(),
       frameworks: [],
       projects: [],
       zoom: null,
@@ -41,8 +42,14 @@ class GraphsViewControls extends React.Component {
   }
 
   componentDidMount() {
-    this.getDefaultTimeRange();
     this.fetchData();
+    this.checkQueryParams();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.timeRange !== this.state.timeRange) {
+      this.fetchSeriesData();
+    }
   }
 
   // TODO should add a custom time range option based on query param
@@ -52,13 +59,11 @@ class GraphsViewControls extends React.Component {
     const defaultValue = $stateParams.timerange
       ? parseInt($stateParams.timerange, 10)
       : phDefaultTimeRangeValue;
-    const timeRange = phTimeRanges.find(time => time.value === defaultValue);
-    this.setState({ timeRange });
+    return phTimeRanges.find(time => time.value === defaultValue);
   };
 
   // TODO
-  // check for selectedSeries from TestDataModal or $stateParams for values
-  // call getSeriesData
+  // check for selectedSeries from TestDataModal
   // set up object for graph
 
   async fetchData() {
@@ -85,7 +90,8 @@ class GraphsViewControls extends React.Component {
     const updates = {};
 
     if (series) {
-      updates.selectedSeries = typeof series === 'string' ? [series] : series;
+      const seriesParam = typeof series === 'string' ? [series] : series;
+      updates.selectedSeries = this.parseSeriesParam(seriesParam);
     }
 
     if (highlightAlerts) {
@@ -99,33 +105,41 @@ class GraphsViewControls extends React.Component {
           : highlightedRevisions;
     }
 
-    this.setState(updates);
-    if (updates.selectedSeries) {
-      const seriesParams = this.getSeriesParam(series);
-      this.fetchSeriesData(seriesParams);
-    }
+    this.setState(updates, () => {
+      if (this.state.selectedSeries.length) {
+        this.fetchSeriesData();
+      }
+    });
   };
 
   createSeriesParams = series => {
     const { project, id, framework } = series;
     const { timeRange } = this.state;
 
-    return { 
+    return {
       repository: project,
       signature: id,
       framework,
       interval: timeRange.value,
       all_data: true,
-    }
-  }
+    };
+  };
 
   // we only store the signature, project name and framework in the url, which
   // is used to fetch series data
-  fetchSeriesData = async seriesParams => {
-    const seriesData = await Promise.all(seriesParams.map(series => getData(createApiUrl(perfSummaryEndpoint, this.createSeriesParams(series)))));
+  fetchSeriesData = async () => {
+    const { selectedSeries } = this.state;
+    const seriesData = await Promise.all(
+      selectedSeries.map(series =>
+        getData(
+          createApiUrl(perfSummaryEndpoint, this.createSeriesParams(series)),
+        ),
+      ),
+    );
+    this.setState({ seriesData });
   };
 
-  getSeriesParam = series =>
+  parseSeriesParam = series =>
     series.map(encodedSeries => {
       const partialSeriesString = decodeURIComponent(encodedSeries).replace(
         /[[\]"]/g,
@@ -195,15 +209,15 @@ GraphsViewControls.propTypes = {
     zoom: PropTypes.string,
     highlightRevisions: PropTypes.string,
     select: null,
-    series: PropTypes.oneOfType(
+    series: PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.arrayOf(PropTypes.string),
-    ),
+    ]),
     highlightAlerts: PropTypes.string,
-    highlightedRevisions: PropTypes.oneOfType(
+    highlightedRevisions: PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.arrayOf(PropTypes.string),
-    ),
+    ]),
   }),
 };
 

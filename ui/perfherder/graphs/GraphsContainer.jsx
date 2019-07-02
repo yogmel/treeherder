@@ -30,15 +30,15 @@ GraphsContainer.propTypes = {
     zoom: PropTypes.string,
     highlightRevisions: PropTypes.string,
     select: null,
-    series: PropTypes.oneOfType(
+    series: PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.arrayOf(PropTypes.string),
-    ),
+    ]),
     highlightAlerts: PropTypes.string,
-    highlightedRevisions: PropTypes.oneOfType(
+    highlightedRevisions: PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.arrayOf(PropTypes.string),
-    ),
+    ]),
   }),
 };
 
