@@ -73,7 +73,7 @@ export default class TestDataModal extends React.Component {
 
   getSeriesData = async params => {
     const { errorMessages, project } = this.state;
-    const { testsDisplayed } = this.props;
+    const { displayedTests } = this.props;
 
     let updates = {
       filteredData: [],
@@ -85,9 +85,9 @@ export default class TestDataModal extends React.Component {
       ...updates,
       ...processResponse(response, 'seriesData', errorMessages),
     };
-    if (testsDisplayed.length && updates.seriesData) {
+    if (displayedTests.length && updates.seriesData) {
       updates.seriesData = updates.seriesData.filter(
-        item => testsDisplayed.findIndex(test => item.id === test.id) === -1,
+        item => displayedTests.findIndex(test => item.id === test.id) === -1,
       );
     }
     this.setState(updates);
@@ -298,7 +298,7 @@ export default class TestDataModal extends React.Component {
     } else if (relatedTests.length) {
       tests = relatedTests;
     }
-
+    console.log(this.props.displayedTests);
     return (
       <Modal size="lg" isOpen={showModal} toggle={toggle}>
         <ModalHeader toggle={toggle}>Add Test Data</ModalHeader>
@@ -415,7 +415,7 @@ TestDataModal.propTypes = {
     option: PropTypes.string,
     relatedSeries: PropTypes.shape({}),
   }),
-  testsDisplayed: PropTypes.arrayOf(PropTypes.shape({})),
+  displayedTests: PropTypes.arrayOf(PropTypes.shape({})),
   frameworks: PropTypes.arrayOf(PropTypes.shape({})),
   showModal: PropTypes.bool.isRequired,
   toggle: PropTypes.func.isRequired,
@@ -423,6 +423,6 @@ TestDataModal.propTypes = {
 
 TestDataModal.defaultProps = {
   options: undefined,
-  testsDisplayed: [],
+  displayedTests: [],
   frameworks: [],
 };

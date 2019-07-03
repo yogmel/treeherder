@@ -28,7 +28,16 @@ import TestDataModal from './TestDataModal';
 class GraphsViewControls extends React.Component {
   constructor(props) {
     super(props);
-    this.colors = ['darkseagreen', 'lightseagreen', 'darkslateblue', 'darkgreen', 'steelblue', 'darkorchid', 'blue', 'darkcyan'];    
+    this.colors = [
+      'darkseagreen',
+      'lightseagreen',
+      'darkslateblue',
+      'darkgreen',
+      'steelblue',
+      'darkorchid',
+      'blue',
+      'darkcyan',
+    ];
     this.state = {
       timeRange: this.getDefaultTimeRange(),
       frameworks: [],
@@ -39,6 +48,7 @@ class GraphsViewControls extends React.Component {
       highlightAlerts: null,
       highlightedRevisions: ['', ''],
       showModal: false,
+      testData: [],
     };
   }
 
@@ -64,7 +74,10 @@ class GraphsViewControls extends React.Component {
   };
 
   // TODO
-  // check for displayedTests from TestDataModal
+  // need to also fetch alertSummaries - review code
+  // need to add color attribute to perf data 
+  // (figure out how to combine visible and color attributes with perf data)
+  // move TestCards component to here
   // set up object for graph
 
   async getData() {
@@ -126,16 +139,17 @@ class GraphsViewControls extends React.Component {
     };
   };
 
-  getTestData = async () => {
-    const { displayedTests } = this.state;
-    const seriesData = await Promise.all(
-      displayedTests.map(series =>
+  getTestData = async (newDisplayedTests = []) => {
+    const { testData, displayedTests } = this.state;
+    const tests = newDisplayedTests.length ? newDisplayedTests : displayedTests;
+    const newTestData = await Promise.all(
+      tests.map(series =>
         getData(
           createApiUrl(perfSummaryEndpoint, this.createSeriesParams(series)),
         ),
       ),
     );
-    this.setState({ seriesData });
+    this.setState({ testData: [...testData, ...newTestData] });
   };
 
   parseSeriesParam = series =>
@@ -155,11 +169,10 @@ class GraphsViewControls extends React.Component {
         id:
           partialSeriesArray[1].length === 40
             ? undefined
-            : partialSeriesArray[1],
+            : parseInt(partialSeriesArray[1], 10),
         // TODO this affects the checkboxes in the legend
         visible: partialSeriesArray[2] !== 0,
-        framework: partialSeriesArray[3],
-        color: this.colors.pop(),
+        framework: parseInt(partialSeriesArray[3], 10),
       };
       return partialSeriesObject;
     });
@@ -171,23 +184,22 @@ class GraphsViewControls extends React.Component {
   };
 
   submitData = selectedTests => {
-    const { displayedTests, colors } = this.state;
-    const newDisplayedTests = selectedTests.map(series => 
-      ({
-        id: series.id,
-        project: series.projectName,
-        framework: series.frameworkId,
-        hightlightedPoints: [],
-        visible: true,
-        color: this.colors.pop(),
+    // TODO this seems like an unnecessary extra step
+    const newDisplayedTests = selectedTests.map(series => ({
+      id: parseInt(series.id, 10),
+      project: series.projectName,
+      framework: parseInt(series.frameworkId, 10),
+      hightlightedPoints: [],
+      visible: true,
     }));
 
-    this.setState({ displayedTests: [...this.state.displayedTests, ...newDisplayedTests] });
-  }
+    this.getTestData(newDisplayedTests);
+    this.toggle('showModal');
+  };
 
   render() {
     const { timeRange, projects, frameworks, showModal, displayedTests } = this.state;
-    console.log(displayedTests);
+
     return (
       <Container fluid className="justify-content-start">
         {projects.length > 0 && frameworks.length > 0 && (
@@ -199,6 +211,7 @@ class GraphsViewControls extends React.Component {
             options={{}}
             submitData={this.submitData}
             toggle={() => this.toggle('showModal')}
+            displayedTests={displayedTests}
           />
         )}
         {/* TODO move SelectedTestsContainer into here, TestCards take the displayedTests
