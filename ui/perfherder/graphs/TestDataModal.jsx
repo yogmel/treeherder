@@ -298,7 +298,7 @@ export default class TestDataModal extends React.Component {
     } else if (relatedTests.length) {
       tests = relatedTests;
     }
-    console.log(this.props.displayedTests);
+
     return (
       <Modal size="lg" isOpen={showModal} toggle={toggle}>
         <ModalHeader toggle={toggle}>Add Test Data</ModalHeader>

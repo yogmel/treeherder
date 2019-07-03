@@ -9,8 +9,9 @@ import {
   UncontrolledDropdown,
   DropdownToggle,
 } from 'reactstrap';
+import map from 'lodash/map';
 
-import { getData, processResponse } from '../../helpers/http';
+import { getData, processResponse, processErrors } from '../../helpers/http';
 import {
   getApiUrl,
   repoEndpoint,
@@ -49,6 +50,8 @@ class GraphsViewControls extends React.Component {
       highlightedRevisions: ['', ''],
       showModal: false,
       testData: [],
+      graphData: [],
+      errorMessages: [],
     };
   }
 
@@ -142,15 +145,47 @@ class GraphsViewControls extends React.Component {
   getTestData = async (newDisplayedTests = []) => {
     const { testData, displayedTests } = this.state;
     const tests = newDisplayedTests.length ? newDisplayedTests : displayedTests;
-    const newTestData = await Promise.all(
+
+    const responses = await Promise.all(
       tests.map(series =>
         getData(
           createApiUrl(perfSummaryEndpoint, this.createSeriesParams(series)),
         ),
       ),
     );
-    this.setState({ testData: [...testData, ...newTestData] });
+    const errorMessages = processErrors(responses);
+    if (errorMessages.length) {
+      this.setState({ errorMessages });
+    } else {
+      let newTestData = responses.map(response => response.data[0]);
+      newTestData = this.createGraphObject(newTestData);
+      this.setState({ testData: [...testData, ...newTestData] });  
+    }
+
   };
+
+
+  createGraphObject = (seriesData) => {
+
+    seriesData.forEach(series => {
+      series.color = this.colors.pop(),
+      series.flotSeries = {
+        lines: { show: false },
+        points: { show: true },
+        color: series.color,
+        label: series.projectName + ' ' + series.name,
+        data: series.data.map(dataPoint => [
+                    new Date(dataPoint.push_timestamp * 1000),
+                    dataPoint.value,
+                ]),
+        resultSetData: series.data.map(dataPoint => dataPoint.push_id),
+        // thSeries: $.extend({}, series),
+        jobIdData: series.data.map(dataPoint => dataPoint.job_id),
+        idData: series.data.map(dataPoint => dataPoint.id),
+    }});
+    console.log(seriesData);
+    return seriesData;
+  }
 
   parseSeriesParam = series =>
     series.map(encodedSeries => {
@@ -170,7 +205,7 @@ class GraphsViewControls extends React.Component {
           partialSeriesArray[1].length === 40
             ? undefined
             : parseInt(partialSeriesArray[1], 10),
-        // TODO this affects the checkboxes in the legend
+        // TODO remove this param since it doesn't seem to affect checkboxes
         visible: partialSeriesArray[2] !== 0,
         framework: parseInt(partialSeriesArray[3], 10),
       };

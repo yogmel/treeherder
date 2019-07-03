@@ -651,6 +651,7 @@ perf.controller('GraphsCtrl', [
                         idData: map(seriesData[series.signature], 'id'),
                     };
                 }).then(function () {
+                    // console.log(series)
                     series.relatedAlertSummaries = [];
                     var repo = $rootScope.repos.find(repo =>
                         repo.name === series.projectName);
