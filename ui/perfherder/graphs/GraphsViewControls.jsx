@@ -9,7 +9,6 @@ import {
   UncontrolledDropdown,
   DropdownToggle,
 } from 'reactstrap';
-import map from 'lodash/map';
 
 import { getData, processResponse, processErrors } from '../../helpers/http';
 import {
@@ -17,6 +16,7 @@ import {
   repoEndpoint,
   createApiUrl,
   perfSummaryEndpoint,
+  createQueryParams,
 } from '../../helpers/url';
 import { phTimeRanges, phDefaultTimeRangeValue } from '../../helpers/constants';
 import perf from '../../js/perf';
@@ -55,8 +55,8 @@ class GraphsViewControls extends React.Component {
     };
   }
 
-  componentDidMount() {
-    this.getData();
+  async componentDidMount() {
+    await this.getData();
     this.checkQueryParams();
   }
 
@@ -77,9 +77,8 @@ class GraphsViewControls extends React.Component {
   };
 
   // TODO
-  // need to also fetch alertSummaries - review code
-  // need to add color attribute to perf data 
-  // (figure out how to combine visible and color attributes with perf data)
+  // seems a bit slow for loading all data - perhaps return repo id so
+  // we don't need to wait for projects to return
   // move TestCards component to here
   // set up object for graph
 
@@ -158,34 +157,65 @@ class GraphsViewControls extends React.Component {
       this.setState({ errorMessages });
     } else {
       let newTestData = responses.map(response => response.data[0]);
-      newTestData = this.createGraphObject(newTestData);
-      this.setState({ testData: [...testData, ...newTestData] });  
+      newTestData = await this.createGraphObject(newTestData);
+      this.setState({ testData: [...testData, ...newTestData] });
     }
-
   };
 
+  // TODO change this create new structure only from data that we need
+  createGraphObject = async seriesData => {
+    const alertSummaries = await Promise.all(
+      seriesData.map(series => {
+        const project = this.state.projects.find(
+          repo => repo.name === series.repository_name,
+        );
+        return this.getAlertSummary(series.id, project.id);
+      }),
+    );
 
-  createGraphObject = (seriesData) => {
-
-    seriesData.forEach(series => {
-      series.color = this.colors.pop(),
+    for (const series of seriesData) {
+      series.relatedAlertSummaries = alertSummaries.find(
+        item => item.id === series.id,
+      );
+      series.color = this.colors.pop();
       series.flotSeries = {
         lines: { show: false },
         points: { show: true },
         color: series.color,
-        label: series.projectName + ' ' + series.name,
+        label: `${series.repository_name} ${series.name}`,
         data: series.data.map(dataPoint => [
-                    new Date(dataPoint.push_timestamp * 1000),
-                    dataPoint.value,
-                ]),
+          dataPoint.push_timestamp,
+          dataPoint.value,
+        ]),
         resultSetData: series.data.map(dataPoint => dataPoint.push_id),
         // thSeries: $.extend({}, series),
+        thSeries: { ...series },
         jobIdData: series.data.map(dataPoint => dataPoint.job_id),
         idData: series.data.map(dataPoint => dataPoint.id),
-    }});
-    console.log(seriesData);
+      };
+    }
     return seriesData;
-  }
+  };
+
+  getAlertSummary = async (signatureId, repository) => {
+    const { errorMessages } = this.state;
+
+    const url = getApiUrl(
+      `${endpoints.alertSummary}${createQueryParams({
+        signatureId,
+        repository,
+      })}`,
+    );
+
+    const data = await getData(url);
+    const response = processResponse(data, 'alertSummaries', errorMessages);
+
+    if (response.alertSummaries) {
+      return response.alertSummaries.results;
+    }
+    this.setState({ errorMessages: response.errorMessages });
+    return [];
+  };
 
   parseSeriesParam = series =>
     series.map(encodedSeries => {
@@ -233,7 +263,13 @@ class GraphsViewControls extends React.Component {
   };
 
   render() {
-    const { timeRange, projects, frameworks, showModal, displayedTests } = this.state;
+    const {
+      timeRange,
+      projects,
+      frameworks,
+      showModal,
+      displayedTests,
+    } = this.state;
 
     return (
       <Container fluid className="justify-content-start">
