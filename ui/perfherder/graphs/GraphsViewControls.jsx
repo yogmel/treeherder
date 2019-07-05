@@ -56,7 +56,7 @@ class GraphsViewControls extends React.Component {
   }
 
   async componentDidMount() {
-    await this.getData();
+    this.getData();
     this.checkQueryParams();
   }
 
@@ -165,12 +165,9 @@ class GraphsViewControls extends React.Component {
   // TODO change this create new structure only from data that we need
   createGraphObject = async seriesData => {
     const alertSummaries = await Promise.all(
-      seriesData.map(series => {
-        const project = this.state.projects.find(
-          repo => repo.name === series.repository_name,
-        );
-        return this.getAlertSummary(series.id, project.id);
-      }),
+      seriesData.map(series =>
+        this.getAlertSummaries(series.signature_id, series.repository_id),
+      ),
     );
 
     for (const series of seriesData) {
@@ -197,12 +194,12 @@ class GraphsViewControls extends React.Component {
     return seriesData;
   };
 
-  getAlertSummary = async (signatureId, repository) => {
+  getAlertSummaries = async (signatureId, repository) => {
     const { errorMessages } = this.state;
 
     const url = getApiUrl(
       `${endpoints.alertSummary}${createQueryParams({
-        signatureId,
+        alerts__series_signature: signatureId,
         repository,
       })}`,
     );
@@ -226,7 +223,7 @@ class GraphsViewControls extends React.Component {
       const partialSeriesArray = partialSeriesString.split(',');
       const partialSeriesObject = {
         project: partialSeriesArray[0],
-        // TODO deprecate hash usage
+        // TODO deprecate hash usage - show message to require id
         // signature:
         //   partialSeriesArray[1].length === 40
         //     ? partialSeriesArray[1]
