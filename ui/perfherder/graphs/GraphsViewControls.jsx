@@ -79,8 +79,12 @@ class GraphsViewControls extends React.Component {
   };
 
   // TODO
-  // move TestCards component here (and fix all actions that open modal)
+  // Get highlightRevisions and highlightAlerts params set and actions wired 
   // update seriesList data in angular for graphs
+  // move getData and params to a top level GraphsView container that TestCards
+  // will move to (TestCards and GraphsViewControls to be siblings)
+  // TestCards - fix all actions that open modal, etc
+
 
   async getData() {
     const [projects, frameworks] = await Promise.all([
