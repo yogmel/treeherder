@@ -48,7 +48,7 @@ class GraphsViewControls extends React.Component {
       zoom: null,
       select: null,
       displayedTests: [],
-      highlightAlerts: null,
+      highlightAlerts: true,
       highlightedRevisions: ['', ''],
       showModal: false,
       testData: [],
@@ -266,6 +266,7 @@ class GraphsViewControls extends React.Component {
       frameworks,
       showModal,
       displayedTests,
+      highlightAlerts,
     } = this.state;
 
     return (
@@ -318,7 +319,7 @@ class GraphsViewControls extends React.Component {
           <Label for="compare revisions" className="mt-1">
             Highlight revisions:
           </Label>
-          <Col sm="2" className="pr-0">
+          <Col sm="2">
             <Input
               type="text"
               name="revision1"
@@ -326,13 +327,25 @@ class GraphsViewControls extends React.Component {
               placeholder="hg revision"
             />
           </Col>
-          <Col sm="2">
+          <Col sm="2" className="px-0">
             <Input
               type="text"
               name="revision2"
               id="revision2"
               placeholder="hg revision"
             />
+          </Col>
+          <Col>
+            <Button
+              color="info"
+              outline
+              onClick={() =>
+                this.setState({ highlightAlerts: !highlightAlerts })
+              }
+              active={highlightAlerts}
+            >
+              Highlight alerts
+            </Button>
           </Col>
         </Row>
         {/* <div id="graph-bottom" ng-show="seriesList.length > 0">
