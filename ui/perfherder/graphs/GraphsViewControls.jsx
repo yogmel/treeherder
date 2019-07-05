@@ -8,6 +8,8 @@ import {
   Row,
   UncontrolledDropdown,
   DropdownToggle,
+  Input,
+  Label,
 } from 'reactstrap';
 
 import { getData, processResponse, processErrors } from '../../helpers/http';
@@ -77,10 +79,8 @@ class GraphsViewControls extends React.Component {
   };
 
   // TODO
-  // seems a bit slow for loading all data - perhaps return repo id so
-  // we don't need to wait for projects to return
-  // move TestCards component to here
-  // set up object for graph
+  // move TestCards component here (and fix all actions that open modal)
+  // update seriesList data in angular for graphs
 
   async getData() {
     const [projects, frameworks] = await Promise.all([
@@ -314,6 +314,44 @@ class GraphsViewControls extends React.Component {
           </Col>
         </Row>
         <GraphsContainer timeRange={timeRange} {...this.props} />
+        <Row className="justify-content-start">
+          <Label for="compare revisions" className="mt-1">
+            Highlight revisions:
+          </Label>
+          <Col sm="2" className="pr-0">
+            <Input
+              type="text"
+              name="revision1"
+              id="revision1"
+              placeholder="hg revision"
+            />
+          </Col>
+          <Col sm="2">
+            <Input
+              type="text"
+              name="revision2"
+              id="revision2"
+              placeholder="hg revision"
+            />
+          </Col>
+        </Row>
+        {/* <div id="graph-bottom" ng-show="seriesList.length > 0">
+        Highlight revisions:
+        <span ng-repeat="highlightedRevision in highlightedRevisions track by $index">
+          <input type="text"
+                 maxlength="40"
+                 ng-change="updateHighlightedRevisions()"
+                 placeholder="hg revision"
+                 ng-model="highlightedRevisions[$index]">
+            <span class="reset-highlight-button" ng-show="highlightedRevisions[$index].length > 0" ng-click="resetHighlight($index)">&#10006;</span>
+          </input>
+        </span>
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" ng-change="updateHighlightedRevisions()" ng-model="highlightAlerts">Highlight alerts</input>
+          </label>
+        </div>
+      </div> */}
       </Container>
     );
   }
