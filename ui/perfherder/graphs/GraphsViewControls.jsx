@@ -79,12 +79,11 @@ class GraphsViewControls extends React.Component {
   };
 
   // TODO
-  // Get highlightRevisions and highlightAlerts params set and actions wired 
+  // Get highlightRevisions and highlightAlerts params set and actions wired
   // update seriesList data in angular for graphs
   // move getData and params to a top level GraphsView container that TestCards
   // will move to (TestCards and GraphsViewControls to be siblings)
   // TestCards - fix all actions that open modal, etc
-
 
   async getData() {
     const [projects, frameworks] = await Promise.all([
@@ -115,7 +114,7 @@ class GraphsViewControls extends React.Component {
     }
 
     if (highlightAlerts) {
-      updates.highlightAlerts = parseInt(highlightAlerts, 10);
+      updates.highlightAlerts = Boolean(parseInt(highlightAlerts, 10));
     }
 
     if (highlightedRevisions) {
@@ -271,8 +270,9 @@ class GraphsViewControls extends React.Component {
       showModal,
       displayedTests,
       highlightAlerts,
+      highlightedRevisions,
     } = this.state;
-
+    console.log(highlightedRevisions);
     return (
       <Container fluid className="justify-content-start">
         {projects.length > 0 && frameworks.length > 0 && (
@@ -323,23 +323,20 @@ class GraphsViewControls extends React.Component {
           <Label for="compare revisions" className="mt-1">
             Highlight revisions:
           </Label>
-          <Col sm="2">
-            <Input
-              type="text"
-              name="revision1"
-              id="revision1"
-              placeholder="hg revision"
-            />
-          </Col>
-          <Col sm="2" className="px-0">
-            <Input
-              type="text"
-              name="revision2"
-              id="revision2"
-              placeholder="hg revision"
-            />
-          </Col>
-          <Col>
+          {highlightedRevisions.length > 0 &&
+            highlightedRevisions.map((revision, index) => (
+              // eslint-disable-next-line react/no-array-index-key
+              <Col sm="2" className="px-2" key={index}>
+                <Input
+                  type="text"
+                  name={`revision ${revision}`}
+                  placeholder="hg revision"
+                  value={revision}
+                  onChange={() => {}}
+                />
+              </Col>
+            ))}
+          <Col className="pl-2">
             <Button
               color="info"
               outline
