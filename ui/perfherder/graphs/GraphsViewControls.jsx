@@ -262,6 +262,16 @@ class GraphsViewControls extends React.Component {
     this.toggle('showModal');
   };
 
+  changeHighlightedRevision = (index, newValue) => {
+    const { highlightedRevisions } = this.state;
+    const newRevisions = [...highlightedRevisions];
+    newRevisions.splice(index, 1, newValue);
+    this.setState({ highlightedRevisions: newRevisions });
+    if (newValue.length >= 12) {
+      // TODO update graph
+    }
+  };
+
   render() {
     const {
       timeRange,
@@ -272,7 +282,7 @@ class GraphsViewControls extends React.Component {
       highlightAlerts,
       highlightedRevisions,
     } = this.state;
-    console.log(highlightedRevisions);
+
     return (
       <Container fluid className="justify-content-start">
         {projects.length > 0 && frameworks.length > 0 && (
@@ -332,7 +342,9 @@ class GraphsViewControls extends React.Component {
                   name={`revision ${revision}`}
                   placeholder="hg revision"
                   value={revision}
-                  onChange={() => {}}
+                  onChange={event =>
+                    this.changeHighlightedRevision(index, event.target.value)
+                  }
                 />
               </Col>
             ))}
