@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Row } from 'reactstrap';
+import { ResponsiveLine } from '@nivo/line';
 
 class GraphsContainer extends React.Component {
   constructor(props) {
@@ -8,16 +9,44 @@ class GraphsContainer extends React.Component {
     this.state = {};
   }
 
-  componentDidMount() {}
-
   render() {
+    const { testData } = this.props;
+
     return (
       <React.Fragment>
         <Row>
           <div id="overview-plot" />
         </Row>
         <Row>
-          <div id="graph" />
+          <div id="test-graph">
+            <ResponsiveLine
+              data={testData}
+              margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
+              xScale={{
+                type: 'time',
+                format: '%Y-%m-%dT%H:%M:%S',
+                precision: 'day',
+              }}
+              stacked={false}
+              curve="linear"
+              axisBottom={{
+                orient: 'bottom',
+                tickSize: 5,
+                tickPadding: 5,
+                tickRotation: -90,
+                legend: 'time',
+                legendOffset: 110,
+                legendPosition: 'middle',
+                format: '%Y-%m-%d',
+              }}
+              lineWidth={0}
+              pointSize={6}
+              pointBorderWidth={1}
+              pointBorderColor={{ from: 'serieColor' }}
+              pointLabel="y"
+              pointLabelYOffset={-12}
+            />
+          </div>
         </Row>
       </React.Fragment>
     );

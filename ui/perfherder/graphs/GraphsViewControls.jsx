@@ -54,6 +54,7 @@ class GraphsViewControls extends React.Component {
       testData: [],
       graphData: [],
       errorMessages: [],
+      seriesData: [],
     };
   }
 
@@ -173,28 +174,23 @@ class GraphsViewControls extends React.Component {
       ),
     );
 
-    for (const series of seriesData) {
-      series.relatedAlertSummaries = alertSummaries.find(
-        item => item.id === series.id,
-      );
-      series.color = this.colors.pop();
-      series.flotSeries = {
-        lines: { show: false },
-        points: { show: true },
-        color: series.color,
-        label: `${series.repository_name} ${series.name}`,
-        data: series.data.map(dataPoint => [
-          dataPoint.push_timestamp,
-          dataPoint.value,
-        ]),
-        resultSetData: series.data.map(dataPoint => dataPoint.push_id),
-        // thSeries: $.extend({}, series),
-        thSeries: { ...series },
-        jobIdData: series.data.map(dataPoint => dataPoint.job_id),
-        idData: series.data.map(dataPoint => dataPoint.id),
-      };
-    }
-    return seriesData;
+    const graphData = seriesData.map(series => ({
+      relatedAlertSummaries: alertSummaries.find(item => item.id === series.id),
+      color: this.colors.pop(),
+      name: series.name,
+      signature_id: series.signature_id,
+      platform: series.platform,
+      project: series.repository_name,
+      id: `${series.repository_name} ${series.name}`,
+      data: series.data.map(dataPoint => ({
+        x: dataPoint.push_timestamp,
+        y: dataPoint.value,
+      })),
+      resultSetData: series.data.map(dataPoint => dataPoint.push_id),
+      jobIdData: series.data.map(dataPoint => dataPoint.job_id),
+      idData: series.data.map(dataPoint => dataPoint.id),
+    }));
+    return graphData;
   };
 
   getAlertSummaries = async (signatureId, repository) => {
@@ -281,6 +277,7 @@ class GraphsViewControls extends React.Component {
       displayedTests,
       highlightAlerts,
       highlightedRevisions,
+      testData,
     } = this.state;
 
     return (
@@ -328,7 +325,13 @@ class GraphsViewControls extends React.Component {
             </Button>
           </Col>
         </Row>
-        <GraphsContainer timeRange={timeRange} {...this.props} />
+        {testData.length > 0 && (
+          <GraphsContainer
+            timeRange={timeRange}
+            {...this.props}
+            testData={testData}
+          />
+        )}
         <Row className="justify-content-start">
           <Label for="compare revisions" className="mt-1">
             Highlight revisions:
