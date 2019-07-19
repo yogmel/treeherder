@@ -183,7 +183,7 @@ class GraphsViewControls extends React.Component {
       project: series.repository_name,
       id: `${series.repository_name} ${series.name}`,
       data: series.data.map(dataPoint => ({
-        x: dataPoint.push_timestamp,
+        x: new Date(dataPoint.push_timestamp),
         y: dataPoint.value,
       })),
       resultSetData: series.data.map(dataPoint => dataPoint.push_id),

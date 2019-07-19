@@ -24,7 +24,7 @@ class GraphsContainer extends React.Component {
               margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
               xScale={{
                 type: 'time',
-                format: '%Y-%m-%dT%H:%M:%S',
+                format: 'native',
                 precision: 'day',
               }}
               gridYValues={[0, 50, 100, 150, 200, 250, 300, 350]}
@@ -35,12 +35,12 @@ class GraphsContainer extends React.Component {
                 orient: 'bottom',
                 tickSize: 5,
                 tickPadding: 5,
-                tickRotation: -90,
+                // tickRotation: -90,
                 legend: 'time',
                 legendOffset: 110,
                 legendPosition: 'middle',
-                format: '%Y-%m-%d',
-                tickValues: 'every day'
+                format: '%b %d',
+                tickValues: 'every day',
               }}
               lineWidth={0}
               pointSize={6}
