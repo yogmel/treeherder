@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Row } from 'reactstrap';
 import { ResponsiveLine } from '@nivo/line';
+import { ResponsiveScatterPlot } from '@nivo/scatterplot';
 
 class GraphsContainer extends React.Component {
   constructor(props) {
@@ -25,7 +26,7 @@ class GraphsContainer extends React.Component {
         </Row>
         <Row>
           <div id="test-graph">
-            <ResponsiveLine
+            <ResponsiveScatterPlot
               data={testData}
               margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
               xScale={{
@@ -35,7 +36,29 @@ class GraphsContainer extends React.Component {
                 min: 'auto',
                 max: 'auto',
               }}
-              yScale={{ type: 'linear', min: 'auto' , max: 'auto' }}
+              xFormat={e => e.toString()}
+              axisBottom={{
+                orient: 'bottom',
+                format: '%b %d',
+                tickValues: 'every day',
+              }}
+              gridYValues={5}
+              axisLeft={{ tickValues: 5 }}
+              yScale={{ type: 'linear', min: 'auto', max: 'auto' }}
+              tooltip={() => <p>tooltip!</p>}
+              onClick={(point, event) => console.log(point, event)}
+            />
+            {/* <ResponsiveLine
+              data={testData}
+              margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
+              xScale={{
+                type: 'time',
+                format: 'native',
+                precision: 'day',
+                min: 'auto',
+                max: 'auto',
+              }}
+              yScale={{ type: 'linear', min: 'auto', max: 'auto' }}
               gridYValues={5}
               axisLeft={{ tickValues: 5 }}
               stacked={false}
@@ -53,8 +76,8 @@ class GraphsContainer extends React.Component {
               tooltip={() => <p>tooltip!</p>}
               onClick={(point, event) => console.log(point, event)}
               onMouseEnter={(point, event) => console.log(point, event)}
-              useMesh={true}
-            />
+              useMesh
+            /> */}
           </div>
         </Row>
       </React.Fragment>
