@@ -35,11 +35,12 @@ class GraphsContainer extends React.Component {
                 max: 'auto',
               }}
               yScale={{ type: 'linear', min: 'auto' , max: 'auto' }}
-              gridYValues={[0, 50, 100, 150, 200, 250, 300, 350]}
-              axisLeft={{ tickValues: [0, 50, 100, 150, 200, 250, 300, 350] }}
+              gridYValues={5}
+              axisLeft={{ tickValues: 5 }}
               stacked={false}
               curve="linear"
               axisBottom={{
+                orient: 'bottom',
                 format: '%b %d',
                 tickValues: 'every day',
               }}
