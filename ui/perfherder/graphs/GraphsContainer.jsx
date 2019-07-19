@@ -12,6 +12,7 @@ class GraphsContainer extends React.Component {
   render() {
     const { testData } = this.props;
     // zoomGraph functionality - set the props for min, max values of xScale and yScale
+    // zoom custom layer for selection square on overview plot: https://nivo.rocks/storybook/?path=/story/line--custom-layers
     // highlightAlerts and highlightedRevisons:
     // - veritical line (markers): https://nivo.rocks/storybook/?path=/story/line--adding-markers
     // - doesn't seem to have a 'highlight' function, only customized points: https://nivo.rocks/storybook/?path=/story/line--custom-point-symbol
@@ -49,6 +50,10 @@ class GraphsContainer extends React.Component {
               pointColor={{ theme: 'background' }}
               pointBorderWidth={2}
               pointBorderColor={{ from: 'serieColor' }}
+              tooltip={() => <p>tooltip!</p>}
+              onClick={(point, event) => console.log(point, event)}
+              onMouseEnter={(point, event) => console.log(point, event)}
+              useMesh={true}
             />
           </div>
         </Row>
