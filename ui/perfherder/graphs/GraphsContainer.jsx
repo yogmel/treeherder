@@ -27,6 +27,8 @@ class GraphsContainer extends React.Component {
                 format: '%Y-%m-%dT%H:%M:%S',
                 precision: 'day',
               }}
+              gridYValues={[0, 50, 100, 150, 200, 250, 300, 350]}
+              axisLeft={{ tickValues: [0, 50, 100, 150, 200, 250, 300, 350] }}
               stacked={false}
               curve="linear"
               axisBottom={{
@@ -38,6 +40,7 @@ class GraphsContainer extends React.Component {
                 legendOffset: 110,
                 legendPosition: 'middle',
                 format: '%Y-%m-%d',
+                tickValues: 'every day'
               }}
               lineWidth={0}
               pointSize={6}
