@@ -394,6 +394,7 @@ perf.controller('GraphsCtrl', [
                         opts.min = $scope.zoom.y[0];
                         opts.max = $scope.zoom.y[1];
                     });
+
                     $scope.plot.setupGrid();
                     $scope.overviewPlot.setSelection({
                         xaxis: {

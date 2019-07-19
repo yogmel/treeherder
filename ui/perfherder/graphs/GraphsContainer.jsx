@@ -11,6 +11,11 @@ class GraphsContainer extends React.Component {
 
   render() {
     const { testData } = this.props;
+    // zoomGraph functionality - set the props for min, max values of xScale and yScale
+    // highlightAlerts and highlightedRevisons:
+    // - veritical line (markers): https://nivo.rocks/storybook/?path=/story/line--adding-markers
+    // - doesn't seem to have a 'highlight' function, only customized points: https://nivo.rocks/storybook/?path=/story/line--custom-point-symbol
+    // selecting a point should also highlight it
 
     return (
       <React.Fragment>
@@ -26,28 +31,23 @@ class GraphsContainer extends React.Component {
                 type: 'time',
                 format: 'native',
                 precision: 'day',
+                min: 'auto',
+                max: 'auto',
               }}
+              yScale={{ type: 'linear', min: 'auto' , max: 'auto' }}
               gridYValues={[0, 50, 100, 150, 200, 250, 300, 350]}
               axisLeft={{ tickValues: [0, 50, 100, 150, 200, 250, 300, 350] }}
               stacked={false}
               curve="linear"
               axisBottom={{
-                orient: 'bottom',
-                tickSize: 5,
-                tickPadding: 5,
-                // tickRotation: -90,
-                legend: 'time',
-                legendOffset: 110,
-                legendPosition: 'middle',
                 format: '%b %d',
                 tickValues: 'every day',
               }}
               lineWidth={0}
-              pointSize={6}
-              pointBorderWidth={1}
+              colors={['blue', 'green']}
+              pointColor={{ theme: 'background' }}
+              pointBorderWidth={2}
               pointBorderColor={{ from: 'serieColor' }}
-              pointLabel="y"
-              pointLabelYOffset={-12}
             />
           </div>
         </Row>
