@@ -201,27 +201,45 @@ class GraphsView extends React.Component {
       ),
     );
 
-    for (const series of seriesData) {
-      series.relatedAlertSummaries = alertSummaries.find(
-        item => item.id === series.id,
-      );
-      series.color = newColors.pop();
-      series.visible = true;
-      series.flotSeries = {
-        lines: { show: false },
-        points: { show: true },
-        color: series.color[1],
-        label: `${series.repository_name} ${series.name}`,
-        data: series.data.map(dataPoint => [
-          new Date(dataPoint.push_timestamp),
-          dataPoint.value,
-        ]),
-        resultSetData: series.data.map(dataPoint => dataPoint.push_id),
-        thSeries: { ...series },
-        jobIdData: series.data.map(dataPoint => dataPoint.job_id),
-        idData: series.data.map(dataPoint => dataPoint.id),
-      };
-    }
+    const graphData = seriesData.map(series => ({
+      relatedAlertSummaries: alertSummaries.find(item => item.id === series.id),
+      color: newColors.pop(),
+      visible: true,
+      name: series.name,
+      signature_id: series.signature_id,
+      platform: series.platform,
+      project: series.repository_name,
+      id: `${series.repository_name} ${series.name}`,
+      data: series.data.map(dataPoint => ({
+        x: new Date(dataPoint.push_timestamp),
+        y: dataPoint.value,
+      })),
+      resultSetData: series.data.map(dataPoint => dataPoint.push_id),
+      jobIdData: series.data.map(dataPoint => dataPoint.job_id),
+      idData: series.data.map(dataPoint => dataPoint.id),
+    }));
+
+    // for (const series of seriesData) {
+    //   series.relatedAlertSummaries = alertSummaries.find(
+    //     item => item.id === series.id,
+    //   );
+    //   series.color = newColors.pop();
+    //   series.visible = true;
+    //   series.flotSeries = {
+    //     lines: { show: false },
+    //     points: { show: true },
+    //     color: series.color[1],
+    //     label: `${series.repository_name} ${series.name}`,
+    //     data: series.data.map(dataPoint => [
+    //       new Date(dataPoint.push_timestamp),
+    //       dataPoint.value,
+    //     ]),
+    //     resultSetData: series.data.map(dataPoint => dataPoint.push_id),
+    //     thSeries: { ...series },
+    //     jobIdData: series.data.map(dataPoint => dataPoint.job_id),
+    //     idData: series.data.map(dataPoint => dataPoint.id),
+    //   };
+    // }
     this.setState({ colors: newColors });
     return seriesData;
   };
