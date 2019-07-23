@@ -5,8 +5,6 @@ import MG from 'metrics-graphics';
 // TODO import at top-level of apps
 import 'metrics-graphics/dist/metricsgraphics.css';
 
-import Graph from '../../shared/Graph';
-
 const mainSpecs = {
   data: [],
   top: 70,
@@ -31,7 +29,7 @@ const overviewSpecs = {
   target: '',
   x_accessor: 'x',
   y_accessor: 'y',
-  brush: 'xy',
+  brush: 'x',
   zoom_target: '',
   showActivePoint: false,
 };
@@ -40,6 +38,7 @@ class GraphsContainer extends React.Component {
   constructor(props) {
     super(props);
     this.main = React.createRef();
+    this.overview = React.createRef();
     this.state = {
       data: this.props.testData.map(item => item.data),
     };
@@ -47,6 +46,8 @@ class GraphsContainer extends React.Component {
 
   componentDidMount() {
     this.updateSpecs(this.main.current, mainSpecs);
+    overviewSpecs.zoom_target = mainSpecs;
+    this.updateSpecs(this.overview.current, overviewSpecs);
   }
   // componentDidUpdate() {
   //   const { specs, data } = this.props;
@@ -61,24 +62,18 @@ class GraphsContainer extends React.Component {
     specs.target = element;
     specs.data = data;
     MG.data_graphic(specs);
-  }
+  };
 
   render() {
     return (
       <React.Fragment>
         <Row>
-          <div
-            className="mx-auto pb-3"
-            ref={this.main}
-          />
+          <div className="mx-auto pb-3" ref={this.overview} />
         </Row>
 
-        {/* <Row>
-          <div
-            className="mx-auto pb-3"
-            ref={ele => this.updateSpecs(ele, this.mainSpecs)}
-          />
-        </Row> */}
+        <Row>
+          <div className="mx-auto pb-3" ref={this.main} />
+        </Row>
       </React.Fragment>
     );
   }
