@@ -11,12 +11,13 @@ const mainSpecs = {
   width: 600,
   height: 200,
   right: 40,
-  // missing_is_hidden: true,
   target: '',
   x_accessor: 'x',
   y_accessor: 'y',
   brush: 'xy',
   chart_type: 'point',
+  color_accessor: 'z',
+  color_range: ['blue', 'green'],
 };
 const overviewSpecs = {
   data: [],
@@ -25,11 +26,10 @@ const overviewSpecs = {
   top: 8,
   bottom: 0,
   right: 40,
-  // missing_is_hidden: true,
   target: '',
   x_accessor: 'x',
   y_accessor: 'y',
-  brush: 'x',
+  brush: 'xy',
   zoom_target: '',
   showActivePoint: false,
 };
@@ -39,26 +39,32 @@ class GraphsContainer extends React.Component {
     super(props);
     this.main = React.createRef();
     this.overview = React.createRef();
-    this.state = {
-      data: this.props.testData.map(item => item.data),
-    };
   }
 
   componentDidMount() {
-    this.updateSpecs(this.main.current, mainSpecs);
-    overviewSpecs.zoom_target = mainSpecs;
-    this.updateSpecs(this.overview.current, overviewSpecs);
+    this.plotGraphs();
   }
-  // componentDidUpdate() {
-  //   const { specs, data } = this.props;
-  //   if (specs.data !== data) {
-  //     specs.data = data;
-  //     MG.data_graphic(specs);
-  //   }
-  // }
 
-  updateSpecs = (element, specs) => {
-    const { data } = this.state;
+  componentDidUpdate(prevProps) {
+    const { testData } = this.props;
+
+    if (testData !== prevProps.testData) {
+      this.plotGraphs();
+    }
+  }
+
+  plotGraphs = () => {
+    const { testData } = this.props;
+    if (testData.length) {
+      const data = testData.map(item => item.data);
+
+      this.updateSpecs(this.main.current, mainSpecs, data.flat());
+      overviewSpecs.zoom_target = mainSpecs;
+      this.updateSpecs(this.overview.current, overviewSpecs, data);
+    }
+  };
+
+  updateSpecs = (element, specs, data) => {
     specs.target = element;
     specs.data = data;
     MG.data_graphic(specs);
@@ -80,7 +86,7 @@ class GraphsContainer extends React.Component {
 }
 
 GraphsContainer.propTypes = {
-  testData: PropTypes.arrayOf(PropTypes.shape({})),
+  testData: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
 };
 
 export default GraphsContainer;
