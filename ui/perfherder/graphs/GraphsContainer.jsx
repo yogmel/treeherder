@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
 import { Row } from 'reactstrap';
 import MG from 'metrics-graphics';
 // TODO import at top-level of apps
@@ -29,7 +31,9 @@ const overviewSpecs = {
   showActivePoint: false,
 };
 
-const GraphsContainer = ({ data }) => {
+const GraphsContainer = ({ testData }) => {
+  const data = testData.map(item => item.data);
+  console.log(data);
   if (data.length) {
     mainSpecs.data = data;
     overviewSpecs.data = data;
@@ -50,7 +54,7 @@ const GraphsContainer = ({ data }) => {
 };
 
 GraphsContainer.propTypes = {
-  data: PropTypes.arrayOf(PropTypes.shape({})),
+  testData: PropTypes.arrayOf(PropTypes.shape({})),
 }
 
 export default GraphsContainer;

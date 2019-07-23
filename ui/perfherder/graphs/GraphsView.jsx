@@ -241,7 +241,7 @@ class GraphsView extends React.Component {
     //   };
     // }
     this.setState({ colors: newColors });
-    return seriesData;
+    return graphData;
   };
 
   // TODO possibly move to helpers file
@@ -403,7 +403,7 @@ class GraphsView extends React.Component {
               <GraphsViewControls
                 timeRange={timeRange}
                 graphs={
-                  <GraphsContainer timeRange={timeRange} {...this.props} />
+                  testData.length > 0 && <GraphsContainer timeRange={timeRange} testData={testData} {...this.props} />
                 }
                 updateState={state => this.setState(state)}
                 updateStateParams={state =>
