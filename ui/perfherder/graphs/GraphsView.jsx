@@ -207,6 +207,8 @@ class GraphsView extends React.Component {
       visible: true,
       name: series.name,
       signature_id: series.signature_id,
+      signature_hash: series.signature_hash,
+      framework_id: series.framework_id,
       platform: series.platform,
       project: series.repository_name,
       id: `${series.repository_name} ${series.name}`,
@@ -219,27 +221,6 @@ class GraphsView extends React.Component {
       idData: series.data.map(dataPoint => dataPoint.id),
     }));
 
-    // for (const series of seriesData) {
-    //   series.relatedAlertSummaries = alertSummaries.find(
-    //     item => item.id === series.id,
-    //   );
-    //   series.color = newColors.pop();
-    //   series.visible = true;
-    //   series.flotSeries = {
-    //     lines: { show: false },
-    //     points: { show: true },
-    //     color: series.color[1],
-    //     label: `${series.repository_name} ${series.name}`,
-    //     data: series.data.map(dataPoint => [
-    //       new Date(dataPoint.push_timestamp),
-    //       dataPoint.value,
-    //     ]),
-    //     resultSetData: series.data.map(dataPoint => dataPoint.push_id),
-    //     thSeries: { ...series },
-    //     jobIdData: series.data.map(dataPoint => dataPoint.job_id),
-    //     idData: series.data.map(dataPoint => dataPoint.id),
-    //   };
-    // }
     this.setState({ colors: newColors });
     return graphData;
   };
@@ -313,8 +294,9 @@ class GraphsView extends React.Component {
     // TODO rename certain fields that are returned in PerfSeriesModel so they are consistent with performance/summary fields?
     const newSeries = testData.map(
       series =>
-        `${series.repository_name},${series.signature_id},${series.framework_id}`,
+        `${series.project},${series.signature_id},${series.framework_id}`,
     );
+
     const params = {
       series: newSeries,
       highlightedRevisions: highlightedRevisions.filter(rev => rev.length),
@@ -403,7 +385,13 @@ class GraphsView extends React.Component {
               <GraphsViewControls
                 timeRange={timeRange}
                 graphs={
-                  testData.length > 0 && <GraphsContainer timeRange={timeRange} testData={testData} {...this.props} />
+                  testData.length > 0 && (
+                    <GraphsContainer
+                      timeRange={timeRange}
+                      testData={testData}
+                      {...this.props}
+                    />
+                  )
                 }
                 updateState={state => this.setState(state)}
                 updateStateParams={state =>

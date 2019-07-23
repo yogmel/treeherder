@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
 import { Row } from 'reactstrap';
 import MG from 'metrics-graphics';
 // TODO import at top-level of apps
@@ -13,7 +12,7 @@ const mainSpecs = {
   height: 200,
   right: 40,
   // missing_is_hidden: true,
-  target: '#graph',
+  target: '#test-graph',
   brush: 'xy',
   chart_type: 'point',
 };
@@ -25,7 +24,7 @@ const overviewSpecs = {
   bottom: 0,
   right: 40,
   // missing_is_hidden: true,
-  target: '#overview-plot',
+  target: '#test-overview-plot',
   brush: 'xy',
   zoom_target: mainSpecs,
   showActivePoint: false,
@@ -33,21 +32,21 @@ const overviewSpecs = {
 
 const GraphsContainer = ({ testData }) => {
   const data = testData.map(item => item.data);
-  console.log(data);
-  if (data.length) {
-    mainSpecs.data = data;
-    overviewSpecs.data = data;
-    MG.data_graphic(mainSpecs);
-    MG.data_graphic(overviewSpecs);
-  }
+  // console.log(data);
+  // if (data.length) {
+  //   mainSpecs.data = data;
+  //   overviewSpecs.data = data;
+  //   MG.data_graphic(mainSpecs);
+  //   MG.data_graphic(overviewSpecs);
+  // }
 
   return (
     <React.Fragment>
       <Row>
-        <div id="overview-plot" />
+        <div id="test-overview-plot" />
       </Row>
       <Row>
-        <div id="graph" />
+        <div id="test-graph" />
       </Row>
     </React.Fragment>
   );
@@ -55,6 +54,6 @@ const GraphsContainer = ({ testData }) => {
 
 GraphsContainer.propTypes = {
   testData: PropTypes.arrayOf(PropTypes.shape({})),
-}
+};
 
 export default GraphsContainer;
