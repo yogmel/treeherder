@@ -32,16 +32,21 @@ const overviewSpecs = {
   x_accessor: 'x',
   y_accessor: 'y',
   brush: 'xy',
-  zoom_target: mainSpecs,
+  zoom_target: '',
   showActivePoint: false,
 };
 
 class GraphsContainer extends React.Component {
   constructor(props) {
     super(props);
+    this.main = React.createRef();
     this.state = {
       data: this.props.testData.map(item => item.data),
     };
+  }
+
+  componentDidMount() {
+    this.updateSpecs(this.main.current, mainSpecs);
   }
   // componentDidUpdate() {
   //   const { specs, data } = this.props;
@@ -51,14 +56,11 @@ class GraphsContainer extends React.Component {
   //   }
   // }
 
-  updateSpecs(element, specs) {
-    if (element) {
-      const { data } = this.state;
-
-      specs.target = element;
-      specs.data = data;
-      MG.data_graphic(specs);
-    }
+  updateSpecs = (element, specs) => {
+    const { data } = this.state;
+    specs.target = element;
+    specs.data = data;
+    MG.data_graphic(specs);
   }
 
   render() {
@@ -67,11 +69,16 @@ class GraphsContainer extends React.Component {
         <Row>
           <div
             className="mx-auto pb-3"
-            ref={ele => this.updateSpecs(ele, mainSpecs)}
+            ref={this.main}
           />
         </Row>
 
-        <Row>{/* <Graph specs={mainSpecs} data={data} /> */}</Row>
+        {/* <Row>
+          <div
+            className="mx-auto pb-3"
+            ref={ele => this.updateSpecs(ele, this.mainSpecs)}
+          />
+        </Row> */}
       </React.Fragment>
     );
   }
