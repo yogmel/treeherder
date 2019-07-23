@@ -5,6 +5,8 @@ import MG from 'metrics-graphics';
 // TODO import at top-level of apps
 import 'metrics-graphics/dist/metricsgraphics.css';
 
+import Graph from '../../shared/Graph';
+
 const mainSpecs = {
   data: [],
   top: 70,
@@ -12,7 +14,9 @@ const mainSpecs = {
   height: 200,
   right: 40,
   // missing_is_hidden: true,
-  target: '#test-graph',
+  target: '',
+  x_accessor: 'x',
+  y_accessor: 'y',
   brush: 'xy',
   chart_type: 'point',
 };
@@ -24,33 +28,54 @@ const overviewSpecs = {
   bottom: 0,
   right: 40,
   // missing_is_hidden: true,
-  target: '#test-overview-plot',
+  target: '',
+  x_accessor: 'x',
+  y_accessor: 'y',
   brush: 'xy',
   zoom_target: mainSpecs,
   showActivePoint: false,
 };
 
-const GraphsContainer = ({ testData }) => {
-  const data = testData.map(item => item.data);
-  // console.log(data);
-  // if (data.length) {
-  //   mainSpecs.data = data;
-  //   overviewSpecs.data = data;
-  //   MG.data_graphic(mainSpecs);
-  //   MG.data_graphic(overviewSpecs);
+class GraphsContainer extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      data: this.props.testData.map(item => item.data),
+    };
+  }
+  // componentDidUpdate() {
+  //   const { specs, data } = this.props;
+  //   if (specs.data !== data) {
+  //     specs.data = data;
+  //     MG.data_graphic(specs);
+  //   }
   // }
 
-  return (
-    <React.Fragment>
-      <Row>
-        <div id="test-overview-plot" />
-      </Row>
-      <Row>
-        <div id="test-graph" />
-      </Row>
-    </React.Fragment>
-  );
-};
+  updateSpecs(element, specs) {
+    if (element) {
+      const { data } = this.state;
+
+      specs.target = element;
+      specs.data = data;
+      MG.data_graphic(specs);
+    }
+  }
+
+  render() {
+    return (
+      <React.Fragment>
+        <Row>
+          <div
+            className="mx-auto pb-3"
+            ref={ele => this.updateSpecs(ele, mainSpecs)}
+          />
+        </Row>
+
+        <Row>{/* <Graph specs={mainSpecs} data={data} /> */}</Row>
+      </React.Fragment>
+    );
+  }
+}
 
 GraphsContainer.propTypes = {
   testData: PropTypes.arrayOf(PropTypes.shape({})),
