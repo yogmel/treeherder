@@ -385,7 +385,11 @@ class GraphsView extends React.Component {
               <GraphsViewControls
                 timeRange={timeRange}
                 graphs={
-                  <GraphsContainer timeRange={timeRange} {...this.props} />
+                  <GraphsContainer
+                    timeRange={timeRange}
+                    {...this.props}
+                    testData={testData}
+                  />
                 }
                 updateState={state => this.setState(state)}
                 updateStateParams={state =>

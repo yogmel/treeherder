@@ -60,7 +60,7 @@ perf.controller('GraphsCtrl', [
             $scope.zoom = zoom;
             $scope.selectedDataPoint = selectedDataPoint;
             $scope.myTimerange = timeRange;
-            plotGraph();
+            // plotGraph();
         }
 
         $scope.createAlert = function (dataPoint) {
