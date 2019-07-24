@@ -24,6 +24,7 @@ const GraphsContainer = ({
         },
       });
     }
+    // TODO not working
     // highlight the datapoints too
     series.highlightedPoints = [
       ...new Set([
@@ -37,15 +38,31 @@ const GraphsContainer = ({
     ];
   };
 
-  // highlight points which correspond to an alert
-  if (highlightAlerts) {
-    testData.forEach(series => {
-      if (series.visible) {
-        series.relatedAlertSummaries.forEach(alertSummary => {
-          addHighlightedDatapoint(series, alertSummary.push_id);
-        });
+  // highlight points which correspond to an alert or revision
+  for (const series of testData) {
+    if (!series.visible) {
+      continue;
+    }
+
+    if (highlightAlerts) {
+      series.relatedAlertSummaries.forEach(alertSummary => {
+        addHighlightedDatapoint(series, alertSummary.push_id);
+      });
+    }
+
+    for (let rev of highlightedRevisions) {
+      if (!rev) {
+        continue;
       }
-    });
+      // in case people are still use 12 character revisions
+      const dataPoint = series.data.find(
+        item => item.revision.indexOf(rev) !== -1,
+      );
+
+      if (dataPoint) {
+        addHighlightedDatapoint(series, dataPoint.push_id);
+      }
+    };
   }
 
   $.plot($('#graph'), testData.map(series => series.flotSeries), {
