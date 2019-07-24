@@ -430,11 +430,12 @@ perf.controller('GraphsCtrl', [
 
         function plotGraph() {
             // synchronize series visibility with flot, in case it's changed
-            $scope.seriesList.forEach(function (series) {
-                series.flotSeries.points.show = series.visible;
-                series.blockColor = series.visible ? series.color : 'grey';
-                series.highlightedPoints = [];                
-            });
+            // TODO remove
+            // $scope.seriesList.forEach(function (series) {
+            //     series.flotSeries.points.show = series.visible;
+            //     series.blockColor = series.visible ? series.color : 'grey';
+            //     series.highlightedPoints = [];                
+            // });
 
             // highlight points which correspond to an alert
             var markings = [];
