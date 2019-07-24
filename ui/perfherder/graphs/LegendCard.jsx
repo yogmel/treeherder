@@ -17,7 +17,7 @@ const LegendCard = ({
       if (item.signature_id === series.signature_id) {
         item.visible = !item.visible;
         item.flotSeries.points.show = item.visible;
-        // item.highlightedPoints = [];
+        item.highlightedPoints = [];
       }
       return item;
     });

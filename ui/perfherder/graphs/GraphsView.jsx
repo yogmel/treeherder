@@ -221,6 +221,7 @@ class GraphsView extends React.Component {
         jobIdData: series.data.map(dataPoint => dataPoint.job_id),
         idData: series.data.map(dataPoint => dataPoint.id),
       };
+      series.highlightedPoints = [];
     }
     this.setState({ colors: newColors });
     return seriesData;
