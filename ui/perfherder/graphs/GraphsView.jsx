@@ -330,6 +330,7 @@ class GraphsView extends React.Component {
       colors,
       loading,
       errorMessages,
+      zoom,
     } = this.state;
 
     return (
@@ -387,7 +388,10 @@ class GraphsView extends React.Component {
                 graphs={
                   <GraphsContainer
                     timeRange={timeRange}
-                    {...this.props}
+                    highlightAlerts={highlightAlerts}
+                    highlightedRevisions={highlightedRevisions}
+                    zoom={zoom}
+                    selectedDataPoint={selectedDataPoint}
                     testData={testData}
                   />
                 }

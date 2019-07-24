@@ -3,8 +3,14 @@ import { Row } from 'reactstrap';
 import PropTypes from 'prop-types';
 import $ from 'jquery';
 
-const GraphsContainer = ({ testData }) => {
-  const plot = $.plot($('#graph'), testData.map(series => series.flotSeries), {
+const GraphsContainer = ({
+  testData,
+  zoom,
+  highlightAlerts,
+  highlightedRevisions,
+  selectedDataPoint,
+}) => {
+  $.plot($('#graph'), testData.map(series => series.flotSeries), {
     xaxis: { mode: 'time' },
     series: { shadowSize: 0 },
     selection: { mode: 'xy', color: '#97c6e5' },
@@ -21,6 +27,7 @@ const GraphsContainer = ({ testData }) => {
       // markings,
     },
   });
+
   return (
     <React.Fragment>
       <Row>
@@ -35,10 +42,21 @@ const GraphsContainer = ({ testData }) => {
 
 GraphsContainer.propTypes = {
   testData: PropTypes.arrayOf(PropTypes.shape({})),
+  zoom: PropTypes.string,
+  selectedDataPoint: PropTypes.string,
+  highlightAlerts: PropTypes.string,
+  highlightedRevisions: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.arrayOf(PropTypes.string),
+  ]),
 };
 
 GraphsContainer.defaultProps = {
   testData: [],
+  zoom: {},
+  selectedDataPoint: null,
+  highlightAlerts: true,
+  highlightedRevisions: ['', ''],
 };
 
 export default GraphsContainer;
