@@ -50,6 +50,8 @@ const GraphsContainer = ({
       });
     }
 
+    // Can this be done a better way? if we have revisions we
+    // don't need to look for the push id
     for (let rev of highlightedRevisions) {
       if (!rev) {
         continue;
