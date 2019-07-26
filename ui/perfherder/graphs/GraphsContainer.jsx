@@ -7,6 +7,7 @@ import {
   VictoryAxis,
   VictoryBrushContainer,
   VictoryZoomContainer,
+  VictoryScatter,
 } from 'victory';
 
 import { graphColors } from '../constants';
@@ -110,8 +111,8 @@ class GraphsContainer extends React.Component {
         <Row>
           <VictoryChart
             padding={{ top: 0, left: 50, right: 50, bottom: 30 }}
-            width={600}
-            height={90}
+            width={935}
+            height={100}
             scale={{ x: 'time', y: 'value' }}
             containerComponent={
               <VictoryBrushContainer
@@ -149,8 +150,8 @@ class GraphsContainer extends React.Component {
 
         <Row>
           <VictoryChart
-            width={600}
-            height={350}
+            width={935}
+            height={300}
             scale={{ x: 'time', y: 'value' }}
             containerComponent={
               <VictoryZoomContainer
@@ -164,11 +165,17 @@ class GraphsContainer extends React.Component {
             }
           >
             {testData.map((item, i) => (
-              <VictoryLine
+              <VictoryScatter
                 key={item.name}
                 style={{
-                  data: { stroke: graphColors[i][1] },
+                  data: {
+                    fill: graphColors[i][1],
+                    fillOpacity: 0.3,
+                    stroke: graphColors[i][1],
+                    strokeWidth: 2,
+                  },
                 }}
+                size={1}
                 data={item.visible ? item.data : []}
               />
             ))}
