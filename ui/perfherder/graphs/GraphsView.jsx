@@ -386,14 +386,16 @@ class GraphsView extends React.Component {
               <GraphsViewControls
                 timeRange={timeRange}
                 graphs={
-                  <GraphsContainer
-                    timeRange={timeRange}
-                    highlightAlerts={highlightAlerts}
-                    highlightedRevisions={highlightedRevisions}
-                    zoom={zoom}
-                    selectedDataPoint={selectedDataPoint}
-                    testData={testData}
-                  />
+                  testData.length > 0 && (
+                    <GraphsContainer
+                      timeRange={timeRange}
+                      highlightAlerts={highlightAlerts}
+                      highlightedRevisions={highlightedRevisions}
+                      zoom={zoom}
+                      selectedDataPoint={selectedDataPoint}
+                      testData={testData}
+                    />
+                  )
                 }
                 updateState={state => this.setState(state)}
                 updateStateParams={state =>
