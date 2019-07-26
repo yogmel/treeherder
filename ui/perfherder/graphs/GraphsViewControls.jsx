@@ -103,7 +103,7 @@ const GraphsViewControls = ({
 GraphsViewControls.propTypes = {
   updateState: PropTypes.func.isRequired,
   updateStateParams: PropTypes.func.isRequired,
-  graphs: PropTypes.shape({}).isRequired,
+  graphs: PropTypes.oneOfType([PropTypes.shape({}), PropTypes.bool]).isRequired,
   timeRange: PropTypes.shape({}).isRequired,
   highlightAlerts: PropTypes.bool.isRequired,
   highlightedRevisions: PropTypes.oneOfType([

@@ -7,7 +7,6 @@ import {
   VictoryAxis,
   VictoryBrushContainer,
   VictoryZoomContainer,
-  VictoryTheme,
 } from 'victory';
 
 import { graphColors } from '../constants';
@@ -139,7 +138,7 @@ class GraphsContainer extends React.Component {
             {testData.map((item, i) => (
               <VictoryLine
                 key={item.name}
-                data={item.data}
+                data={item.visible ? item.data : []}
                 style={{
                   data: { stroke: graphColors[i][1] },
                 }}
@@ -170,7 +169,7 @@ class GraphsContainer extends React.Component {
                 style={{
                   data: { stroke: graphColors[i][1] },
                 }}
-                data={item.data}
+                data={item.visible ? item.data : []}
               />
             ))}
           </VictoryChart>

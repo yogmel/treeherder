@@ -18,7 +18,7 @@ import {
   errorMessageClass,
 } from '../../helpers/constants';
 import perf from '../../js/perf';
-import { endpoints } from '../constants';
+import { endpoints, graphColors } from '../constants';
 import ErrorMessages from '../../shared/ErrorMessages';
 import ErrorBoundary from '../../shared/ErrorBoundary';
 import LoadingSpinner from '../../shared/LoadingSpinner';
@@ -27,16 +27,6 @@ import GraphsContainer from './GraphsContainer';
 import TestDataModal from './TestDataModal';
 import LegendCard from './LegendCard';
 import GraphsViewControls from './GraphsViewControls';
-
-const dataColors = [
-  ['magenta', '#e252cf'],
-  ['blue', '#1752b8'],
-  ['darkorchid', '#9932cc'],
-  ['brown', '#b87e17'],
-  ['green', '#19a572'],
-  ['turquoise', '#17a2b8'],
-  ['scarlet', '#b81752'],
-];
 
 class GraphsView extends React.Component {
   constructor(props) {
@@ -53,7 +43,6 @@ class GraphsView extends React.Component {
       testData: [],
       errorMessages: [],
       options: {},
-      colors: [...dataColors],
       loading: false,
     };
   }
@@ -192,9 +181,6 @@ class GraphsView extends React.Component {
   };
 
   createGraphObject = async seriesData => {
-    const { colors } = this.state;
-
-    const newColors = [...colors];
     const alertSummaries = await Promise.all(
       seriesData.map(series =>
         this.getAlertSummaries(series.signature_id, series.repository_id),
@@ -203,7 +189,6 @@ class GraphsView extends React.Component {
     // TODO remove color usage and access by index
     const graphData = seriesData.map(series => ({
       relatedAlertSummaries: alertSummaries.find(item => item.id === series.id),
-      color: newColors.pop(),
       visible: true,
       name: series.name,
       signature_id: series.signature_id,
@@ -222,7 +207,6 @@ class GraphsView extends React.Component {
       idData: series.data.map(dataPoint => dataPoint.id),
       highlightedPoints: [],
     }));
-    this.setState({ colors: newColors });
     return graphData;
   };
 
@@ -327,7 +311,6 @@ class GraphsView extends React.Component {
       highlightAlerts,
       highlightedRevisions,
       selectedDataPoint,
-      colors,
       loading,
       errorMessages,
       zoom,
@@ -363,7 +346,7 @@ class GraphsView extends React.Component {
             <Col id="graph-chooser">
               <Container className="graph-legend pl-0 pb-4">
                 {testData.length > 0 &&
-                  testData.map(series => (
+                  testData.map((series, i) => (
                     <div
                       key={`${series.name} ${series.repository_name} ${series.platform}`}
                     >
@@ -375,7 +358,7 @@ class GraphsView extends React.Component {
                         updateStateParams={state =>
                           this.setState(state, this.changeParams)
                         }
-                        colors={colors}
+                        color={graphColors[i][0]}
                         selectedDataPoint={selectedDataPoint}
                       />
                     </div>
@@ -409,7 +392,6 @@ class GraphsView extends React.Component {
                       timeRange,
                       zoom: {},
                       selectedDataPoint: null,
-                      colors: [...dataColors],
                     },
                     this.getTestData,
                   )

@@ -10,13 +10,12 @@ const LegendCard = ({
   updateState,
   updateStateParams,
   selectedDataPoint,
-  colors,
+  color,
 }) => {
   const updateSelectedTest = () => {
     const newTestData = [...testData].map(item => {
       if (item.signature_id === series.signature_id) {
         item.visible = !item.visible;
-        item.flotSeries.points.show = item.visible;
         item.highlightedPoints = [];
       }
       return item;
@@ -30,7 +29,7 @@ const LegendCard = ({
   };
 
   const resetParams = testData => {
-    const updates = { testData, colors: [...colors, ...[series.color]] };
+    const updates = { testData };
 
     if (
       selectedDataPoint &&
@@ -71,12 +70,12 @@ const LegendCard = ({
       </span>
       <div
         className={`${
-          series.visible ? series.color[0] : 'border-secondary'
+          series.visible ? color : 'border-secondary'
         } graph-legend-card p-3`}
       >
         <p
           className={`p-0 mb-0 pointer border-0 ${
-            series.visible ? series.color : 'text-muted'
+            series.visible ? color : 'text-muted'
           } text-left`}
           onClick={() => addTestData('addRelatedConfigs')}
           title="Add related configurations"
@@ -124,7 +123,7 @@ LegendCard.propTypes = {
   updateState: PropTypes.func.isRequired,
   testData: PropTypes.arrayOf(PropTypes.shape({})),
   updateStateParams: PropTypes.func.isRequired,
-  colors: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
+  color: PropTypes.string.isRequired,
   selectedDataPoint: PropTypes.shape({}),
 };
 
