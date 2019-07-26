@@ -9,6 +9,7 @@ import {
   VictoryZoomContainer,
   VictoryScatter,
 } from 'victory';
+import moment from 'moment';
 
 import { graphColors } from '../constants';
 
@@ -113,7 +114,7 @@ class GraphsContainer extends React.Component {
             padding={{ top: 0, left: 50, right: 50, bottom: 30 }}
             width={935}
             height={100}
-            scale={{ x: 'time', y: 'value' }}
+            scale={{ x: 'time', y: 'linear' }}
             containerComponent={
               <VictoryBrushContainer
                 responsive={false}
@@ -125,17 +126,6 @@ class GraphsContainer extends React.Component {
               />
             }
           >
-            <VictoryAxis
-            // tickValues={[
-            //   new Date(1985, 1, 1),
-            //   new Date(1990, 1, 1),
-            //   new Date(1995, 1, 1),
-            //   new Date(2000, 1, 1),
-            //   new Date(2005, 1, 1),
-            //   new Date(2010, 1, 1),
-            // ]}
-            // tickFormat={x => new Date(x).getFullYear()}
-            />
             {testData.map((item, i) => (
               <VictoryLine
                 key={item.name}
@@ -152,7 +142,7 @@ class GraphsContainer extends React.Component {
           <VictoryChart
             width={935}
             height={300}
-            scale={{ x: 'time', y: 'value' }}
+            scale={{ x: 'time', y: 'linear' }}
             containerComponent={
               <VictoryZoomContainer
                 responsive={false}
@@ -179,6 +169,10 @@ class GraphsContainer extends React.Component {
                 data={item.visible ? item.data : []}
               />
             ))}
+            <VictoryAxis
+              tickCount={10}
+              tickFormat={x => moment(x).format('MMM DD')}
+            />
           </VictoryChart>
         </Row>
         {/* <Row>
