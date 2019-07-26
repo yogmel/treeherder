@@ -10,6 +10,8 @@ import {
   VictoryTheme,
 } from 'victory';
 
+import { graphColors } from '../constants';
+
 class GraphsContainer extends React.Component {
   constructor(props) {
     super(props);
@@ -134,8 +136,15 @@ class GraphsContainer extends React.Component {
             // ]}
             // tickFormat={x => new Date(x).getFullYear()}
             />
-            {testData.map(item =>
-            <VictoryLine data={item.data} />)}
+            {testData.map((item, i) => (
+              <VictoryLine
+                key={item.name}
+                data={item.data}
+                style={{
+                  data: { stroke: graphColors[i][1] },
+                }}
+              />
+            ))}
           </VictoryChart>
         </Row>
 
@@ -155,13 +164,15 @@ class GraphsContainer extends React.Component {
               />
             }
           >
-          {testData.map(item =>
-            <VictoryLine
-              // style={{
-              //   data: { stroke: 'tomato' },
-              // }}
-              data={item.data}
-            />)}
+            {testData.map((item, i) => (
+              <VictoryLine
+                key={item.name}
+                style={{
+                  data: { stroke: graphColors[i][1] },
+                }}
+                data={item.data}
+              />
+            ))}
           </VictoryChart>
         </Row>
         {/* <Row>
