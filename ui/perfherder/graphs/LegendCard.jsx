@@ -76,7 +76,7 @@ const LegendCard = ({
       >
         <p
           className={`p-0 mb-0 pointer border-0 ${
-            series.visible ? series.flotSeries.color : 'text-muted'
+            series.visible ? series.color : 'text-muted'
           } text-left`}
           onClick={() => addTestData('addRelatedConfigs')}
           title="Add related configurations"

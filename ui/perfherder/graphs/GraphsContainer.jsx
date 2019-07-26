@@ -1,11 +1,21 @@
 import React from 'react';
 import { Row } from 'reactstrap';
 import PropTypes from 'prop-types';
+import {
+  VictoryChart,
+  VictoryLine,
+  VictoryAxis,
+  VictoryBrushContainer,
+  VictoryZoomContainer,
+} from 'victory';
 
 class GraphsContainer extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      // selectedDomain: {},
+      // zoomDomain: {},
+    };
   }
 
   // const markings = [];
@@ -84,43 +94,122 @@ class GraphsContainer extends React.Component {
   // });
 
   render() {
-    const {
-      testData,
-      zoom,
-      highlightAlerts,
-      highlightedRevisions,
-      selectedDataPoint,
-    } = this.props;
+    // const {
+    //   testData,
+    //   zoom,
+    //   highlightAlerts,
+    //   highlightedRevisions,
+    //   selectedDataPoint,
+    // } = this.props;
+    const { zoomDomain, selectedDomain } = this.state;
     return (
       <React.Fragment>
         <Row>
+          <VictoryChart
+            width={600}
+            height={350}
+            scale={{ x: 'time' }}
+            containerComponent={
+              <VictoryZoomContainer
+                responsive={false}
+                zoomDimension="x"
+                zoomDomain={zoomDomain}
+                onZoomDomainChange={selectedDomain =>
+                  this.setState({ selectedDomain })
+                }
+              />
+            }
+          >
+            <VictoryLine
+              style={{
+                data: { stroke: 'tomato' },
+              }}
+              data={[
+                { x: new Date(1982, 1, 1), y: 125 },
+                { x: new Date(1987, 1, 1), y: 257 },
+                { x: new Date(1993, 1, 1), y: 345 },
+                { x: new Date(1997, 1, 1), y: 515 },
+                { x: new Date(2001, 1, 1), y: 132 },
+                { x: new Date(2005, 1, 1), y: 305 },
+                { x: new Date(2011, 1, 1), y: 270 },
+                { x: new Date(2015, 1, 1), y: 470 },
+              ]}
+            />
+          </VictoryChart>
+        </Row>
+        <Row>
+          <VictoryChart
+            padding={{ top: 0, left: 50, right: 50, bottom: 30 }}
+            width={600}
+            height={90}
+            scale={{ x: 'time' }}
+            containerComponent={
+              <VictoryBrushContainer
+                responsive={false}
+                brushDimension="x"
+                brushDomain={selectedDomain}
+                onBrushDomainChange={zoomDomain =>
+                  this.setState({ zoomDomain })
+                }
+              />
+            }
+          >
+            <VictoryAxis
+              tickValues={[
+                new Date(1985, 1, 1),
+                new Date(1990, 1, 1),
+                new Date(1995, 1, 1),
+                new Date(2000, 1, 1),
+                new Date(2005, 1, 1),
+                new Date(2010, 1, 1),
+              ]}
+              tickFormat={x => new Date(x).getFullYear()}
+            />
+            <VictoryLine
+              style={{
+                data: { stroke: 'tomato' },
+              }}
+              data={[
+                { x: new Date(1982, 1, 1), y: 125 },
+                { x: new Date(1987, 1, 1), y: 257 },
+                { x: new Date(1993, 1, 1), y: 345 },
+                { x: new Date(1997, 1, 1), y: 515 },
+                { x: new Date(2001, 1, 1), y: 132 },
+                { x: new Date(2005, 1, 1), y: 305 },
+                { x: new Date(2011, 1, 1), y: 270 },
+                { x: new Date(2015, 1, 1), y: 470 },
+              ]}
+            />
+          </VictoryChart>
+        </Row>
+        {/* <Row>
           <div id="overview-plot" />
         </Row>
         <Row>
           <div id="graph" />
-        </Row>
+        </Row> */}
       </React.Fragment>
     );
   }
 }
 
 GraphsContainer.propTypes = {
-  testData: PropTypes.arrayOf(PropTypes.shape({})),
-  zoom: PropTypes.shape({}),
-  selectedDataPoint: PropTypes.string,
-  highlightAlerts: PropTypes.bool,
-  highlightedRevisions: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.arrayOf(PropTypes.string),
-  ]),
+  // testData: PropTypes.arrayOf(PropTypes.shape({})),
+  // zoom: PropTypes.shape({}),
+  // selectedDataPoint: PropTypes.string,
+  // highlightAlerts: PropTypes.bool,
+  // highlightedRevisions: PropTypes.oneOfType([
+  //   PropTypes.string,
+  //   PropTypes.arrayOf(PropTypes.string),
+  // ]),
 };
 
 GraphsContainer.defaultProps = {
-  testData: [],
-  zoom: {},
-  selectedDataPoint: null,
-  highlightAlerts: true,
-  highlightedRevisions: ['', ''],
+  // testData: [],
+  // zoom: {},
+  // selectedDataPoint: null,
+  // highlightAlerts: true,
+  // highlightedRevisions: ['', ''],
 };
 
 export default GraphsContainer;
