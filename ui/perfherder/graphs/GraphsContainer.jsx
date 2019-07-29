@@ -22,7 +22,13 @@ class GraphsContainer extends React.Component {
     this.state = {
       selectedDomain: this.props.zoom,
       zoomDomain: this.props.zoom,
+      highlights: [],
+      markers: [],
     };
+  }
+
+  componentDidMount() {
+    this.addHighlights();
   }
 
   componentDidUpdate(prevProps) {
@@ -60,51 +66,37 @@ class GraphsContainer extends React.Component {
   // };
 
   // // highlight points which correspond to an alert or revision
-  // for (const series of testData) {
-  //   if (!series.visible) {
-  //     continue;
-  //   }
+  addHighlights = () => {
+    const { testData, highlightAlerts, highlightedRevisions } = this.props;
+    const markers = [];
 
-  //   if (highlightAlerts) {
-  //     series.relatedAlertSummaries.forEach(alertSummary => {
-  //       addHighlightedDatapoint(series, alertSummary.push_id);
-  //     });
-  //   }
+    for (const series of testData) {
+      if (!series.visible) {
+        continue;
+      }
 
-  //   // Can this be done a better way? if we have revisions we
-  //   // don't need to look for the push id
-  //   for (const rev of highlightedRevisions) {
-  //     if (!rev) {
-  //       continue;
-  //     }
-  //     // in case people are still use 12 character revisions
-  //     const dataPoint = series.data.find(
-  //       item => item.revision.indexOf(rev) !== -1,
-  //     );
+      // if (highlightAlerts) {
+      //   series.relatedAlertSummaries.forEach(alertSummary => {
+      //     addHighlightedDatapoint(series, alertSummary.push_id);
+      //   });
+      // }
 
-  //     if (dataPoint) {
-  //       addHighlightedDatapoint(series, dataPoint.push_id);
-  //     }
-  //   }
-  // }
+      for (const rev of highlightedRevisions) {
+        if (!rev) {
+          continue;
+        }
+        // in case people are still using 12 character sha
+        const dataPoint = series.data.find(
+          item => item.revision.indexOf(rev) !== -1,
+        );
 
-  // $.plot($('#graph'), testData.map(series => series.flotSeries), {
-  //   xaxis: { mode: 'time' },
-  //   series: { shadowSize: 0 },
-  //   selection: { mode: 'xy', color: '#97c6e5' },
-  //   lines: { show: false },
-  //   points: { show: true },
-  //   legend: { show: false },
-  //   grid: {
-  //     color: '#cdd6df',
-  //     borderWidth: 2,
-  //     backgroundColor: '#fff',
-  //     hoverable: true,
-  //     clickable: true,
-  //     autoHighlight: false,
-  //     markings,
-  //   },
-  // });
+        if (dataPoint) {
+          markers.push(dataPoint.x);
+        }
+      }
+    }
+    this.setState({ markers });
+  };
 
   // eslint-disable-next-line react/sort-comp
   updateZoomParams = debounce(
@@ -119,7 +111,7 @@ class GraphsContainer extends React.Component {
       //   highlightedRevisions,
       //   selectedDataPoint,
     } = this.props;
-    const { zoomDomain, selectedDomain } = this.state;
+    const { zoomDomain, selectedDomain, markers } = this.state;
 
     return (
       <React.Fragment>
@@ -183,6 +175,15 @@ class GraphsContainer extends React.Component {
                 data={item.visible ? item.data : []}
               />
             ))}
+            {markers.length > 0 &&
+              markers.map(x => (
+                <VictoryLine
+                  style={{
+                    data: { stroke: 'lightgray', strokeWidth: 1 },
+                  }}
+                  x={() => x}
+                />
+              ))}
             <VictoryAxis
               tickCount={10}
               tickFormat={x => moment(x).format('MMM DD')}
@@ -205,19 +206,19 @@ GraphsContainer.propTypes = {
   updateStateParams: PropTypes.func.isRequired,
   zoom: PropTypes.shape({}),
   // selectedDataPoint: PropTypes.string,
-  // highlightAlerts: PropTypes.bool,
-  // highlightedRevisions: PropTypes.oneOfType([
-  //   PropTypes.string,
-  //   PropTypes.arrayOf(PropTypes.string),
-  // ]),
+  highlightAlerts: PropTypes.bool,
+  highlightedRevisions: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.arrayOf(PropTypes.string),
+  ]),
 };
 
 GraphsContainer.defaultProps = {
   testData: [],
   zoom: {},
   // selectedDataPoint: null,
-  // highlightAlerts: true,
-  // highlightedRevisions: ['', ''],
+  highlightAlerts: true,
+  highlightedRevisions: ['', ''],
 };
 
 export default GraphsContainer;

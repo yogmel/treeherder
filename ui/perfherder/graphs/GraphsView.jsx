@@ -204,7 +204,9 @@ class GraphsView extends React.Component {
         x: new Date(dataPoint.push_timestamp),
         y: dataPoint.value,
         z: series.signature_id,
+        revision: dataPoint.revision,
       })),
+      // Are these needed?
       resultSetData: series.data.map(dataPoint => dataPoint.push_id),
       jobIdData: series.data.map(dataPoint => dataPoint.job_id),
       idData: series.data.map(dataPoint => dataPoint.id),
