@@ -1,3 +1,5 @@
+/* eslint-disable react/no-did-update-set-state
+ */
 import React from 'react';
 import { Row } from 'reactstrap';
 import PropTypes from 'prop-types';
@@ -10,6 +12,7 @@ import {
   VictoryScatter,
 } from 'victory';
 import moment from 'moment';
+import debounce from 'lodash/debounce';
 
 import { graphColors } from '../constants';
 
@@ -22,6 +25,12 @@ class GraphsContainer extends React.Component {
     };
   }
 
+  componentDidUpdate(prevProps) {
+    const { zoom } = this.props;
+    if (prevProps.zoom !== zoom) {
+      this.setState({ zoomDomain: zoom, selectedDomain: zoom });
+    }
+  }
   // const markings = [];
   // const addHighlightedDatapoint = (series, resultSetId) => {
   //   // add a vertical line where alerts are, for extra visibility
@@ -97,10 +106,11 @@ class GraphsContainer extends React.Component {
   //   },
   // });
 
-  updateZoomDomain = zoom => {
-    this.setState({ zoomDomain: zoom });
-    this.props.updateStateParams({ zoom });
-  };
+  // eslint-disable-next-line react/sort-comp
+  updateZoomParams = debounce(
+    () => this.props.updateStateParams({ zoom: this.state.zoomDomain }),
+    1000,
+  );
 
   render() {
     const {
@@ -124,7 +134,9 @@ class GraphsContainer extends React.Component {
                 responsive={false}
                 brushDimension="x"
                 brushDomain={selectedDomain}
-                onBrushDomainChange={this.updateZoomDomain}
+                onBrushDomainChange={zoomDomain =>
+                  this.setState({ zoomDomain }, this.updateZoomParams)
+                }
               />
             }
           >
