@@ -17,8 +17,8 @@ class GraphsContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      // selectedDomain: {},
-      // zoomDomain: {},
+      selectedDomain: this.props.zoom,
+      zoomDomain: this.props.zoom,
     };
   }
 
@@ -97,10 +97,14 @@ class GraphsContainer extends React.Component {
   //   },
   // });
 
+  updateZoomDomain = zoom => {
+    this.setState({ zoomDomain: zoom });
+    this.props.updateStateParams({ zoom });
+  };
+
   render() {
     const {
       testData,
-      //   zoom,
       //   highlightAlerts,
       //   highlightedRevisions,
       //   selectedDataPoint,
@@ -120,9 +124,7 @@ class GraphsContainer extends React.Component {
                 responsive={false}
                 brushDimension="x"
                 brushDomain={selectedDomain}
-                onBrushDomainChange={zoomDomain =>
-                  this.setState({ zoomDomain })
-                }
+                onBrushDomainChange={this.updateZoomDomain}
               />
             }
           >
@@ -188,7 +190,8 @@ class GraphsContainer extends React.Component {
 
 GraphsContainer.propTypes = {
   testData: PropTypes.arrayOf(PropTypes.shape({})),
-  // zoom: PropTypes.shape({}),
+  updateStateParams: PropTypes.func.isRequired,
+  zoom: PropTypes.shape({}),
   // selectedDataPoint: PropTypes.string,
   // highlightAlerts: PropTypes.bool,
   // highlightedRevisions: PropTypes.oneOfType([
@@ -199,7 +202,7 @@ GraphsContainer.propTypes = {
 
 GraphsContainer.defaultProps = {
   testData: [],
-  // zoom: {},
+  zoom: {},
   // selectedDataPoint: null,
   // highlightAlerts: true,
   // highlightedRevisions: ['', ''],

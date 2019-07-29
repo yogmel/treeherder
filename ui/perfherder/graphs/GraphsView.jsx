@@ -93,7 +93,7 @@ class GraphsView extends React.Component {
     if (series) {
       const _series = typeof series === 'string' ? [series] : series;
       const seriesParams = this.parseSeriesParam(_series);
-      this.getTestData(seriesParams);
+      this.getTestData(seriesParams, true);
     }
 
     if (highlightAlerts) {
@@ -109,8 +109,9 @@ class GraphsView extends React.Component {
 
     if (zoom) {
       const zoomArray = zoom.replace(/[[{}\]"]+/g, '').split(',');
+      // TODO change to UTC
       const zoomObject = {
-        x: zoomArray.slice(0, 2),
+        x: zoomArray.map(x => new Date(parseInt(x, 10))).slice(0, 2),
         y: zoomArray.slice(2, 4),
       };
       updates.zoom = zoomObject;
@@ -145,7 +146,7 @@ class GraphsView extends React.Component {
     };
   };
 
-  getTestData = async (newDisplayedTests = []) => {
+  getTestData = async (newDisplayedTests = [], init = false) => {
     const { testData } = this.state;
     const tests = newDisplayedTests.length ? newDisplayedTests : testData;
     this.setState({ loading: true });
@@ -173,10 +174,12 @@ class GraphsView extends React.Component {
         newTestData = [...testData, ...newTestData];
       }
 
-      this.setState(
-        { testData: newTestData, loading: false },
-        this.changeParams,
-      );
+      this.setState({ testData: newTestData, loading: false }, () => {
+        if (!init) {
+          // we don't need to change params when getData is called on initial page load
+          this.changeParams();
+        }
+      });
     }
   };
 
@@ -286,6 +289,7 @@ class GraphsView extends React.Component {
       highlightedRevisions: highlightedRevisions.filter(rev => rev.length),
       highlightAlerts: +highlightAlerts,
       timerange: timeRange.value,
+      zoom,
     };
 
     if (!selectedDataPoint) {
@@ -294,6 +298,8 @@ class GraphsView extends React.Component {
 
     if (Object.keys(zoom).length === 0) {
       params.zoom = null;
+    } else {
+      params.zoom = [...zoom.x.map(z => z.getTime()), ...zoom.y].toString();
     }
 
     this.updateParams(params);
@@ -377,6 +383,9 @@ class GraphsView extends React.Component {
                       zoom={zoom}
                       selectedDataPoint={selectedDataPoint}
                       testData={testData}
+                      updateStateParams={state =>
+                        this.setState(state, this.changeParams)
+                      }
                     />
                   )
                 }
