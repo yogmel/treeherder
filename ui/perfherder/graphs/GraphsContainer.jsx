@@ -23,7 +23,6 @@ class GraphsContainer extends React.Component {
       selectedDomain: this.props.zoom,
       zoomDomain: this.props.zoom,
       highlights: [],
-      markers: [],
     };
   }
 
@@ -32,54 +31,38 @@ class GraphsContainer extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { zoom } = this.props;
+    const { zoom, highlightAlerts, highlightedRevisions } = this.props;
     if (prevProps.zoom !== zoom) {
       this.setState({ zoomDomain: zoom, selectedDomain: zoom });
     }
-  }
-  // const markings = [];
-  // const addHighlightedDatapoint = (series, resultSetId) => {
-  //   // add a vertical line where alerts are, for extra visibility
-  //   const index = series.flotSeries.resultSetData.indexOf(resultSetId);
-  //   if (index !== -1) {
-  //     markings.push({
-  //       color: '#ddd',
-  //       lineWidth: 1,
-  //       xaxis: {
-  //         from: series.flotSeries.data[index][0],
-  //         to: series.flotSeries.data[index][0],
-  //       },
-  //     });
-  //   }
-  //   // TODO not working
-  //   // highlight the datapoints too
-  //   series.highlightedPoints = [
-  //     ...new Set([
-  //       ...series.highlightedPoints,
-  //       ...series.flotSeries.resultSetData
-  //         .map((seriesResultSetId, index) =>
-  //           resultSetId === seriesResultSetId ? index : null,
-  //         )
-  //         .filter(v => v),
-  //     ]),
-  //   ];
-  // };
 
-  // // highlight points which correspond to an alert or revision
+    if (
+      prevProps.highlightAlerts !== highlightAlerts ||
+      prevProps.highlightedRevisions !== highlightedRevisions
+    ) {
+      this.addHighlights();
+    }
+  }
+
   addHighlights = () => {
     const { testData, highlightAlerts, highlightedRevisions } = this.props;
-    const markers = [];
+    const highlights = [];
 
     for (const series of testData) {
       if (!series.visible) {
         continue;
       }
 
-      // if (highlightAlerts) {
-      //   series.relatedAlertSummaries.forEach(alertSummary => {
-      //     addHighlightedDatapoint(series, alertSummary.push_id);
-      //   });
-      // }
+      if (highlightAlerts) {
+        series.relatedAlertSummaries.forEach(alertSummary => {
+          const dataPoint = series.data.find(
+            item => item.revision === alertSummary.revision,
+          );
+          if (dataPoint) {
+            highlights.push(dataPoint.x);
+          }
+        });
+      }
 
       for (const rev of highlightedRevisions) {
         if (!rev) {
@@ -91,11 +74,12 @@ class GraphsContainer extends React.Component {
         );
 
         if (dataPoint) {
-          markers.push(dataPoint.x);
+          highlights.push(dataPoint.x);
         }
       }
     }
-    this.setState({ markers });
+
+    this.setState({ highlights });
   };
 
   // eslint-disable-next-line react/sort-comp
@@ -111,7 +95,7 @@ class GraphsContainer extends React.Component {
       //   highlightedRevisions,
       //   selectedDataPoint,
     } = this.props;
-    const { zoomDomain, selectedDomain, markers } = this.state;
+    const { zoomDomain, selectedDomain, highlights } = this.state;
 
     return (
       <React.Fragment>
@@ -175,9 +159,10 @@ class GraphsContainer extends React.Component {
                 data={item.visible ? item.data : []}
               />
             ))}
-            {markers.length > 0 &&
-              markers.map(x => (
+            {highlights.length > 0 &&
+              highlights.map(x => (
                 <VictoryLine
+                  key={x}
                   style={{
                     data: { stroke: 'lightgray', strokeWidth: 1 },
                   }}

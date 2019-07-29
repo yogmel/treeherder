@@ -206,7 +206,7 @@ class GraphsView extends React.Component {
         z: series.signature_id,
         revision: dataPoint.revision,
       })),
-      // Are these needed?
+      // TODO Are these needed?
       resultSetData: series.data.map(dataPoint => dataPoint.push_id),
       jobIdData: series.data.map(dataPoint => dataPoint.job_id),
       idData: series.data.map(dataPoint => dataPoint.id),
