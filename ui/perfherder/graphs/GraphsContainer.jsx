@@ -19,6 +19,8 @@ import { graphColors } from '../constants';
 class GraphsContainer extends React.Component {
   constructor(props) {
     super(props);
+    this.updateSelection = debounce(this.updateSelection.bind(this), 800);
+    this.updateZoom = debounce(this.updateZoom.bind(this), 800);
     this.state = {
       selectedDomain: this.props.zoom,
       zoomDomain: this.props.zoom,
@@ -84,21 +86,19 @@ class GraphsContainer extends React.Component {
     this.setState({ highlights });
   };
 
-  // eslint-disable-next-line react/sort-comp
-  updateZoomParams = debounce(
-    () => this.props.updateStateParams({ zoom: this.state.zoomDomain }),
-    1000,
-  );
+  updateSelection(selectedDomain) {
+    this.setState({ selectedDomain });
+  }
+
+  updateZoom(zoomDomain) {
+    this.setState({ zoomDomain });
+    this.props.updateStateParams({ zoom: zoomDomain });
+  }
 
   render() {
-    const {
-      testData,
-      //   highlightAlerts,
-      //   highlightedRevisions,
-      //   selectedDataPoint,
-    } = this.props;
+    const { testData } = this.props;
     const { zoomDomain, selectedDomain, highlights } = this.state;
-    console.log(testData, highlights);
+
     return (
       <React.Fragment>
         <Row>
@@ -112,9 +112,7 @@ class GraphsContainer extends React.Component {
                 responsive={false}
                 brushDimension="x"
                 brushDomain={selectedDomain}
-                onBrushDomainChange={zoomDomain =>
-                  this.setState({ zoomDomain }, this.updateZoomParams)
-                }
+                onBrushDomainChange={this.updateZoom}
               />
             }
           >
@@ -140,9 +138,7 @@ class GraphsContainer extends React.Component {
                 responsive={false}
                 zoomDimension="x"
                 zoomDomain={zoomDomain}
-                onZoomDomainChange={selectedDomain =>
-                  this.setState({ selectedDomain })
-                }
+                onZoomDomainChange={this.updateSelection}
               />
             }
           >
@@ -153,7 +149,7 @@ class GraphsContainer extends React.Component {
                   data: {
                     fill: graphColors[i][1],
                     fillOpacity: 0.3,
-                    stroke: data => console.log(data.revision),
+                    stroke: graphColors[i][1],
                     strokeWidth: 2,
                   },
                 }}
