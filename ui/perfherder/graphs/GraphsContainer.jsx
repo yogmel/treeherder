@@ -44,6 +44,8 @@ class GraphsContainer extends React.Component {
     }
   }
 
+  // TODO refactor/cleanup this function and change the style of data points for alerts
+  // and revisions (flip so fill is solid and stroke-opacity has a value)
   addHighlights = () => {
     const { testData, highlightAlerts, highlightedRevisions } = this.props;
     const highlights = [];
@@ -59,7 +61,7 @@ class GraphsContainer extends React.Component {
             item => item.revision === alertSummary.revision,
           );
           if (dataPoint) {
-            highlights.push(dataPoint.x);
+            highlights.push(dataPoint);
           }
         });
       }
@@ -74,11 +76,11 @@ class GraphsContainer extends React.Component {
         );
 
         if (dataPoint) {
-          highlights.push(dataPoint.x);
+          highlights.push(dataPoint);
         }
       }
     }
-
+    // create a set
     this.setState({ highlights });
   };
 
@@ -96,7 +98,7 @@ class GraphsContainer extends React.Component {
       //   selectedDataPoint,
     } = this.props;
     const { zoomDomain, selectedDomain, highlights } = this.state;
-
+    console.log(testData, highlights);
     return (
       <React.Fragment>
         <Row>
@@ -151,22 +153,22 @@ class GraphsContainer extends React.Component {
                   data: {
                     fill: graphColors[i][1],
                     fillOpacity: 0.3,
-                    stroke: graphColors[i][1],
+                    stroke: data => console.log(data.revision),
                     strokeWidth: 2,
                   },
                 }}
-                size={1}
+                size={2}
                 data={item.visible ? item.data : []}
               />
             ))}
             {highlights.length > 0 &&
-              highlights.map(x => (
+              highlights.map(item => (
                 <VictoryLine
-                  key={x}
+                  key={item}
                   style={{
-                    data: { stroke: 'lightgray', strokeWidth: 1 },
+                    data: { stroke: 'secondary', strokeWidth: 1 },
                   }}
-                  x={() => x}
+                  x={() => item.x}
                 />
               ))}
             <VictoryAxis
