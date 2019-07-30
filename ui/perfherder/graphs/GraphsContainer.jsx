@@ -19,8 +19,8 @@ import { graphColors } from '../constants';
 class GraphsContainer extends React.Component {
   constructor(props) {
     super(props);
-    this.updateSelection = debounce(this.updateSelection.bind(this), 800);
-    this.updateZoom = debounce(this.updateZoom.bind(this), 800);
+    this.updateSelection = debounce(this.updateSelection.bind(this), 1000);
+    this.updateZoom = debounce(this.updateZoom.bind(this), 1000);
     this.state = {
       selectedDomain: this.props.zoom,
       zoomDomain: this.props.zoom,
@@ -46,11 +46,13 @@ class GraphsContainer extends React.Component {
     }
   }
 
+  // TODO add ? icon to chart to explain how zoom/pan works?
+
   // TODO refactor/cleanup this function and change the style of data points for alerts
   // and revisions (flip so fill is solid and stroke-opacity has a value)
   addHighlights = () => {
     const { testData, highlightAlerts, highlightedRevisions } = this.props;
-    const highlights = [];
+    let highlights = [];
 
     for (const series of testData) {
       if (!series.visible) {
@@ -58,14 +60,8 @@ class GraphsContainer extends React.Component {
       }
 
       if (highlightAlerts) {
-        series.relatedAlertSummaries.forEach(alertSummary => {
-          const dataPoint = series.data.find(
-            item => item.revision === alertSummary.revision,
-          );
-          if (dataPoint) {
-            highlights.push(dataPoint);
-          }
-        });
+        const dataPoints = series.data.filter(item => item.alertSummary);
+        highlights = [...highlights, ...dataPoints];
       }
 
       for (const rev of highlightedRevisions) {
@@ -110,7 +106,6 @@ class GraphsContainer extends React.Component {
             containerComponent={
               <VictoryBrushContainer
                 responsive={false}
-                brushDimension="x"
                 brushDomain={selectedDomain}
                 onBrushDomainChange={this.updateZoom}
               />
@@ -136,41 +131,42 @@ class GraphsContainer extends React.Component {
             containerComponent={
               <VictoryZoomContainer
                 responsive={false}
-                zoomDimension="x"
                 zoomDomain={zoomDomain}
                 onZoomDomainChange={this.updateSelection}
               />
             }
           >
+            {highlights.length > 0 &&
+              highlights.map(item => (
+                <VictoryLine
+                  key={item}
+                  style={{
+                    data: { stroke: 'lightgray', strokeWidth: 1 },
+                  }}
+                  x={() => item.x}
+                />
+              ))}
+
             {testData.map((item, i) => (
               <VictoryScatter
                 key={item.name}
                 style={{
                   data: {
                     fill: graphColors[i][1],
-                    fillOpacity: 0.3,
+                    fillOpacity: data => (data.alertSummary ? 100 : 0.3),
+                    strokeOpacity: data => (data.alertSummary ? 0.3 : 100),
                     stroke: graphColors[i][1],
-                    strokeWidth: 2,
+                    strokeWidth: data => (data.alertSummary ? 12 : 2),
                   },
                 }}
                 size={2}
                 data={item.visible ? item.data : []}
               />
             ))}
-            {highlights.length > 0 &&
-              highlights.map(item => (
-                <VictoryLine
-                  key={item}
-                  style={{
-                    data: { stroke: 'secondary', strokeWidth: 1 },
-                  }}
-                  x={() => item.x}
-                />
-              ))}
-            <VictoryAxis
+            {/* <VictoryAxis
               tickCount={10}
               tickFormat={x => moment(x).format('MMM DD')}
-            />
+            /> */}
           </VictoryChart>
         </Row>
         {/* <Row>

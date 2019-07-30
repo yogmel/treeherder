@@ -190,28 +190,36 @@ class GraphsView extends React.Component {
       ),
     );
     // TODO remove color usage and access by index
-    const graphData = seriesData.map(series => ({
-      relatedAlertSummaries: alertSummaries.find(item => item.id === series.id),
-      visible: true,
-      name: series.name,
-      signature_id: series.signature_id,
-      signature_hash: series.signature_hash,
-      framework_id: series.framework_id,
-      platform: series.platform,
-      repository_name: series.repository_name,
-      id: `${series.repository_name} ${series.name}`,
-      data: series.data.map(dataPoint => ({
-        x: new Date(dataPoint.push_timestamp),
-        y: dataPoint.value,
-        z: series.signature_id,
-        revision: dataPoint.revision,
-      })),
-      // TODO Are these needed?
-      resultSetData: series.data.map(dataPoint => dataPoint.push_id),
-      jobIdData: series.data.map(dataPoint => dataPoint.job_id),
-      idData: series.data.map(dataPoint => dataPoint.id),
-      highlightedPoints: [],
-    }));
+    const graphData = seriesData.map(series => {
+      const relatedAlertSummaries = alertSummaries.find(
+        item => item.id === series.id,
+      );
+      return {
+        relatedAlertSummaries,
+        visible: true,
+        name: series.name,
+        signature_id: series.signature_id,
+        signature_hash: series.signature_hash,
+        framework_id: series.framework_id,
+        platform: series.platform,
+        repository_name: series.repository_name,
+        id: `${series.repository_name} ${series.name}`,
+        data: series.data.map(dataPoint => ({
+          x: new Date(dataPoint.push_timestamp),
+          y: dataPoint.value,
+          z: series.signature_id,
+          revision: dataPoint.revision,
+          alertSummary: relatedAlertSummaries.find(
+            item => item.revision === dataPoint.revision,
+          ),
+        })),
+        // TODO Are these needed?
+        resultSetData: series.data.map(dataPoint => dataPoint.push_id),
+        jobIdData: series.data.map(dataPoint => dataPoint.job_id),
+        idData: series.data.map(dataPoint => dataPoint.id),
+        highlightedPoints: [],
+      };
+    });
     return graphData;
   };
 
