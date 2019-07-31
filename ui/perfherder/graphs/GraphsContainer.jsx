@@ -100,14 +100,17 @@ class GraphsContainer extends React.Component {
       item.visible ? item.data : [],
     );
     const yValues = scatterData.map(item => item.y);
+
     return (
       <React.Fragment>
         <Row>
           <VictoryChart
-            padding={{ top: 0, left: 50, right: 50, bottom: 30 }}
+            padding={{ top: 10, left: 50, right: 50, bottom: 30 }}
             width={1200}
-            height={100}
+            height={125}
             scale={{ x: 'time', y: 'linear' }}
+            domain={{ y: [Math.min(...yValues), Math.max(...yValues)] }}
+            domainPadding={{ y: 30 }}
             containerComponent={
               <VictoryBrushContainer
                 responsive={false}
@@ -116,6 +119,20 @@ class GraphsContainer extends React.Component {
               />
             }
           >
+            <VictoryAxis
+              dependentAxis
+              tickCount={5}
+              style={{
+                grid: { stroke: 'lightgray', strokeWidth: 0.5 },
+              }}
+            />
+            <VictoryAxis
+              tickCount={10}
+              tickFormat={x => moment(x).format('MMM DD')}
+              style={{
+                grid: { stroke: 'lightgray', strokeWidth: 0.5 },
+              }}
+            />
             {testData.map((item, i) => (
               <VictoryLine
                 key={item.name}
@@ -134,7 +151,7 @@ class GraphsContainer extends React.Component {
             height={350}
             scale={{ x: 'time', y: 'linear' }}
             domain={{ y: [Math.min(...yValues), Math.max(...yValues)] }}
-            domainPadding={40}
+            domainPadding={{ y: 40 }}
             containerComponent={
               <VictoryZoomVoronoiContainer
                 responsive={false}
@@ -149,7 +166,7 @@ class GraphsContainer extends React.Component {
                 <VictoryLine
                   key={item}
                   style={{
-                    data: { stroke: 'lightgray', strokeWidth: 1 },
+                    data: { stroke: 'gray', strokeWidth: 1 },
                   }}
                   x={() => item.x}
                 />
@@ -168,11 +185,19 @@ class GraphsContainer extends React.Component {
               size={() => 3}
               data={scatterData}
             />
-            <VictoryAxis dependentAxis tickCount={9} />
-
+            <VictoryAxis
+              dependentAxis
+              tickCount={9}
+              style={{
+                grid: { stroke: 'lightgray', strokeWidth: 0.5 },
+              }}
+            />
             <VictoryAxis
               tickCount={10}
               tickFormat={x => moment(x).format('MMM DD')}
+              style={{
+                grid: { stroke: 'lightgray', strokeWidth: 0.5 },
+              }}
             />
           </VictoryChart>
         </Row>
