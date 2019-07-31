@@ -8,9 +8,7 @@ import {
   VictoryLine,
   VictoryAxis,
   VictoryBrushContainer,
-  VictoryZoomContainer,
   VictoryScatter,
-  VictoryVoronoiContainer,
   createContainer,
 } from 'victory';
 import moment from 'moment';
@@ -23,8 +21,11 @@ const VictoryZoomVoronoiContainer = createContainer('zoom', 'voronoi');
 class GraphsContainer extends React.Component {
   constructor(props) {
     super(props);
-    this.updateSelection = debounce(this.updateSelection.bind(this), 1000);
-    this.updateZoom = debounce(this.updateZoom.bind(this), 1000);
+    // this.updateSelection = debounce(this.updateSelection.bind(this), 1000);
+    // this.updateZoom = debounce(this.updateZoom.bind(this), 1000);
+    this.updateSelection = this.updateSelection.bind(this);
+    this.updateZoom = this.updateZoom.bind(this);
+
     this.state = {
       selectedDomain: this.props.zoom,
       zoomDomain: this.props.zoom,
@@ -95,6 +96,8 @@ class GraphsContainer extends React.Component {
     const { testData } = this.props;
     const { zoomDomain, selectedDomain, highlights } = this.state;
 
+    const scatterData = testData.flatMap(item => item.visible ? item.data : []);
+
     return (
       <React.Fragment>
         <Row>
@@ -148,22 +151,19 @@ class GraphsContainer extends React.Component {
                 />
               ))}
 
-            {testData.map((item, i) => (
-              <VictoryScatter
-                key={item.name}
-                style={{
-                  data: {
-                    fill: graphColors[i][1],
-                    fillOpacity: data => (data.alertSummary ? 100 : 0.3),
-                    strokeOpacity: data => (data.alertSummary ? 0.3 : 100),
-                    stroke: graphColors[i][1],
-                    strokeWidth: data => (data.alertSummary ? 12 : 2),
-                  },
-                }}
-                size={() => 3}
-                data={item.visible ? item.data : []}
-              />
-            ))}
+            <VictoryScatter
+              style={{
+                data: {
+                  fill: d => d.z,
+                  fillOpacity: data => (data.alertSummary ? 100 : 0.3),
+                  strokeOpacity: data => (data.alertSummary ? 0.3 : 100),
+                  stroke: d => d.z,
+                  strokeWidth: data => (data.alertSummary ? 12 : 2),
+                },
+              }}
+              size={() => 3}
+              data={scatterData}
+            />
             {/* <VictoryAxis
               tickCount={10}
               tickFormat={x => moment(x).format('MMM DD')}
