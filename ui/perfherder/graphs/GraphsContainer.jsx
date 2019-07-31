@@ -22,11 +22,8 @@ const VictoryZoomVoronoiContainer = createContainer('zoom', 'voronoi');
 class GraphsContainer extends React.Component {
   constructor(props) {
     super(props);
-    // this.updateSelection = debounce(this.updateSelection.bind(this), 800);
-    // this.updateZoom = debounce(this.updateZoom.bind(this), 1000);
-    this.updateSelection = this.updateSelection.bind(this);
-    this.updateZoom = this.updateZoom.bind(this);
-
+    this.updateZoom = debounce(this.updateZoom.bind(this), 500);
+    this.updateSelection = debounce(this.updateSelection.bind(this), 500);
     this.state = {
       selectedDomain: this.props.zoom,
       zoomDomain: this.props.zoom,
@@ -69,33 +66,6 @@ class GraphsContainer extends React.Component {
     return entireDomain;
   };
 
-  updateData() {
-    const { selectedDomain: zoomDomain } = this.state;
-    const { testData } = this.props;
-    const maxPoints = 100;
-
-    if (zoomDomain.x && zoomDomain.y) {
-      const scatterPlotData = testData
-        .flatMap(item => (item.visible ? item.data : []))
-        .filter(
-          data =>
-            data.x >= zoomDomain.x[0] &&
-            data.x <= zoomDomain.x[1] &&
-            data.y >= zoomDomain.y[0] &&
-            data.y <= zoomDomain.y[1],
-        );
-      console.log(scatterPlotData.length);
-
-      if (scatterPlotData.length > maxPoints) {
-        const k = Math.ceil(scatterPlotData.length / maxPoints);
-        scatterPlotData.filter((d, i) => i % k === 0);
-      }
-      console.log(scatterPlotData.length);
-      
-      this.setState({ scatterPlotData });
-    }
-  }
-
   // TODO add ? icon to chart to explain how zoom/pan works?
   addHighlights = () => {
     const { testData, highlightAlerts, highlightedRevisions } = this.props;
@@ -128,13 +98,30 @@ class GraphsContainer extends React.Component {
     this.setState({ highlights });
   };
 
+  updateData() {
+    const { selectedDomain: zoomDomain } = this.state;
+    const { testData } = this.props;
+
+    if (zoomDomain.x && zoomDomain.y) {
+      const scatterPlotData = testData
+        .flatMap(item => (item.visible ? item.data : []))
+        .filter(
+          data =>
+            data.x >= zoomDomain.x[0] &&
+            data.x <= zoomDomain.x[1] &&
+            data.y >= zoomDomain.y[0] &&
+            data.y <= zoomDomain.y[1],
+        );
+      this.setState({ scatterPlotData });
+    }
+  }
+
   updateSelection(selectedDomain) {
-    console.log('update selection');
     this.setState({ selectedDomain }, this.updateData);
   }
 
+  // TODO remove local zoomDomain state
   updateZoom(zoomDomain) {
-    console.log('zoom');
     this.setState({ zoomDomain });
     this.props.updateStateParams({ zoom: zoomDomain });
   }
@@ -153,7 +140,7 @@ class GraphsContainer extends React.Component {
 
     return (
       <React.Fragment>
-        {/* <Row>
+        <Row>
           <VictoryChart
             padding={{ top: 10, left: 50, right: 50, bottom: 30 }}
             width={1200}
@@ -193,7 +180,7 @@ class GraphsContainer extends React.Component {
               />
             ))}
           </VictoryChart>
-        </Row> */}
+        </Row>
 
         <Row>
           <VictoryChart
@@ -205,7 +192,7 @@ class GraphsContainer extends React.Component {
             containerComponent={
               <VictoryZoomVoronoiContainer
                 responsive={false}
-                // zoomDomain={zoomDomain}
+                zoomDomain={zoomDomain}
                 onZoomDomainChange={this.updateSelection}
                 labels={d => `${d.x}, ${d.y}`}
               />
