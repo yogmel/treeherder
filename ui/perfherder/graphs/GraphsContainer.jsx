@@ -96,7 +96,9 @@ class GraphsContainer extends React.Component {
     const { testData } = this.props;
     const { zoomDomain, selectedDomain, highlights } = this.state;
 
-    const scatterData = testData.flatMap(item => item.visible ? item.data : []);
+    const scatterData = testData.flatMap(item =>
+      item.visible ? item.data : [],
+    );
     const yValues = scatterData.map(item => item.y);
     return (
       <React.Fragment>
@@ -131,7 +133,8 @@ class GraphsContainer extends React.Component {
             width={1200}
             height={350}
             scale={{ x: 'time', y: 'linear' }}
-            domain={{ y: [Math.min(...yValues), Math.max(...yValues)]}}        
+            domain={{ y: [Math.min(...yValues), Math.max(...yValues)] }}
+            domainPadding={40}
             containerComponent={
               <VictoryZoomVoronoiContainer
                 responsive={false}
@@ -165,18 +168,14 @@ class GraphsContainer extends React.Component {
               size={() => 3}
               data={scatterData}
             />
-            {/* <VictoryAxis
+            <VictoryAxis dependentAxis tickCount={9} />
+
+            <VictoryAxis
               tickCount={10}
               tickFormat={x => moment(x).format('MMM DD')}
-            /> */}
+            />
           </VictoryChart>
         </Row>
-        {/* <Row>
-          <div id="overview-plot" />
-        </Row>
-        <Row>
-          <div id="graph" />
-        </Row> */}
       </React.Fragment>
     );
   }
