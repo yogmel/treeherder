@@ -47,13 +47,14 @@ const LegendCard = ({
 
   const removeTest = () => {
     const index = testData.findIndex(test => test === series);
+    const newData = [...testData];
 
     if (index === -1) {
       return;
     }
 
-    testData.splice(index, 1);
-    resetParams(testData);
+    newData.splice(index, 1);
+    resetParams(newData);
   };
 
   const subtitleStyle = 'p-0 mb-0 border-0 text-secondary text-left';

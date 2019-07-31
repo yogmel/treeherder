@@ -57,32 +57,39 @@ class GraphsContainer extends React.Component {
     ) {
       this.addHighlights();
     }
-    console.log(testData.length)
+
     if (prevProps.testData !== testData) {
-      console.log(testData.length)
-      const entireDomain = this.getEntireDomain();
-      const scatterPlotData = testData.flatMap(item =>
-        item.visible ? item.data : [],
-      );
-      this.setState({
-        entireDomain,
-        selectedDomain: {},
-        scatterPlotData,
-      });
-      this.props.updateStateParams({ zoom: {} });
+      this.updateGraphs();
     }
   }
+
+  updateGraphs = () => {
+    const { testData, updateStateParams } = this.props;
+    const entireDomain = this.getEntireDomain();
+    const scatterPlotData = testData.flatMap(item =>
+      item.visible ? item.data : [],
+    );
+
+    this.setState({
+      entireDomain,
+      selectedDomain: {},
+      scatterPlotData,
+    });
+    updateStateParams({ zoom: {} });
+  };
 
   getEntireDomain = () => {
     const { testData } = this.props;
     const data = testData.flatMap(item => (item.visible ? item.data : []));
     const yValues = data.map(item => item.y);
 
-    const entireDomain = {
+    if (!data.length) {
+      return {};
+    }
+    return {
       y: [Math.min(...yValues), Math.max(...yValues)],
       x: [data[0].x, last(data).x],
     };
-    return entireDomain;
   };
 
   // TODO add ? icon to chart to explain how zoom/pan works?
@@ -121,6 +128,9 @@ class GraphsContainer extends React.Component {
     const { selectedDomain } = this.state;
     const { testData } = this.props;
 
+    // we do this (along with debouncing updateSelection and updateZoom)
+    // to make zooming faster by removing unneeded data points based on
+    // the updated selectedDomain
     if (selectedDomain.x && selectedDomain.y) {
       const scatterPlotData = testData
         .flatMap(item => (item.visible ? item.data : []))
@@ -151,7 +161,7 @@ class GraphsContainer extends React.Component {
       scatterPlotData,
       entireDomain,
     } = this.state;
-    console.log(scatterPlotData)
+
     return (
       <React.Fragment>
         <Row>
