@@ -18,7 +18,7 @@ import debounce from 'lodash/debounce';
 
 import { graphColors } from '../constants';
 
-const VictoryZoomVoronoiContainer = createContainer("zoom", "voronoi");
+const VictoryZoomVoronoiContainer = createContainer('zoom', 'voronoi');
 
 class GraphsContainer extends React.Component {
   constructor(props) {
@@ -100,7 +100,7 @@ class GraphsContainer extends React.Component {
         <Row>
           <VictoryChart
             padding={{ top: 0, left: 50, right: 50, bottom: 30 }}
-            width={935}
+            width={1200}
             height={100}
             scale={{ x: 'time', y: 'linear' }}
             containerComponent={
@@ -125,7 +125,7 @@ class GraphsContainer extends React.Component {
 
         <Row>
           <VictoryChart
-            width={935}
+            width={1200}
             height={300}
             scale={{ x: 'time', y: 'linear' }}
             containerComponent={
@@ -133,7 +133,7 @@ class GraphsContainer extends React.Component {
                 responsive={false}
                 zoomDomain={zoomDomain}
                 onZoomDomainChange={this.updateSelection}
-                labels={(d) => `${d.x}, ${d.y}`}
+                labels={d => `${d.x}, ${d.y}`}
               />
             }
           >
@@ -160,7 +160,7 @@ class GraphsContainer extends React.Component {
                     strokeWidth: data => (data.alertSummary ? 12 : 2),
                   },
                 }}
-                size={2}
+                size={() => 3}
                 data={item.visible ? item.data : []}
               />
             ))}

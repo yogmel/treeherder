@@ -337,7 +337,7 @@ class GraphsView extends React.Component {
         errorClasses={errorMessageClass}
         message={genericErrorMessage}
       >
-        <Container fluid className="pt-5 max-width-default">
+        <Container fluid className="pt-5">
           {loading && <LoadingSpinner />}
 
           {errorMessages.length > 0 && (
