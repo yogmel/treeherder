@@ -13,6 +13,7 @@ import {
 } from 'victory';
 import moment from 'moment';
 import debounce from 'lodash/debounce';
+import last from 'lodash/last';
 
 import { graphColors } from '../constants';
 
@@ -21,7 +22,7 @@ const VictoryZoomVoronoiContainer = createContainer('zoom', 'voronoi');
 class GraphsContainer extends React.Component {
   constructor(props) {
     super(props);
-    // this.updateSelection = debounce(this.updateSelection.bind(this), 1000);
+    // this.updateSelection = debounce(this.updateSelection.bind(this), 800);
     // this.updateZoom = debounce(this.updateZoom.bind(this), 1000);
     this.updateSelection = this.updateSelection.bind(this);
     this.updateZoom = this.updateZoom.bind(this);
@@ -30,10 +31,15 @@ class GraphsContainer extends React.Component {
       selectedDomain: this.props.zoom,
       zoomDomain: this.props.zoom,
       highlights: [],
+      scatterPlotData: this.props.testData.flatMap(item =>
+        item.visible ? item.data : [],
+      ),
+      entireDomain: this.getEntireDomain(),
     };
   }
 
   componentDidMount() {
+    this.updateData();
     this.addHighlights();
   }
 
@@ -48,6 +54,45 @@ class GraphsContainer extends React.Component {
       prevProps.highlightedRevisions !== highlightedRevisions
     ) {
       this.addHighlights();
+    }
+  }
+
+  getEntireDomain = () => {
+    const { testData } = this.props;
+    const data = testData.flatMap(item => (item.visible ? item.data : []));
+    const yValues = data.map(item => item.y);
+
+    const entireDomain = {
+      y: [Math.min(...yValues), Math.max(...yValues)],
+      x: [data[0].x, last(data).x],
+    };
+    return entireDomain;
+  };
+
+  updateData() {
+    const { selectedDomain: zoomDomain } = this.state;
+    const { testData } = this.props;
+    const maxPoints = 100;
+
+    if (zoomDomain.x && zoomDomain.y) {
+      const scatterPlotData = testData
+        .flatMap(item => (item.visible ? item.data : []))
+        .filter(
+          data =>
+            data.x >= zoomDomain.x[0] &&
+            data.x <= zoomDomain.x[1] &&
+            data.y >= zoomDomain.y[0] &&
+            data.y <= zoomDomain.y[1],
+        );
+      console.log(scatterPlotData.length);
+
+      if (scatterPlotData.length > maxPoints) {
+        const k = Math.ceil(scatterPlotData.length / maxPoints);
+        scatterPlotData.filter((d, i) => i % k === 0);
+      }
+      console.log(scatterPlotData.length);
+      
+      this.setState({ scatterPlotData });
     }
   }
 
@@ -84,26 +129,31 @@ class GraphsContainer extends React.Component {
   };
 
   updateSelection(selectedDomain) {
-    this.setState({ selectedDomain });
+    console.log('update selection');
+    this.setState({ selectedDomain }, this.updateData);
   }
 
   updateZoom(zoomDomain) {
+    console.log('zoom');
     this.setState({ zoomDomain });
     this.props.updateStateParams({ zoom: zoomDomain });
   }
 
   render() {
     const { testData } = this.props;
-    const { zoomDomain, selectedDomain, highlights } = this.state;
+    const {
+      zoomDomain,
+      selectedDomain,
+      highlights,
+      scatterPlotData,
+      entireDomain,
+    } = this.state;
 
-    const scatterData = testData.flatMap(item =>
-      item.visible ? item.data : [],
-    );
-    const yValues = scatterData.map(item => item.y);
+    const yValues = scatterPlotData.map(item => item.y);
 
     return (
       <React.Fragment>
-        <Row>
+        {/* <Row>
           <VictoryChart
             padding={{ top: 10, left: 50, right: 50, bottom: 30 }}
             width={1200}
@@ -143,19 +193,19 @@ class GraphsContainer extends React.Component {
               />
             ))}
           </VictoryChart>
-        </Row>
+        </Row> */}
 
         <Row>
           <VictoryChart
             width={1200}
             height={350}
             scale={{ x: 'time', y: 'linear' }}
-            domain={{ y: [Math.min(...yValues), Math.max(...yValues)] }}
+            domain={entireDomain}
             domainPadding={{ y: 40 }}
             containerComponent={
               <VictoryZoomVoronoiContainer
                 responsive={false}
-                zoomDomain={zoomDomain}
+                // zoomDomain={zoomDomain}
                 onZoomDomainChange={this.updateSelection}
                 labels={d => `${d.x}, ${d.y}`}
               />
@@ -183,7 +233,7 @@ class GraphsContainer extends React.Component {
                 },
               }}
               size={() => 3}
-              data={scatterData}
+              data={scatterPlotData}
             />
             <VictoryAxis
               dependentAxis
