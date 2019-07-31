@@ -10,11 +10,15 @@ import {
   VictoryBrushContainer,
   VictoryZoomContainer,
   VictoryScatter,
+  VictoryVoronoiContainer,
+  createContainer,
 } from 'victory';
 import moment from 'moment';
 import debounce from 'lodash/debounce';
 
 import { graphColors } from '../constants';
+
+const VictoryZoomVoronoiContainer = createContainer("zoom", "voronoi");
 
 class GraphsContainer extends React.Component {
   constructor(props) {
@@ -47,9 +51,6 @@ class GraphsContainer extends React.Component {
   }
 
   // TODO add ? icon to chart to explain how zoom/pan works?
-
-  // TODO refactor/cleanup this function and change the style of data points for alerts
-  // and revisions (flip so fill is solid and stroke-opacity has a value)
   addHighlights = () => {
     const { testData, highlightAlerts, highlightedRevisions } = this.props;
     let highlights = [];
@@ -78,7 +79,6 @@ class GraphsContainer extends React.Component {
         }
       }
     }
-    // create a set
     this.setState({ highlights });
   };
 
@@ -129,10 +129,11 @@ class GraphsContainer extends React.Component {
             height={300}
             scale={{ x: 'time', y: 'linear' }}
             containerComponent={
-              <VictoryZoomContainer
+              <VictoryZoomVoronoiContainer
                 responsive={false}
                 zoomDomain={zoomDomain}
                 onZoomDomainChange={this.updateSelection}
+                labels={(d) => `${d.x}, ${d.y}`}
               />
             }
           >
