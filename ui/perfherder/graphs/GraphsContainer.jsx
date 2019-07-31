@@ -26,7 +26,6 @@ class GraphsContainer extends React.Component {
     this.updateSelection = debounce(this.updateSelection.bind(this), 500);
     this.state = {
       selectedDomain: this.props.zoom,
-      zoomDomain: this.props.zoom,
       highlights: [],
       scatterPlotData: this.props.testData.flatMap(item =>
         item.visible ? item.data : [],
@@ -41,9 +40,15 @@ class GraphsContainer extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { zoom, highlightAlerts, highlightedRevisions } = this.props;
+    const {
+      zoom,
+      highlightAlerts,
+      highlightedRevisions,
+      testData,
+    } = this.props;
+
     if (prevProps.zoom !== zoom) {
-      this.setState({ zoomDomain: zoom, selectedDomain: zoom });
+      this.setState({ selectedDomain: zoom });
     }
 
     if (
@@ -51,6 +56,20 @@ class GraphsContainer extends React.Component {
       prevProps.highlightedRevisions !== highlightedRevisions
     ) {
       this.addHighlights();
+    }
+    console.log(testData.length)
+    if (prevProps.testData !== testData) {
+      console.log(testData.length)
+      const entireDomain = this.getEntireDomain();
+      const scatterPlotData = testData.flatMap(item =>
+        item.visible ? item.data : [],
+      );
+      this.setState({
+        entireDomain,
+        selectedDomain: {},
+        scatterPlotData,
+      });
+      this.props.updateStateParams({ zoom: {} });
     }
   }
 
@@ -99,18 +118,18 @@ class GraphsContainer extends React.Component {
   };
 
   updateData() {
-    const { selectedDomain: zoomDomain } = this.state;
+    const { selectedDomain } = this.state;
     const { testData } = this.props;
 
-    if (zoomDomain.x && zoomDomain.y) {
+    if (selectedDomain.x && selectedDomain.y) {
       const scatterPlotData = testData
         .flatMap(item => (item.visible ? item.data : []))
         .filter(
           data =>
-            data.x >= zoomDomain.x[0] &&
-            data.x <= zoomDomain.x[1] &&
-            data.y >= zoomDomain.y[0] &&
-            data.y <= zoomDomain.y[1],
+            data.x >= selectedDomain.x[0] &&
+            data.x <= selectedDomain.x[1] &&
+            data.y >= selectedDomain.y[0] &&
+            data.y <= selectedDomain.y[1],
         );
       this.setState({ scatterPlotData });
     }
@@ -120,24 +139,19 @@ class GraphsContainer extends React.Component {
     this.setState({ selectedDomain }, this.updateData);
   }
 
-  // TODO remove local zoomDomain state
-  updateZoom(zoomDomain) {
-    this.setState({ zoomDomain });
-    this.props.updateStateParams({ zoom: zoomDomain });
+  updateZoom(zoom) {
+    this.props.updateStateParams({ zoom });
   }
 
   render() {
-    const { testData } = this.props;
+    const { testData, zoom } = this.props;
     const {
-      zoomDomain,
       selectedDomain,
       highlights,
       scatterPlotData,
       entireDomain,
     } = this.state;
-
-    const yValues = scatterPlotData.map(item => item.y);
-
+    console.log(scatterPlotData)
     return (
       <React.Fragment>
         <Row>
@@ -146,7 +160,7 @@ class GraphsContainer extends React.Component {
             width={1200}
             height={125}
             scale={{ x: 'time', y: 'linear' }}
-            domain={{ y: [Math.min(...yValues), Math.max(...yValues)] }}
+            domain={entireDomain}
             domainPadding={{ y: 30 }}
             containerComponent={
               <VictoryBrushContainer
@@ -192,7 +206,7 @@ class GraphsContainer extends React.Component {
             containerComponent={
               <VictoryZoomVoronoiContainer
                 responsive={false}
-                zoomDomain={zoomDomain}
+                zoomDomain={zoom}
                 onZoomDomainChange={this.updateSelection}
                 labels={d => `${d.x}, ${d.y}`}
               />
