@@ -184,14 +184,16 @@ class GraphsView extends React.Component {
   };
 
   createGraphObject = async seriesData => {
-    const alertSummaries = await Promise.all(
+    let alertSummaries = await Promise.all(
       seriesData.map(series =>
         this.getAlertSummaries(series.signature_id, series.repository_id),
       ),
     );
-    // TODO remove color usage and access by index
+    alertSummaries = alertSummaries.flat();
+    let relatedAlertSummaries;
+
     const graphData = seriesData.map((series, i) => {
-      const relatedAlertSummaries = alertSummaries.find(
+      relatedAlertSummaries = alertSummaries.find(
         item => item.id === series.id,
       );
 
@@ -210,7 +212,7 @@ class GraphsView extends React.Component {
           y: dataPoint.value,
           z: graphColors[i][1],
           revision: dataPoint.revision,
-          alertSummary: relatedAlertSummaries.find(
+          alertSummary: alertSummaries.find(
             item => item.revision === dataPoint.revision,
           ),
         })),
@@ -221,6 +223,7 @@ class GraphsView extends React.Component {
         highlightedPoints: [],
       };
     });
+
     return graphData;
   };
 

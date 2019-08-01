@@ -35,8 +35,8 @@ class GraphsContainer extends React.Component {
   }
 
   componentDidMount() {
-    this.updateData();
     this.addHighlights();
+    this.updateData();
   }
 
   componentDidUpdate(prevProps) {
@@ -69,7 +69,7 @@ class GraphsContainer extends React.Component {
     const scatterPlotData = testData.flatMap(item =>
       item.visible ? item.data : [],
     );
-
+    this.addHighlights();
     this.setState({
       entireDomain,
       selectedDomain: {},
@@ -218,7 +218,7 @@ class GraphsContainer extends React.Component {
                 responsive={false}
                 zoomDomain={zoom}
                 onZoomDomainChange={this.updateSelection}
-                labels={d => `${d.x}, ${d.y}`}
+                labels={d => d.revision}
               />
             }
           >
@@ -255,7 +255,7 @@ class GraphsContainer extends React.Component {
             />
             <VictoryAxis
               tickCount={10}
-              tickFormat={x => moment(x).format('MMM DD')}
+              // tickFormat={x => moment(x).format('MMM DD')}
               style={{
                 grid: { stroke: 'lightgray', strokeWidth: 0.5 },
               }}
