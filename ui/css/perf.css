@@ -135,7 +135,8 @@ h1 {
 .graphchooser-close {
   color: #fff;
   outline: none;
-  margin: -14px -4px;
+  /* margin: -14px -4px; */
+  z-index: 999;
 }
 
 .graphchooser-close:hover {

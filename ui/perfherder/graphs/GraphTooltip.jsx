@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
+// import { Button } from 'reactstrap';
 
 // import { getData, processResponse } from '../../helpers/http';
 // import { getApiUrl } from '../../helpers/url';
@@ -10,7 +8,7 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
 // import PerfSeriesModel from '../../models/perfSeries';
 // import { thPerformanceBranches } from '../../helpers/constants';
 import { displayNumber } from '../helpers';
-import { getJobsUrl, createQueryParams } from '../../helpers/url';
+import { createQueryParams } from '../../helpers/url';
 
 export class GraphTooltip extends React.Component {
   constructor(props) {
@@ -19,17 +17,13 @@ export class GraphTooltip extends React.Component {
   }
 
   render() {
-    const { selectedDataPoint, closePopup, tooltipContent } = this.props;
+    const { selectedDataPoint, tooltipContent } = this.props;
 
-    // TODO closePopup not working
     return (
       <div id="graph-tooltip" className={selectedDataPoint ? 'locked' : ''}>
         {tooltipContent && (
           <div className="body">
             <div>
-              <span onClick={closePopup} className="close graphchooser-close">
-                <FontAwesomeIcon icon={faTimes} title="close tooltip" />
-              </span>
               <p id="tt-series">
                 {tooltipContent.series.test} ({tooltipContent.project.name})
               </p>
