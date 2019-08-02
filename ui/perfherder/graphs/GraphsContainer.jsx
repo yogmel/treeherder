@@ -132,7 +132,7 @@ class GraphsContainer extends React.Component {
   // Not sure if this is needed
   getTooltipPosition = (point, yOffset = 10) => ({
     left: point.x - 250 / 2,
-    top: point.y - 50 - yOffset,
+    top: point.y - yOffset,
   });
 
   updateData() {
@@ -170,7 +170,7 @@ class GraphsContainer extends React.Component {
   // - when another tooltip is selected or tooltip is closed,
   //   remove highlight style attributes on datapoint
   showTooltip = (dataPoint, lock = false) => {
-    const { showTooltip, lockTooltip } = this.state;
+    const { showTooltip, selectedDataPoint } = this.state;
     const position = this.getTooltipPosition(dataPoint);
 
     this.hideTooltip.cancel();
@@ -180,7 +180,6 @@ class GraphsContainer extends React.Component {
     if (!showTooltip || lock) {
       this.setState({
         showTooltip: true,
-        lockTooltip: lock,
         selectedDataPoint: dataPoint,
       });
     }
@@ -197,17 +196,15 @@ class GraphsContainer extends React.Component {
 
   // eslint-disable-next-line react/sort-comp
   hideTooltip = debounce(() => {
-    const { showTooltip, lockTooltip } = this.state;
-    console.log(showTooltip, lockTooltip);
-    if (showTooltip && !lockTooltip) {
-      console.log('hide tooltip');
+    const { showTooltip, selectedDataPoint } = this.state;
+
+    if (showTooltip && !selectedDataPoint) {
       this.setState({ showTooltip: false });
     }
   }, 250);
 
   closeTooltip = event => {
-    event.stopPropagation();
-    this.setState({ showTooltip: false });
+    this.setState({ showTooltip: false, selectedDataPoint: null });
   };
 
   render() {
@@ -218,24 +215,27 @@ class GraphsContainer extends React.Component {
       scatterPlotData,
       entireDomain,
       showTooltip,
+      selectedDataPoint,
     } = this.state;
 
     return (
       <React.Fragment>
         <div
           id="graph-tooltip"
-          className={showTooltip ? 'show' : 'hide'}
+          className={`${showTooltip ? 'show' : 'hide'} ${
+            selectedDataPoint ? 'locked' : ''
+          }`}
           ref={this.tooltip}
         >
+          <span className="close mr-3 my-2 ml-2" onClick={this.closeTooltip}>
+            <FontAwesomeIcon
+              className="pointer text-white"
+              icon={faTimes}
+              size="xs"
+              title="close tooltip"
+            />
+          </span>
           <div className="body">
-            <span className="mr-3 my-2 ml-2" onClick={this.closeTooltip}>
-              <FontAwesomeIcon
-                className="pointer text-white"
-                icon={faTimes}
-                size="xs"
-                title="close tooltip"
-              />
-            </span>
             Hello
           </div>
           <div className="tip" />
