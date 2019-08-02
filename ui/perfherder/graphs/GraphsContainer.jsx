@@ -9,7 +9,7 @@ import {
   VictoryAxis,
   VictoryBrushContainer,
   VictoryScatter,
-  VictoryZoomContainer,
+  createContainer,
 } from 'victory';
 import moment from 'moment';
 import debounce from 'lodash/debounce';
@@ -18,6 +18,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
 import { graphColors } from '../constants';
+
+const VictoryZoomVoronoiContainer = createContainer('zoom', 'voronoi');
 
 class GraphsContainer extends React.Component {
   constructor(props) {
@@ -175,7 +177,7 @@ class GraphsContainer extends React.Component {
     // console.log(dataPoint.data.find(datum => datum.style.strokeOpacity === 0.3));
     this.tooltip.current.style.cssText = `left: ${position.left}px; top: ${position.top}px;`;
 
-    if (!showTooltip || lockTooltip !== lock) {
+    if (!showTooltip || lock) {
       this.setState({
         showTooltip: true,
         lockTooltip: lock,
@@ -196,6 +198,7 @@ class GraphsContainer extends React.Component {
   // eslint-disable-next-line react/sort-comp
   hideTooltip = debounce(() => {
     const { showTooltip, lockTooltip } = this.state;
+    console.log(showTooltip, lockTooltip);
     if (showTooltip && !lockTooltip) {
       console.log('hide tooltip');
       this.setState({ showTooltip: false });
@@ -287,7 +290,7 @@ class GraphsContainer extends React.Component {
             domain={entireDomain}
             domainPadding={{ y: 40 }}
             containerComponent={
-              <VictoryZoomContainer
+              <VictoryZoomVoronoiContainer
                 responsive={false}
                 zoomDomain={zoom}
                 onZoomDomainChange={this.updateSelection}
