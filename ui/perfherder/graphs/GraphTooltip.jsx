@@ -20,7 +20,7 @@ export class GraphTooltip extends React.Component {
 
   render() {
     const { selectedDataPoint, closePopup, tooltipContent } = this.props;
-    console.log(tooltipContent);
+
     // TODO closePopup not working
     return (
       <div id="graph-tooltip" className={selectedDataPoint ? 'locked' : ''}>
@@ -151,7 +151,7 @@ GraphTooltip.propTypes = {
 
 GraphTooltip.defaultProps = {
   selectedDataPoint: null,
-  // tooltipContent: undefined,
+  tooltipContent: undefined,
 };
 
 export default GraphTooltip;

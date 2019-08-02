@@ -92,6 +92,7 @@ h1 {
   visibility: hidden;
   pointer-events: none;
   width: 280px;
+  z-index: 999;
 }
 #graph-tooltip.locked {
   pointer-events: auto;

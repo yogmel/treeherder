@@ -24,6 +24,7 @@ class GraphsContainer extends React.Component {
     super(props);
     this.updateZoom = debounce(this.updateZoom.bind(this), 500);
     this.updateSelection = debounce(this.updateSelection.bind(this), 500);
+    this.tooltip = React.createRef();
     this.state = {
       selectedDomain: this.props.zoom,
       highlights: [],
@@ -31,6 +32,9 @@ class GraphsContainer extends React.Component {
         item.visible ? item.data : [],
       ),
       entireDomain: this.getEntireDomain(),
+      selectedPoint: null,
+      showTooltip: false,
+      dataPoint: null,
     };
   }
 
@@ -153,6 +157,17 @@ class GraphsContainer extends React.Component {
     this.props.updateStateParams({ zoom });
   }
 
+  showTooltip = dataPoint => {
+    const position = this.getTipPosition(dataPoint);
+    this.tooltip.current.style.cssText = `left: ${dataPoint.x}px; bottom: ${dataPoint.y}px; visibility: visible;`;
+  };
+
+  // Not sure if this is needed
+  getTipPosition = (point, yOffset = 10) => ({
+    left: point.x - 250 / 2,
+    top: point.y - 160 - yOffset,
+  });
+
   render() {
     const { testData, zoom } = this.props;
     const {
@@ -164,6 +179,9 @@ class GraphsContainer extends React.Component {
 
     return (
       <React.Fragment>
+        <div id="graph-tooltip" ref={this.tooltip}>
+          <div className="body">Hello</div>
+        </div>
         <Row>
           <VictoryChart
             padding={{ top: 10, left: 50, right: 50, bottom: 30 }}
@@ -218,7 +236,7 @@ class GraphsContainer extends React.Component {
                 responsive={false}
                 zoomDomain={zoom}
                 onZoomDomainChange={this.updateSelection}
-                labels={d => d.revision}
+                // labels={d => d.revision}
               />
             }
           >
@@ -254,8 +272,9 @@ class GraphsContainer extends React.Component {
                       return [
                         {
                           target: 'data',
-                          mutation: props => ({ style: { ...props.style, ...{ fillOpacity: 100, strokeOpacity: 0.3, strokeWidth: 12} }}),
-                          callback: d => console.log(d)
+                          // mutation: props => ({ style: { ...props.style, ...{ fillOpacity: 100, strokeOpacity: 0.3, strokeWidth: 12} }}),
+                          mutation: props => this.showTooltip(props),
+                          // callback: d => console.log(d),
                         },
                       ];
                     },
