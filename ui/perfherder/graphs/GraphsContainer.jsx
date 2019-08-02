@@ -245,6 +245,23 @@ class GraphsContainer extends React.Component {
               }}
               size={() => 3}
               data={scatterPlotData}
+              // TODO look into mutation props and externalMutations to absolutely position tooltip (same as what's in angular code)
+              events={[
+                {
+                  target: 'data',
+                  eventHandlers: {
+                    onClick: props => {
+                      return [
+                        {
+                          target: 'data',
+                          mutation: props => ({ style: { ...props.style, ...{ fillOpacity: 100, strokeOpacity: 0.3, strokeWidth: 12} }}),
+                          callback: d => console.log(d)
+                        },
+                      ];
+                    },
+                  },
+                },
+              ]}
             />
             <VictoryAxis
               dependentAxis
