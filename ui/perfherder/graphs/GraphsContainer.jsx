@@ -9,15 +9,13 @@ import {
   VictoryAxis,
   VictoryBrushContainer,
   VictoryScatter,
-  createContainer,
+  VictoryZoomContainer,
 } from 'victory';
 import moment from 'moment';
 import debounce from 'lodash/debounce';
 import last from 'lodash/last';
 
 import { graphColors } from '../constants';
-
-const VictoryZoomVoronoiContainer = createContainer('zoom', 'voronoi');
 
 class GraphsContainer extends React.Component {
   constructor(props) {
@@ -128,6 +126,12 @@ class GraphsContainer extends React.Component {
     this.setState({ highlights });
   };
 
+  // Not sure if this is needed
+  getTipPosition = (point, yOffset = 10) => ({
+    left: point.x - 250 / 2,
+    top: point.y - 50 - yOffset,
+  });
+
   updateData() {
     const { selectedDomain } = this.state;
     const { testData } = this.props;
@@ -157,16 +161,34 @@ class GraphsContainer extends React.Component {
     this.props.updateStateParams({ zoom });
   }
 
-  showTooltip = dataPoint => {
+  showTooltip = (dataPoint, lock = false) => {
+    const { showTooltip, lockTooltip } = this.state;
     const position = this.getTipPosition(dataPoint);
-    this.tooltip.current.style.cssText = `left: ${dataPoint.x}px; bottom: ${dataPoint.y}px; visibility: visible;`;
+
+    this.tooltip.current.style.cssText = `left: ${position.left}px; top: ${position.top}px;`;
+    this.hideTooltip.cancel();
+
+    if (!showTooltip || lockTooltip !== lock) {
+      this.setState({ showTooltip: true, lockTooltip: lock });
+    }
+
+    if (lock) {
+      return {
+        style: {
+          ...dataPoint.style,
+          ...{ fillOpacity: 100, strokeOpacity: 0.3, strokeWidth: 12 },
+        },
+      };
+    }
   };
 
-  // Not sure if this is needed
-  getTipPosition = (point, yOffset = 10) => ({
-    left: point.x - 250 / 2,
-    top: point.y - 160 - yOffset,
-  });
+  // eslint-disable-next-line react/sort-comp
+  hideTooltip = debounce(() => {
+    const { showTooltip, lockTooltip } = this.state;
+    if (showTooltip && !lockTooltip) {
+      this.setState({ showTooltip: false });
+    }
+  }, 250);
 
   render() {
     const { testData, zoom } = this.props;
@@ -175,11 +197,16 @@ class GraphsContainer extends React.Component {
       highlights,
       scatterPlotData,
       entireDomain,
+      showTooltip,
     } = this.state;
 
     return (
       <React.Fragment>
-        <div id="graph-tooltip" ref={this.tooltip}>
+        <div
+          id="graph-tooltip"
+          className={showTooltip ? 'show' : 'hide'}
+          ref={this.tooltip}
+        >
           <div className="body">Hello</div>
         </div>
         <Row>
@@ -232,11 +259,10 @@ class GraphsContainer extends React.Component {
             domain={entireDomain}
             domainPadding={{ y: 40 }}
             containerComponent={
-              <VictoryZoomVoronoiContainer
+              <VictoryZoomContainer
                 responsive={false}
                 zoomDomain={zoom}
                 onZoomDomainChange={this.updateSelection}
-                // labels={d => d.revision}
               />
             }
           >
@@ -263,18 +289,32 @@ class GraphsContainer extends React.Component {
               }}
               size={() => 3}
               data={scatterPlotData}
-              // TODO look into mutation props and externalMutations to absolutely position tooltip (same as what's in angular code)
               events={[
                 {
                   target: 'data',
                   eventHandlers: {
-                    onClick: props => {
+                    onClick: () => {
                       return [
                         {
                           target: 'data',
-                          // mutation: props => ({ style: { ...props.style, ...{ fillOpacity: 100, strokeOpacity: 0.3, strokeWidth: 12} }}),
-                          mutation: props => this.showTooltip(props),
+                          mutation: props => this.showTooltip(props, true),
                           // callback: d => console.log(d),
+                        },
+                      ];
+                    },
+                    onMouseOver: () => {
+                      return [
+                        {
+                          target: 'data',
+                          mutation: props => this.showTooltip(props),
+                        },
+                      ];
+                    },
+                    onMouseOut: () => {
+                      return [
+                        {
+                          target: 'data',
+                          callback: this.hideTooltip,
                         },
                       ];
                     },

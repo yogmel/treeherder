@@ -89,7 +89,7 @@ h1 {
 
 #graph-tooltip {
   position: absolute;
-  visibility: hidden;
+  /* visibility: hidden; */
   pointer-events: none;
   width: 280px;
   z-index: 999;
