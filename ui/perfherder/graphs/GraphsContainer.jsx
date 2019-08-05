@@ -145,8 +145,9 @@ class GraphsContainer extends React.Component {
   // - show tooltip based on the selected query params
   showTooltip = (dataPoint, lock = false) => {
     const { lockTooltip } = this.state;
+    const { updateStateParams } = this.props;
 
-    if (lockTooltip) {
+    if (lockTooltip && !lock) {
       // we don't want the mouseOver event to reposition the tooltip
       return;
     }
@@ -159,6 +160,10 @@ class GraphsContainer extends React.Component {
       selectedDataPoint: dataPoint,
       lockTooltip: lock,
     });
+
+    if (lock) {
+      updateStateParams({ selectedDataPoint: `${dataPoint.x},${dataPoint.y}` });
+    }
   };
 
   // debounced
@@ -206,7 +211,7 @@ class GraphsContainer extends React.Component {
       showTooltip,
       lockTooltip,
     } = this.state;
-
+    console.log(this.props.selectedDataPoint);
     return (
       <React.Fragment>
         <div

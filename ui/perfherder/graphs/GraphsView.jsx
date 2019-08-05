@@ -308,6 +308,8 @@ class GraphsView extends React.Component {
 
     if (!selectedDataPoint) {
       params.selected = null;
+    } else {
+      params.selected = selectedDataPoint;
     }
 
     if (Object.keys(zoom).length === 0) {
