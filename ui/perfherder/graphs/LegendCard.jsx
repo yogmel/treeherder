@@ -90,7 +90,7 @@ const LegendCard = ({
           title="Add related branches"
           type="button"
         >
-          {series.repository_name}
+          {series.project}
         </p>
         <p
           className={subtitleStyle}
@@ -100,7 +100,7 @@ const LegendCard = ({
         >
           {series.platform}
         </p>
-        <span className="small">{`${series.signature_hash.slice(
+        <span className="small">{`${series.signatureHash.slice(
           0,
           16,
         )}...`}</span>

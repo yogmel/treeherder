@@ -132,13 +132,13 @@ class GraphsView extends React.Component {
   };
 
   createSeriesParams = series => {
-    const { repository_name, signature_id, framework_id } = series;
+    const { project, signatureId, frameworkId } = series;
     const { timeRange } = this.state;
 
     return {
-      repository: repository_name,
-      signature: signature_id,
-      framework: framework_id,
+      repository: project,
+      signature: signatureId,
+      framework: frameworkId,
       interval: timeRange.value,
       all_data: true,
     };
@@ -199,11 +199,11 @@ class GraphsView extends React.Component {
         relatedAlertSummaries,
         visible: true,
         name: series.name,
-        signature_id: series.signature_id,
-        signature_hash: series.signature_hash,
-        framework_id: series.framework_id,
+        signatureId: series.signature_id,
+        signatureHash: series.signature_hash,
+        frameworkId: series.framework_id,
         platform: series.platform,
-        repository_name: series.repository_name,
+        project: series.repository_name,
         id: `${series.repository_name} ${series.name}`,
         data: series.data.map(dataPoint => ({
           x: new Date(dataPoint.push_timestamp),
@@ -256,13 +256,13 @@ class GraphsView extends React.Component {
       );
       const partialSeriesArray = partialSeriesString.split(',');
       const partialSeriesObject = {
-        repository_name: partialSeriesArray[0],
+        project: partialSeriesArray[0],
         // TODO deprecate signature_hash
-        signature_id:
+        signatureId:
           partialSeriesArray[1].length === 40
             ? partialSeriesArray[1]
             : parseInt(partialSeriesArray[1], 10),
-        framework_id: parseInt(partialSeriesArray[2], 10),
+        frameworkId: parseInt(partialSeriesArray[2], 10),
       };
       return partialSeriesObject;
     });
@@ -293,10 +293,8 @@ class GraphsView extends React.Component {
     } = this.state;
     const { updateGraphs } = this.props;
 
-    // TODO rename certain fields that are returned in PerfSeriesModel so they are consistent with performance/summary fields?
     const newSeries = testData.map(
-      series =>
-        `${series.repository_name},${series.signature_id},${series.framework_id}`,
+      series => `${series.project},${series.signatureId},${series.frameworkId}`,
     );
     const params = {
       series: newSeries,
@@ -371,7 +369,7 @@ class GraphsView extends React.Component {
                 {testData.length > 0 &&
                   testData.map((series, i) => (
                     <div
-                      key={`${series.name} ${series.repository_name} ${series.platform}`}
+                      key={`${series.name} ${series.project} ${series.platform}`}
                     >
                       <LegendCard
                         series={series}

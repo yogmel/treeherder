@@ -19,6 +19,8 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
 import { graphColors } from '../constants';
 
+import GraphTooltip from './GraphTooltip';
+
 class GraphsContainer extends React.Component {
   constructor(props) {
     super(props);
@@ -211,6 +213,7 @@ class GraphsContainer extends React.Component {
     }
   }, 250);
 
+  // TODO closeTooltip should reset selected param
   render() {
     const { testData, zoom } = this.props;
     const {
@@ -220,6 +223,7 @@ class GraphsContainer extends React.Component {
       entireDomain,
       showTooltip,
       lockTooltip,
+      selectedDataPoint,
     } = this.state;
 
     return (
@@ -248,7 +252,12 @@ class GraphsContainer extends React.Component {
               title="close tooltip"
             />
           </span>
-          <div className="body">Hello</div>
+          {selectedDataPoint && showTooltip && (
+            <GraphTooltip
+              selectedDataPoint={selectedDataPoint}
+              testData={testData}
+            />
+          )}
           <div className="tip" />
         </div>
         <Row>

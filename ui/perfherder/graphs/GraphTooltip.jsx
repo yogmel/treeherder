@@ -17,47 +17,50 @@ export class GraphTooltip extends React.Component {
   }
 
   render() {
-    const { selectedDataPoint, tooltipContent } = this.props;
-
+    const { selectedDataPoint, testData } = this.props;
+    const signature = selectedDataPoint.datum
+      ? selectedDataPoint.datum.signatureId
+      : selectedDataPoint.signatureId;
+    console.log(signature);
+    const testDetails = testData.find(item => item.signatureId === signature);
+    console.log(selectedDataPoint, testDetails);
     return (
-      <div id="graph-tooltip" className={selectedDataPoint ? 'locked' : ''}>
-        {tooltipContent && (
-          <div className="body">
-            <div>
-              <p id="tt-series">
-                {tooltipContent.series.test} ({tooltipContent.project.name})
-              </p>
-              <p id="tt-series2" className="small">
-                {tooltipContent.series.platform}
-              </p>
-            </div>
-            <div>
-              <p id="tt-v">
-                {displayNumber(tooltipContent.value)}
-                <span className="text-muted">
-                  {tooltipContent.series.lowerIsBetter
-                    ? ' (lower is better)'
-                    : ' (higher is better)'}
-                </span>
-              </p>
-              <p id="tt-dv" className="small">
-                &Delta; {displayNumber(tooltipContent.deltaValue)} (
-                {tooltipContent.deltaPercentValue}%)
-              </p>
-            </div>
+      <div className="body">
+        {/* <div>
+          <p id="tt-series">
+            {tooltipContent.series.test} ({tooltipContent.project.name})
+          </p>
+          <p id="tt-series2" className="small">
+            {tooltipContent.series.platform}
+          </p>
+        </div>
+        <div>
+          <p id="tt-v">
+            {displayNumber(tooltipContent.value)}
+            <span className="text-muted">
+              {tooltipContent.series.lowerIsBetter
+                ? ' (lower is better)'
+                : ' (higher is better)'}
+            </span>
+          </p>
+          <p id="tt-dv" className="small">
+            &Delta; {displayNumber(tooltipContent.deltaValue)} (
+            {tooltipContent.deltaPercentValue}%)
+          </p>
+        </div>
 
-            <div>
-              {tooltipContent.revision && tooltipContent.prevRevision && (
-                <span>
-                  <a
-                    id="tt-cset"
-                    href={tooltipContent.pushlogURL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {tooltipContent.revision.slice(0, 13)}
-                  </a>
-                  {/* {tooltipContent.jobId && )
+        <div>
+          {tooltipContent.revision && tooltipContent.prevRevision && (
+            <span>
+              <a
+                id="tt-cset"
+                href={tooltipContent.pushlogURL}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {tooltipContent.revision.slice(0, 13)}
+              </a> */}
+        {/* {tooltipContent.jobId && )
                     (
                     <a
                       id="tt-cset"
@@ -73,26 +76,26 @@ export class GraphTooltip extends React.Component {
                     >
                       job
                     </a>)} */}
-                  ,{' '}
-                  <a
-                    href={`#/comparesubtest${createQueryParams({
-                      originalProject: tooltipContent.project.name,
-                      newProject: tooltipContent.project.name,
-                      originalRevision: tooltipContent.prevRevision,
-                      newRevision: tooltipContent.revision,
-                      originalSignature: selectedDataPoint.signatureId,
-                      newSignature: selectedDataPoint.signatureId,
-                      framework: selectedDataPoint.frameworkId,
-                    })}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    compare
-                  </a>
-                  )
-                </span>
-              )}
-              {/*
+        {/* ,{' '}
+              <a
+                href={`#/comparesubtest${createQueryParams({
+                  originalProject: tooltipContent.project.name,
+                  newProject: tooltipContent.project.name,
+                  originalRevision: tooltipContent.prevRevision,
+                  newRevision: tooltipContent.revision,
+                  originalSignature: selectedDataPoint.signatureId,
+                  newSignature: selectedDataPoint.signatureId,
+                  framework: selectedDataPoint.frameworkId,
+                })}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                compare
+              </a>
+              )
+            </span>
+          )} */}
+        {/*
                 
               </p>
               <p ng-if="tooltipContent.alertSummary">
@@ -130,9 +133,7 @@ export class GraphTooltip extends React.Component {
               </p>
               <p id="tt-t" class="small" ng-bind="tooltipContent.date"></p>
               <p id="tt-v" class="small" ng-show="tooltipContent.retriggers > 0">Retriggers: {{tooltipContent.retriggers}}</p> */}
-            </div>
-          </div>
-        )}
+        {/* </div> */}
       </div>
     );
   }
