@@ -9,7 +9,7 @@ import {
   VictoryAxis,
   VictoryBrushContainer,
   VictoryScatter,
-  createContainer,
+  VictoryZoomContainer,
 } from 'victory';
 import moment from 'moment';
 import debounce from 'lodash/debounce';
@@ -18,8 +18,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
 import { graphColors } from '../constants';
-
-const VictoryZoomVoronoiContainer = createContainer('zoom', 'voronoi');
 
 class GraphsContainer extends React.Component {
   constructor(props) {
@@ -303,7 +301,7 @@ class GraphsContainer extends React.Component {
             domain={entireDomain}
             domainPadding={{ y: 40 }}
             containerComponent={
-              <VictoryZoomVoronoiContainer
+              <VictoryZoomContainer
                 responsive={false}
                 zoomDomain={zoom}
                 onZoomDomainChange={this.updateSelection}
