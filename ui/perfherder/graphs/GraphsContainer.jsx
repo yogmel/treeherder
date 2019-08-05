@@ -34,15 +34,18 @@ class GraphsContainer extends React.Component {
         item.visible ? item.data : [],
       ),
       entireDomain: this.getEntireDomain(),
-      selectedDataPoint: this.props.selectedDataPoint,
+      selectedDataPoint: null,
       showTooltip: false,
       lockTooltip: false,
     };
   }
 
+  // TODO should there be only one selectedDataPoint state?
   componentDidMount() {
     this.addHighlights();
     this.updateData();
+    const { selectedDataPoint } = this.props;
+    if (selectedDataPoint) this.showTooltip(selectedDataPoint, true);
   }
 
   componentDidUpdate(prevProps) {
@@ -141,16 +144,7 @@ class GraphsContainer extends React.Component {
     this.props.updateStateParams({ zoom });
   }
 
-  // TODO
-  // - show tooltip based on the selected query params
-  showTooltip = (dataPoint, lock = false) => {
-    const { lockTooltip } = this.state;
-    const { updateStateParams } = this.props;
-
-    if (lockTooltip && !lock) {
-      // we don't want the mouseOver event to reposition the tooltip
-      return;
-    }
+  showTooltip = (dataPoint, lock) => {
     const position = this.getTooltipPosition(dataPoint);
     this.hideTooltip.cancel();
     this.tooltip.current.style.cssText = `left: ${position.left}px; top: ${position.top}px;`;
@@ -160,14 +154,25 @@ class GraphsContainer extends React.Component {
       selectedDataPoint: dataPoint,
       lockTooltip: lock,
     });
+  };
+
+  setTooltip = (dataPoint, lock = false) => {
+    const { lockTooltip } = this.state;
+    const { updateStateParams } = this.props;
+
+    if (lockTooltip && !lock) {
+      // we don't want the mouseOver event to reposition the tooltip
+      return;
+    }
+    this.setTooltip(dataPoint, lock);
 
     if (lock) {
       updateStateParams({
         selectedDataPoint: {
           signatureId: dataPoint.datum.signatureId,
           pushId: dataPoint.datum.pushId,
-          gridX: dataPoint.x,
-          gridY: dataPoint.y,
+          x: dataPoint.x,
+          y: dataPoint.y,
         },
       });
     }
@@ -336,7 +341,7 @@ class GraphsContainer extends React.Component {
                       return [
                         {
                           target: 'data',
-                          mutation: props => this.showTooltip(props, true),
+                          mutation: props => this.setTooltip(props, true),
                         },
                       ];
                     },
@@ -344,7 +349,7 @@ class GraphsContainer extends React.Component {
                       return [
                         {
                           target: 'data',
-                          mutation: props => this.showTooltip(props),
+                          mutation: props => this.setTooltip(props),
                         },
                       ];
                     },

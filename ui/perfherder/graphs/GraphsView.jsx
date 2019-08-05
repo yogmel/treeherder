@@ -122,8 +122,8 @@ class GraphsView extends React.Component {
       const tooltipValues = {
         signatureId: parseInt(tooltipArray[0], 10),
         pushId: parseInt(tooltipArray[1], 10),
-        gridX: parseInt(tooltipArray[2], 10),
-        gridY: parseInt(tooltipArray[3], 10),
+        x: parseFloat(tooltipArray[2]),
+        y: parseFloat(tooltipArray[3]),
       };
       updates.selectedDataPoint = tooltipValues;
     }
@@ -309,8 +309,8 @@ class GraphsView extends React.Component {
     if (!selectedDataPoint) {
       params.selected = null;
     } else {
-      const { signatureId, pushId, gridX, gridY } = selectedDataPoint;
-      params.selected = [signatureId, pushId, gridX, gridY].join(',');
+      const { signatureId, pushId, x, y } = selectedDataPoint;
+      params.selected = [signatureId, pushId, x, y].join(',');
     }
 
     if (Object.keys(zoom).length === 0) {
