@@ -36,6 +36,7 @@ class GraphsContainer extends React.Component {
       entireDomain: this.getEntireDomain(),
       selectedDataPoint: null,
       showTooltip: false,
+      lockTooltip: false,
     };
   }
 
@@ -135,6 +136,36 @@ class GraphsContainer extends React.Component {
     top: point.y - yOffset,
   });
 
+  // debounced
+  updateZoom(zoom) {
+    this.props.updateStateParams({ zoom });
+  }
+
+  // TODO
+  // - show tooltip based on the selected query params
+  showTooltip = (dataPoint, lock = false) => {
+    const { lockTooltip } = this.state;
+
+    if (lockTooltip) {
+      // we don't want the mouseOver event to reposition the tooltip
+      return;
+    }
+    const position = this.getTooltipPosition(dataPoint);
+    this.hideTooltip.cancel();
+    this.tooltip.current.style.cssText = `left: ${position.left}px; top: ${position.top}px;`;
+
+    this.setState({
+      showTooltip: true,
+      selectedDataPoint: dataPoint,
+      lockTooltip: lock,
+    });
+  };
+
+  // debounced
+  updateSelection(selectedDomain) {
+    this.setState({ selectedDomain }, this.updateData);
+  }
+
   updateData() {
     const { selectedDomain } = this.state;
     const { testData } = this.props;
@@ -156,56 +187,14 @@ class GraphsContainer extends React.Component {
     }
   }
 
-  updateSelection(selectedDomain) {
-    this.setState({ selectedDomain }, this.updateData);
-  }
-
-  updateZoom(zoom) {
-    this.props.updateStateParams({ zoom });
-  }
-
-  // TODO
-  // - apply style to datapoint based on the selected query params
-  //   and then show tooltip
-  // - when another tooltip is selected or tooltip is closed,
-  //   remove highlight style attributes on datapoint
-  showTooltip = (dataPoint, lock = false) => {
-    const { showTooltip, selectedDataPoint } = this.state;
-    const position = this.getTooltipPosition(dataPoint);
-
-    this.hideTooltip.cancel();
-    // console.log(dataPoint.data.find(datum => datum.style.strokeOpacity === 0.3));
-    this.tooltip.current.style.cssText = `left: ${position.left}px; top: ${position.top}px;`;
-
-    if (!showTooltip || lock) {
-      this.setState({
-        showTooltip: true,
-        selectedDataPoint: dataPoint,
-      });
-    }
-
-    if (lock) {
-      return {
-        style: {
-          ...dataPoint.style,
-          ...{ fillOpacity: 100, strokeOpacity: 0.3, strokeWidth: 12 },
-        },
-      };
-    }
-  };
-
   // eslint-disable-next-line react/sort-comp
   hideTooltip = debounce(() => {
-    const { showTooltip, selectedDataPoint } = this.state;
+    const { showTooltip, lockTooltip } = this.state;
 
-    if (showTooltip && !selectedDataPoint) {
+    if (showTooltip && !lockTooltip) {
       this.setState({ showTooltip: false });
     }
   }, 250);
-
-  closeTooltip = event => {
-    this.setState({ showTooltip: false, selectedDataPoint: null });
-  };
 
   render() {
     const { testData, zoom } = this.props;
@@ -215,7 +204,7 @@ class GraphsContainer extends React.Component {
       scatterPlotData,
       entireDomain,
       showTooltip,
-      selectedDataPoint,
+      lockTooltip,
     } = this.state;
 
     return (
@@ -223,11 +212,20 @@ class GraphsContainer extends React.Component {
         <div
           id="graph-tooltip"
           className={`${showTooltip ? 'show' : 'hide'} ${
-            selectedDataPoint ? 'locked' : ''
+            lockTooltip ? 'locked' : ''
           }`}
           ref={this.tooltip}
         >
-          <span className="close mr-3 my-2 ml-2" onClick={this.closeTooltip}>
+          <span
+            className="close mr-3 my-2 ml-2"
+            onClick={() =>
+              this.setState({
+                showTooltip: false,
+                selectedDataPoint: null,
+                lockTooltip: false,
+              })
+            }
+          >
             <FontAwesomeIcon
               className="pointer text-white"
               icon={faTimes}
@@ -235,9 +233,7 @@ class GraphsContainer extends React.Component {
               title="close tooltip"
             />
           </span>
-          <div className="body">
-            Hello
-          </div>
+          <div className="body">Hello</div>
           <div className="tip" />
         </div>
         <Row>
@@ -318,18 +314,17 @@ class GraphsContainer extends React.Component {
                   strokeWidth: data => (data.alertSummary ? 12 : 2),
                 },
               }}
-              size={() => 3}
+              size={() => 5}
               data={scatterPlotData}
               events={[
                 {
                   target: 'data',
                   eventHandlers: {
-                    onClick: parentProps => {
+                    onClick: () => {
                       return [
                         {
                           target: 'data',
                           mutation: props => this.showTooltip(props, true),
-                          // callback: () => console.log(parentProps),
                         },
                       ];
                     },
