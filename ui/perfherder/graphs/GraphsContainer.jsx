@@ -164,7 +164,7 @@ class GraphsContainer extends React.Component {
       // we don't want the mouseOver event to reposition the tooltip
       return;
     }
-    this.setTooltip(dataPoint, lock);
+    this.showTooltip(dataPoint, lock);
 
     if (lock) {
       updateStateParams({
