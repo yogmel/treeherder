@@ -119,13 +119,11 @@ class GraphsView extends React.Component {
 
     if (selected) {
       const tooltipArray = selected.replace(/[[]"]/g, '').split(',');
-      // TODO keys should reflect perf/sumary/ data
       const tooltipValues = {
-        projectName: tooltipArray[0],
-        signatureId: parseInt(tooltipArray[1], 10),
-        resultSetId: parseInt(tooltipArray[2], 10),
-        id: parseInt(tooltipArray[3], 10),
-        frameworkId: parseInt(tooltipArray[4], 10) || 1,
+        signatureId: parseInt(tooltipArray[0], 10),
+        pushId: parseInt(tooltipArray[1], 10),
+        gridX: parseInt(tooltipArray[2], 10),
+        gridY: parseInt(tooltipArray[3], 10),
       };
       updates.selectedDataPoint = tooltipValues;
     }
@@ -215,6 +213,8 @@ class GraphsView extends React.Component {
           alertSummary: alertSummaries.find(
             item => item.revision === dataPoint.revision,
           ),
+          signatureId: series.signature_id,
+          pushId: dataPoint.push_id,
         })),
         // TODO Are these needed?
         resultSetData: series.data.map(dataPoint => dataPoint.push_id),
@@ -309,7 +309,8 @@ class GraphsView extends React.Component {
     if (!selectedDataPoint) {
       params.selected = null;
     } else {
-      params.selected = selectedDataPoint;
+      const { signatureId, pushId, gridX, gridY } = selectedDataPoint;
+      params.selected = [signatureId, pushId, gridX, gridY].join(',');
     }
 
     if (Object.keys(zoom).length === 0) {

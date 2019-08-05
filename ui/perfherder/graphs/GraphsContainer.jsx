@@ -34,7 +34,7 @@ class GraphsContainer extends React.Component {
         item.visible ? item.data : [],
       ),
       entireDomain: this.getEntireDomain(),
-      selectedDataPoint: null,
+      selectedDataPoint: this.props.selectedDataPoint,
       showTooltip: false,
       lockTooltip: false,
     };
@@ -162,7 +162,14 @@ class GraphsContainer extends React.Component {
     });
 
     if (lock) {
-      updateStateParams({ selectedDataPoint: `${dataPoint.x},${dataPoint.y}` });
+      updateStateParams({
+        selectedDataPoint: {
+          signatureId: dataPoint.datum.signatureId,
+          pushId: dataPoint.datum.pushId,
+          gridX: dataPoint.x,
+          gridY: dataPoint.y,
+        },
+      });
     }
   };
 
@@ -211,7 +218,7 @@ class GraphsContainer extends React.Component {
       showTooltip,
       lockTooltip,
     } = this.state;
-    console.log(this.props.selectedDataPoint);
+
     return (
       <React.Fragment>
         <div
