@@ -25,45 +25,37 @@ export default class GraphTooltip extends React.Component {
       : selectedDataPoint.signatureId;
 
     const testDetails = testData.find(item => item.signatureId === signature);
-    const deltaValue = '';
-    const deltaPercentValue = '';
-
-    // var phSeries = $scope.seriesList.find(
-    //   s => s.signature_id === dataPoint.signatureId);
 
     // we need the flot data for calculating values/deltas and to know where
     // on the graph to position the tooltip
-    const flotIndex = testDetails.data.findIndex(item => item.pushId === selectedDataPoint.pushId);
-    // var flotData = {
-    //     series: $scope.plot.getData().find(
-    //         fs => fs.thSeries.signature_id === dataPoint.signatureId),
-    //     pointIndex: flotIndex,
-    // };
+    const flotIndex = testDetails.data.findIndex(
+      item => item.pushId === selectedDataPoint.pushId,
+    );
+    const fullDataPointDetails = testDetails.data[flotIndex];
+
     // check if there are any points belonging to earlier pushes in this
     // graph -- if so, get the previous push so we can link to a pushlog
-
-    // Note this is the same number as flotIndex
-    const firstResultSetIndex = testDetails.resultSetData.indexOf(
-      selectedDataPoint.pushId,
-    );
     const prevResultSetId =
       firstResultSetIndex > 0
-        ? testDetails.resultSetData[firstResultSetIndex - 1]
+        ? testDetails.resultSetData[flotIndex - 1]
         : null;
 
     const retriggerNum = countBy(testDetails.resultSetData, resultSetId =>
       resultSetId === selectedDataPoint.pushId ? 'retrigger' : 'original',
     );
 
-    console.log(firstResultSetIndex, prevResultSetId, retriggerNum, flotIndex)
-    const prevFlotDataPointIndex = (flotIndex - 1);
-    const flotSeriesData = testDetails.data;
+    const prevFlotDataPointIndex = flotIndex - 1;
 
-    // const t = flotSeriesData[flotIndex][0];
-    // const v = flotSeriesData[flotIndex][1];
-    // var v0 = (prevFlotDataPointIndex >= 0) ? flotSeriesData[prevFlotDataPointIndex][1] : v;
-    // var dv = v - v0;
-    // var dvp = v / v0 - 1;
+    const date = fullDataPointDetails.x;
+    const value = fullDataPointDetails.y;
+
+    const v0 =
+      prevFlotDataPointIndex >= 0
+        ? testDetails.data[prevFlotDataPointIndex].y
+        : value;
+    const deltaValue = value - v0;
+    const deltaPercent = value / v0 - 1;
+
     // var alertSummary = phSeries.relatedAlertSummaries.find(alertSummary =>
     //     alertSummary.push_id === dataPoint.resultSetId);
     // var alert;
@@ -98,7 +90,7 @@ export default class GraphTooltip extends React.Component {
         </div>
         <div>
           <p id="tt-v">
-            {displayNumber(selectedDataPoint.y)}
+            {displayNumber(value)}
             <span className="text-muted">
               {testDetails.lowerIsBetter
                 ? ' (lower is better)'
@@ -106,7 +98,8 @@ export default class GraphTooltip extends React.Component {
             </span>
           </p>
           <p id="tt-dv" className="small">
-            &Delta; {displayNumber(deltaValue)} ({deltaPercentValue}%)
+            &Delta; {displayNumber(deltaValue.toFixed(1))} (
+            {(100 * deltaPercent).toFixed(1)}%)
           </p>
         </div>
 
