@@ -11,7 +11,7 @@ import { getJobsUrl, createQueryParams } from '../../helpers/url';
 import RepositoryModel from '../../models/repository';
 import { displayNumber, getStatus } from '../helpers';
 
-const GraphTooltip = ({ selectedDataPoint, testData }) => {
+const GraphTooltip = ({ selectedDataPoint, testData, user }) => {
   // we either have partial information provided by the selected
   // query parameter or the full selectedDataPoint object provided from the
   // graph library
@@ -143,6 +143,7 @@ const GraphTooltip = ({ selectedDataPoint, testData }) => {
           </span>
         )}
         {dataPointDetails.alertSummary && (
+          <React.Fragment>
           <p>
             <a
               href={`perf.html#/alerts?id=${dataPointDetails.alertSummary.id}`}
@@ -170,21 +171,17 @@ const GraphTooltip = ({ selectedDataPoint, testData }) => {
               )}
             </span>
           </p>
+          <p className="text-muted">
+              {/* {!creatingAlert && <span>No alert<span>} */}
+                {user.isStaff ?
+                (<a href="" onClick={createAlert(testDetails)}>create</a>)
+                : <span>(log in as a a sheriff to create)</span>}
+            {/* <span ng-if="creatingAlert">
+              Creating alert... <i class="fas fa-spinner fa-pulse" title="creating alert"></i> <span>*/}
+          </p>
+        </React.Fragment>
         )}
         {/*
-                
-              <p ng-if="testDetails.alertSummary">
-              <span class="text-muted">- {{testDetails.alert && (alertIsOfState(testDetails.alert, phAlertStatusMap.ACKNOWLEDGED) ? getAlertSummarytStatusText(testDetails.alertSummary) : getAlertStatusText(testDetails.alert))}}
-                  <span ng-show="testDetails.alert.related_summary_id">
-                    <span ng-if="testDetails.alert.related_summary_id !== testDetails.alertSummary.id">
-                    to <a href="#/alerts?id={{testDetails.alert.related_summary_id}}" target="_blank" rel="noopener">alert #{{testDetails.alert.related_summary_id}}</a>
-                  </span>
-                  <span ng-if="testDetails.alert.related_summary_id === testDetails.alertSummary.id">
-                    from <a href="#/alerts?id={{testDetails.alert.related_summary_id}}" target="_blank" rel="noopener">alert #{{testDetails.alert.related_summary_id}}</a>
-                  </span>
-                  </span>
-                </span>
-              </p>
               <p class="text-muted" ng-if="!testDetails.alertSummary">
                 <span ng-if="!creatingAlert">
                   No alert

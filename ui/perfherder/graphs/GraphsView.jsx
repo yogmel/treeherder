@@ -293,7 +293,6 @@ class GraphsView extends React.Component {
       highlightedRevisions,
       timeRange,
     } = this.state;
-    const { updateGraphs } = this.props;
 
     const newSeries = testData.map(
       series => `${series.project},${series.signatureId},${series.frameworkId}`,
@@ -320,7 +319,6 @@ class GraphsView extends React.Component {
     }
 
     this.updateParams(params);
-    updateGraphs(this.state);
   };
 
   render() {
@@ -403,6 +401,7 @@ class GraphsView extends React.Component {
                       updateStateParams={state =>
                         this.setState(state, this.changeParams)
                       }
+                      user={this.props.user}
                     />
                   )
                 }
@@ -450,7 +449,7 @@ GraphsView.propTypes = {
     current: PropTypes.shape({}),
     transitionTo: PropTypes.func,
   }),
-  updateGraphs: PropTypes.func.isRequired,
+  user: PropTypes.shape({}).isRequired,  
 };
 
 GraphsView.defaultProps = {
@@ -460,7 +459,7 @@ GraphsView.defaultProps = {
 
 perf.component(
   'graphsView',
-  react2angular(GraphsView, ['updateGraphs'], ['$stateParams', '$state']),
+  react2angular(GraphsView, ['user'], ['$stateParams', '$state']),
 );
 
 export default GraphsView;

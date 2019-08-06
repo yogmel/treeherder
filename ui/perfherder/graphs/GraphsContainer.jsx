@@ -255,6 +255,7 @@ class GraphsContainer extends React.Component {
             <GraphTooltip
               selectedDataPoint={selectedDataPoint}
               testData={testData}
+              {...this.props}
             />
           )}
           <div className="tip" />
