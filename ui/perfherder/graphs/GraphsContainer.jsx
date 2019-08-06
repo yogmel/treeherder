@@ -44,8 +44,8 @@ class GraphsContainer extends React.Component {
   componentDidMount() {
     this.addHighlights();
     this.updateData();
-    const { selectedDataPoint } = this.props;
-    if (selectedDataPoint) this.showTooltip(selectedDataPoint, true);
+    const { partialSelectedData } = this.props;
+    if (partialSelectedData) this.showTooltip(partialSelectedData, true);
   }
 
   componentDidUpdate(prevProps) {
@@ -168,7 +168,7 @@ class GraphsContainer extends React.Component {
 
     if (lock) {
       updateStateParams({
-        selectedDataPoint: {
+        partialSelectedData: {
           signatureId: dataPoint.datum.signatureId,
           pushId: dataPoint.datum.pushId,
           x: dataPoint.x,
@@ -219,7 +219,7 @@ class GraphsContainer extends React.Component {
       selectedDataPoint: null,
       lockTooltip: false,
     });
-    this.props.updateStateParams({ selectedDataPoint: null });
+    this.props.updateStateParams({ partialSelectedData: null });
   };
 
   render() {
@@ -397,7 +397,7 @@ GraphsContainer.propTypes = {
   testData: PropTypes.arrayOf(PropTypes.shape({})),
   updateStateParams: PropTypes.func.isRequired,
   zoom: PropTypes.shape({}),
-  // selectedDataPoint: PropTypes.string,
+  partialSelectedData: PropTypes.shape({}),
   highlightAlerts: PropTypes.bool,
   highlightedRevisions: PropTypes.oneOfType([
     PropTypes.string,
@@ -408,7 +408,7 @@ GraphsContainer.propTypes = {
 GraphsContainer.defaultProps = {
   testData: [],
   zoom: {},
-  // selectedDataPoint: null,
+  partialSelectedData: undefined,
   highlightAlerts: true,
   highlightedRevisions: ['', ''],
 };
