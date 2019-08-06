@@ -215,6 +215,7 @@ class GraphsView extends React.Component {
           ),
           signatureId: series.signature_id,
           pushId: dataPoint.push_id,
+          jobId: dataPoint.job_id,
         })),
         lowerIsBetter: series.lower_is_better,
         // TODO Are these needed?

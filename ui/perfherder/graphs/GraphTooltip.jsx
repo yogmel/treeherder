@@ -8,7 +8,9 @@ import PropTypes from 'prop-types';
 // import PerfSeriesModel from '../../models/perfSeries';
 // import { thPerformanceBranches } from '../../helpers/constants';
 import countBy from 'lodash/countBy';
+import moment from 'moment';
 
+import RepositoryModel from '../../models/repository';
 import { displayNumber } from '../helpers';
 import { createQueryParams } from '../../helpers/url';
 
@@ -31,14 +33,12 @@ export default class GraphTooltip extends React.Component {
     const flotIndex = testDetails.data.findIndex(
       item => item.pushId === selectedDataPoint.pushId,
     );
-    const fullDataPointDetails = testDetails.data[flotIndex];
+    const dataPointDetails = testDetails.data[flotIndex];
 
     // check if there are any points belonging to earlier pushes in this
     // graph -- if so, get the previous push so we can link to a pushlog
     const prevResultSetId =
-      firstResultSetIndex > 0
-        ? testDetails.resultSetData[flotIndex - 1]
-        : null;
+      flotIndex > 0 ? testDetails.resultSetData[flotIndex - 1] : null;
 
     const retriggerNum = countBy(testDetails.resultSetData, resultSetId =>
       resultSetId === selectedDataPoint.pushId ? 'retrigger' : 'original',
@@ -46,9 +46,9 @@ export default class GraphTooltip extends React.Component {
 
     const prevFlotDataPointIndex = flotIndex - 1;
 
-    const date = fullDataPointDetails.x;
-    const value = fullDataPointDetails.y;
-
+    const date = dataPointDetails.x;
+    const value = dataPointDetails.y;
+    //     value: Math.round(v * 1000) / 1000,
     const v0 =
       prevFlotDataPointIndex >= 0
         ? testDetails.data[prevFlotDataPointIndex].y
@@ -56,30 +56,32 @@ export default class GraphTooltip extends React.Component {
     const deltaValue = value - v0;
     const deltaPercent = value / v0 - 1;
 
-    // var alertSummary = phSeries.relatedAlertSummaries.find(alertSummary =>
-    //     alertSummary.push_id === dataPoint.resultSetId);
-    // var alert;
-    // if (alertSummary) {
-    //     alert = alertSummary.alerts.find(alert =>
-    //         alert.series_signature.id === phSeries.id);
-    // }
-    // const tooltipContent = {
-    //     project: $rootScope.repos.find(repo =>
-    //                 repo.name === phSeries.repository_name),
-    //     revisionUrl: `/#/jobs?repo=${phSeries.repository_name}`,
+    if (dataPointDetails.alertSummary) {
+      const alert = alertSummary.alerts.find(
+        alert => alert.series_signature.id === testDetails.signatureId,
+      );
+    }
+
+    const revisionUrl = `/#/jobs?repo=${testDetails.project}`;
+
     //     prevResultSetId: prevResultSetId,
     //     resultSetId: dataPoint.resultSetId,
     //     jobId: dataPoint.jobId,
     //     series: phSeries,
-    //     value: Math.round(v * 1000) / 1000,
-    //     deltaValue: dv.toFixed(1),
-    //     deltaPercentValue: (100 * dvp).toFixed(1),
     //     date: $.plot.formatDate(new Date(t), '%a %b %d, %H:%M:%S'),
     //     retriggers: (retriggerNum.retrigger - 1),
     //     alertSummary: alertSummary,
     //     revisionInfoAvailable: true,
     //     alert: alert,
     // };
+    const repoModel = new RepositoryModel(testDetails.project);
+
+    const pushLogUrl = repoModel.getPushLogRangeHref({
+      fromchange: dataPointDetails.prevRevision,
+      tochange: dataPointDetails.revision,
+    });
+
+    console.log(testDetails);
     return (
       <div className="body">
         <div>
@@ -104,7 +106,7 @@ export default class GraphTooltip extends React.Component {
         </div>
 
         <div>
-          {/* {testDetails.revision && testDetails.prevRevision && (
+          {dataPointDetails.revision && dataPointDetails.prevRevision && (
             <span>
               <a
                 id="tt-cset"
@@ -112,34 +114,34 @@ export default class GraphTooltip extends React.Component {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {testDetails.revision.slice(0, 13)}
-              </a> */}
-          {/* {testDetails.jobId && )
-                    (
-                    <a
-                      id="tt-cset"
-                      href={`${getJobsUrl({
-                        repo: testDetails.project.name,
-                        revision: testDetails.revision,
-                      })}${createQueryParams({
-                        selectedJob: testDetails.jobId,
-                        group_state: 'expanded',
-                      })}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      job
-                    </a>)} */}
-          {/* ,{' '}
+                {dataPointDetails.revision.slice(0, 13)}
+              </a>
+              {dataPointDetails.jobId && (
+                <a
+                  id="tt-cset"
+                  href={`${getJobsUrl({
+                    repo: testDetails.project,
+                    revision: dataPointDetails.revision,
+                  })}${createQueryParams({
+                    selectedJob: dataPointDetails.jobId,
+                    group_state: 'expanded',
+                  })}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  job
+                </a>
+              )}
+              ,{' '}
               <a
                 href={`#/comparesubtest${createQueryParams({
-                  originalProject: testDetails.project.name,
-                  newProject: testDetails.project.name,
-                  originalRevision: testDetails.prevRevision,
-                  newRevision: testDetails.revision,
-                  originalSignature: selectedDataPoint.signatureId,
-                  newSignature: selectedDataPoint.signatureId,
-                  framework: selectedDataPoint.frameworkId,
+                  originalProject: testDetails.project,
+                  newProject: testDetails.project,
+                  originalRevision: dataPointDetails.prevRevision,
+                  newRevision: dataPointDetails.revision,
+                  originalSignature: testDetails.signatureId,
+                  newSignature: testDetails.signatureId,
+                  framework: testDetails.frameworkId,
                 })}`}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -148,7 +150,7 @@ export default class GraphTooltip extends React.Component {
               </a>
               )
             </span>
-          )} */}
+          )}
           {/*
                 
               </p>
