@@ -222,7 +222,6 @@ class GraphsContainer extends React.Component {
     this.props.updateStateParams({ selectedDataPoint: null });
   };
 
-  // TODO closeTooltip should reset selected param
   render() {
     const { testData, zoom } = this.props;
     const {

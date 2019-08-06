@@ -362,7 +362,7 @@ const Alert = (alertData, optionCollectionMap) => ({
     includePlatformInName: true,
   }),
 });
-// TODO move into graphs component or remove
+// TODO remove
 export const getAlertStatusText = alert =>
   Object.values(phAlertStatusMap).find(status => status.id === alert.status)
     .text;
