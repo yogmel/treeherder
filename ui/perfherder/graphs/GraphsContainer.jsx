@@ -213,6 +213,15 @@ class GraphsContainer extends React.Component {
     }
   }, 250);
 
+  closeTooltip = () => {
+    this.setState({
+      showTooltip: false,
+      selectedDataPoint: null,
+      lockTooltip: false,
+    });
+    this.props.updateStateParams({ selectedDataPoint: null });
+  };
+
   // TODO closeTooltip should reset selected param
   render() {
     const { testData, zoom } = this.props;
@@ -235,16 +244,7 @@ class GraphsContainer extends React.Component {
           }`}
           ref={this.tooltip}
         >
-          <span
-            className="close mr-3 my-2 ml-2"
-            onClick={() =>
-              this.setState({
-                showTooltip: false,
-                selectedDataPoint: null,
-                lockTooltip: false,
-              })
-            }
-          >
+          <span className="close mr-3 my-2 ml-2" onClick={this.closeTooltip}>
             <FontAwesomeIcon
               className="pointer text-white"
               icon={faTimes}
@@ -338,7 +338,7 @@ class GraphsContainer extends React.Component {
                   strokeWidth: data => (data.alertSummary ? 12 : 2),
                 },
               }}
-              size={() => 5}
+              size={() => 4}
               data={scatterPlotData}
               events={[
                 {

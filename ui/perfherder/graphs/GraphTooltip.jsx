@@ -3,16 +3,15 @@ import PropTypes from 'prop-types';
 // import { Button } from 'reactstrap';
 
 // import { getData, processResponse } from '../../helpers/http';
-// import { getApiUrl } from '../../helpers/url';
 // import { endpoints } from '../constants';
 // import PerfSeriesModel from '../../models/perfSeries';
 // import { thPerformanceBranches } from '../../helpers/constants';
 import countBy from 'lodash/countBy';
 import moment from 'moment';
 
+import { getApiUrl, getJobsUrl, createQueryParams } from '../../helpers/url';
 import RepositoryModel from '../../models/repository';
 import { displayNumber } from '../helpers';
-import { createQueryParams } from '../../helpers/url';
 
 export default class GraphTooltip extends React.Component {
   constructor(props) {
@@ -22,28 +21,22 @@ export default class GraphTooltip extends React.Component {
 
   render() {
     const { selectedDataPoint, testData } = this.props;
-    const signature = selectedDataPoint.datum
-      ? selectedDataPoint.datum.signatureId
-      : selectedDataPoint.signatureId;
+    const datum = selectedDataPoint.datum
+      ? selectedDataPoint.datum
+      : selectedDataPoint;
 
-    const testDetails = testData.find(item => item.signatureId === signature);
+    const testDetails = testData.find(
+      item => item.signatureId === datum.signatureId,
+    );
 
-    // we need the flot data for calculating values/deltas and to know where
-    // on the graph to position the tooltip
     const flotIndex = testDetails.data.findIndex(
-      item => item.pushId === selectedDataPoint.pushId,
+      item => item.pushId === datum.pushId,
     );
     const dataPointDetails = testDetails.data[flotIndex];
-
-    // check if there are any points belonging to earlier pushes in this
-    // graph -- if so, get the previous push so we can link to a pushlog
-    const prevResultSetId =
-      flotIndex > 0 ? testDetails.resultSetData[flotIndex - 1] : null;
 
     const retriggerNum = countBy(testDetails.resultSetData, resultSetId =>
       resultSetId === selectedDataPoint.pushId ? 'retrigger' : 'original',
     );
-
     const prevFlotDataPointIndex = flotIndex - 1;
 
     const date = dataPointDetails.x;
@@ -56,15 +49,14 @@ export default class GraphTooltip extends React.Component {
     const deltaValue = value - v0;
     const deltaPercent = value / v0 - 1;
 
-    if (dataPointDetails.alertSummary) {
+    if (dataPointDetails.alertSummary && dataPointDetails.alertSummary.alerts) {
       const alert = alertSummary.alerts.find(
         alert => alert.series_signature.id === testDetails.signatureId,
       );
     }
 
     const revisionUrl = `/#/jobs?repo=${testDetails.project}`;
-
-    //     prevResultSetId: prevResultSetId,
+    const prevRevision = testDetails.data[prevFlotDataPointIndex].revision;
     //     resultSetId: dataPoint.resultSetId,
     //     jobId: dataPoint.jobId,
     //     series: phSeries,
@@ -77,7 +69,7 @@ export default class GraphTooltip extends React.Component {
     const repoModel = new RepositoryModel(testDetails.project);
 
     const pushLogUrl = repoModel.getPushLogRangeHref({
-      fromchange: dataPointDetails.prevRevision,
+      fromchange: prevRevision,
       tochange: dataPointDetails.revision,
     });
 
@@ -106,11 +98,11 @@ export default class GraphTooltip extends React.Component {
         </div>
 
         <div>
-          {dataPointDetails.revision && dataPointDetails.prevRevision && (
+          {prevRevision && (
             <span>
               <a
                 id="tt-cset"
-                href={testDetails.pushlogURL}
+                href={pushLogUrl}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -129,7 +121,8 @@ export default class GraphTooltip extends React.Component {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  job
+                  {' '}
+                  (job
                 </a>
               )}
               ,{' '}
@@ -137,7 +130,7 @@ export default class GraphTooltip extends React.Component {
                 href={`#/comparesubtest${createQueryParams({
                   originalProject: testDetails.project,
                   newProject: testDetails.project,
-                  originalRevision: dataPointDetails.prevRevision,
+                  originalRevision: prevRevision,
                   newRevision: dataPointDetails.revision,
                   originalSignature: testDetails.signatureId,
                   newSignature: testDetails.signatureId,
