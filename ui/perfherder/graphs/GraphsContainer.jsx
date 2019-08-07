@@ -152,23 +152,20 @@ class GraphsContainer extends React.Component {
     const { lockTooltip } = this.state;
     const { updateStateParams } = this.props;
 
+    // we don't want the mouseOver event to reposition the tooltip
     if (lockTooltip && !lock) {
-      // we don't want the mouseOver event to reposition the tooltip
-      // if it's been locked
       return;
     }
     this.showTooltip(dataPoint, lock);
 
-    if (lock) {
-      updateStateParams({
-        selectedDataPoint: {
-          signature_id: dataPoint.datum.signature_id,
-          pushId: dataPoint.datum.pushId,
-          x: dataPoint.x,
-          y: dataPoint.y,
-        },
-      });
-    }
+    updateStateParams({
+      selectedDataPoint: {
+        signature_id: dataPoint.datum.signature_id,
+        pushId: dataPoint.datum.pushId,
+        x: dataPoint.x,
+        y: dataPoint.y,
+      },
+    });
   };
 
   closeTooltip = () => {
@@ -235,6 +232,7 @@ class GraphsContainer extends React.Component {
       grid: { stroke: 'lightgray', strokeWidth: 0.5 },
       tickLabels: { fontSize: 13 },
     };
+
     return (
       <React.Fragment>
         <div
@@ -277,7 +275,7 @@ class GraphsContainer extends React.Component {
               />
             }
           >
-            <VictoryAxis dependentAxis tickCount={5} style={axisStyle} />
+            <VictoryAxis dependentAxis tickCount={4} style={axisStyle} />
             <VictoryAxis
               tickCount={10}
               tickFormat={x => moment.utc(x).format('MMM DD')}
@@ -381,7 +379,7 @@ class GraphsContainer extends React.Component {
             />
             <VictoryAxis dependentAxis tickCount={9} style={axisStyle} />
             <VictoryAxis
-              tickCount={10}
+              tickCount={8}
               tickFormat={x => moment.utc(x).format('MMM DD hh:mm')}
               style={axisStyle}
             />
