@@ -26,10 +26,10 @@ const GraphTooltip = ({
     ? selectedDataPoint.datum
     : selectedDataPoint;
 
+  // TODO show an error message if not found
   const testDetails = testData.find(
     item => item.signature_id === datum.signature_id,
   );
-
   const flotIndex = testDetails.data.findIndex(
     item => item.pushId === datum.pushId,
   );

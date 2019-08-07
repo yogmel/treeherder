@@ -208,16 +208,29 @@ class GraphsContainer extends React.Component {
 
   // debounced
   updateSelection(selectedDomain) {
-    this.setState({ selectedDomain }, this.updateData);
+    this.props.updateStateParams({
+      zoom: selectedDomain,
+      selectedDataPoint: null,
+    });
+    this.setState(
+      { selectedDomain, showTooltip: false, lockTooltip: false },
+      this.updateData,
+    );
   }
 
   // debounced
   updateZoom(zoom) {
-    this.props.updateStateParams({ zoom });
+    this.props.updateStateParams({ zoom, selectedDataPoint: null });
+    this.setState({ showTooltip: false, lockTooltip: false });
   }
 
   render() {
-    const { testData, zoom, selectedDataPoint, highlightedRevisions } = this.props;
+    const {
+      testData,
+      zoom,
+      selectedDataPoint,
+      highlightedRevisions,
+    } = this.props;
     const {
       selectedDomain,
       highlights,
@@ -229,14 +242,15 @@ class GraphsContainer extends React.Component {
 
     const highlightPoints = Boolean(highlights.length);
 
-    const hasHighlightedRevision = (point) => highlightedRevisions.find(
-      rev => point.revision.indexOf(rev) !== -1,
-    );
-  
+    const hasHighlightedRevision = point =>
+      highlightedRevisions.find(rev => point.revision.indexOf(rev) !== -1);
+
     const axisStyle = {
       grid: { stroke: 'lightgray', strokeWidth: 0.5 },
       tickLabels: { fontSize: 13 },
     };
+
+    const chartPadding = { top: 10, left: 50, right: 10, bottom: 50 };
 
     return (
       <React.Fragment>
@@ -265,52 +279,54 @@ class GraphsContainer extends React.Component {
           <div className="tip" />
         </div>
         <Row>
-          <VictoryChart
-            padding={{ top: 10, left: 50, right: 10, bottom: 50 }}
-            width={1250}
-            height={125}
-            scale={{ x: 'time', y: 'linear' }}
-            domain={entireDomain}
-            domainPadding={{ y: 30 }}
-            containerComponent={
-              <VictoryBrushContainer
-                responsive={false}
-                brushDomain={selectedDomain}
-                onBrushDomainChange={this.updateZoom}
+          <div>
+            <VictoryChart
+              padding={chartPadding}
+              width={1250}
+              height={125}
+              scale={{ x: 'time', y: 'linear' }}
+              domain={entireDomain}
+              domainPadding={{ y: 30 }}
+              containerComponent={
+                <VictoryBrushContainer
+                  responsive={false}
+                  brushDomain={selectedDomain}
+                  onBrushDomainChange={this.updateZoom}
+                />
+              }
+            >
+              <VictoryAxis dependentAxis tickCount={4} style={axisStyle} />
+              <VictoryAxis
+                tickCount={10}
+                tickFormat={x => moment.utc(x).format('MMM DD')}
+                style={axisStyle}
               />
-            }
-          >
-            <VictoryAxis dependentAxis tickCount={4} style={axisStyle} />
-            <VictoryAxis
-              tickCount={10}
-              tickFormat={x => moment.utc(x).format('MMM DD')}
-              style={axisStyle}
+              {testData.map((item, i) => (
+                <VictoryLine
+                  key={item.name}
+                  data={item.visible ? item.data : []}
+                  style={{
+                    data: { stroke: graphColors[i][1] },
+                  }}
+                />
+              ))}
+            </VictoryChart>
+            <SimpleTooltip
+              text={
+                <FontAwesomeIcon
+                  className="pointer text-secondary"
+                  icon={faQuestionCircle}
+                  size="sm"
+                />
+              }
+              tooltipText="The bottom graph has mouse zoom and pan (click 'n' drag) enabled. For best results, when there's a high concentration of data points use the overview graph's selection marquee to narrow the x and y range first."
             />
-            {testData.map((item, i) => (
-              <VictoryLine
-                key={item.name}
-                data={item.visible ? item.data : []}
-                style={{
-                  data: { stroke: graphColors[i][1] },
-                }}
-              />
-            ))}
-          </VictoryChart>
-          <SimpleTooltip
-            text={
-              <FontAwesomeIcon
-                className="pointer text-secondary"
-                icon={faQuestionCircle}
-                size="sm"
-              />
-            }
-            tooltipText="The bottom graph has mouse zoom and pan (click 'n' drag) enabled. For best results, when there's a high concentration of data points use the overview graph's selection marquee to narrow the x and y range first."
-          />
+          </div>
         </Row>
 
         <Row>
           <VictoryChart
-            padding={{ top: 10, left: 50, right: 10, bottom: 50 }}
+            padding={chartPadding}
             width={1250}
             height={350}
             scale={{ x: 'time', y: 'linear' }}
@@ -339,12 +355,21 @@ class GraphsContainer extends React.Component {
               style={{
                 data: {
                   fill: data =>
-                  (data.alertSummary || hasHighlightedRevision(data) ) && highlightPoints ? data.z : '#fff',
+                    (data.alertSummary || hasHighlightedRevision(data)) &&
+                    highlightPoints
+                      ? data.z
+                      : '#fff',
                   strokeOpacity: data =>
-                  (data.alertSummary || hasHighlightedRevision(data) ) && highlightPoints ? 0.3 : 100,
+                    (data.alertSummary || hasHighlightedRevision(data)) &&
+                    highlightPoints
+                      ? 0.3
+                      : 100,
                   stroke: d => d.z,
                   strokeWidth: data =>
-                  (data.alertSummary || hasHighlightedRevision(data) ) && highlightPoints ? 12 : 2,
+                    (data.alertSummary || hasHighlightedRevision(data)) &&
+                    highlightPoints
+                      ? 12
+                      : 2,
                 },
               }}
               size={() => 4}
