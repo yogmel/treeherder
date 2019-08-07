@@ -37,7 +37,7 @@ class GraphsView extends React.Component {
       frameworks: [],
       projects: [],
       zoom: {},
-      partialSelectedData: null,
+      selectedDataPoint: null,
       highlightAlerts: true,
       highlightedRevisions: ['', ''],
       showModal: false,
@@ -125,7 +125,7 @@ class GraphsView extends React.Component {
         x: parseFloat(tooltipArray[2]),
         y: parseFloat(tooltipArray[3]),
       };
-      updates.partialSelectedData = tooltipValues;
+      updates.selectedDataPoint = tooltipValues;
     }
 
     this.setState(updates);
@@ -311,7 +311,7 @@ class GraphsView extends React.Component {
   changeParams = () => {
     const {
       testData,
-      partialSelectedData,
+      selectedDataPoint,
       zoom,
       highlightAlerts,
       highlightedRevisions,
@@ -330,10 +330,10 @@ class GraphsView extends React.Component {
       zoom,
     };
 
-    if (!partialSelectedData) {
+    if (!selectedDataPoint) {
       params.selected = null;
     } else {
-      const { signature_id, pushId, x, y } = partialSelectedData;
+      const { signature_id, pushId, x, y } = selectedDataPoint;
       params.selected = [signature_id, pushId, x, y].join(',');
     }
 
@@ -356,7 +356,7 @@ class GraphsView extends React.Component {
       options,
       highlightAlerts,
       highlightedRevisions,
-      partialSelectedData,
+      selectedDataPoint,
       loading,
       errorMessages,
       zoom,
@@ -405,7 +405,7 @@ class GraphsView extends React.Component {
                           this.setState(state, this.changeParams)
                         }
                         color={graphColors[i][0]}
-                        partialSelectedData={partialSelectedData}
+                        selectedDataPoint={selectedDataPoint}
                       />
                     </div>
                   ))}
@@ -421,7 +421,7 @@ class GraphsView extends React.Component {
                       highlightAlerts={highlightAlerts}
                       highlightedRevisions={highlightedRevisions}
                       zoom={zoom}
-                      partialSelectedData={partialSelectedData}
+                      selectedDataPoint={selectedDataPoint}
                       testData={testData}
                       updateStateParams={state =>
                         this.setState(state, this.changeParams)
@@ -443,7 +443,7 @@ class GraphsView extends React.Component {
                     {
                       timeRange,
                       zoom: {},
-                      partialSelectedData: null,
+                      selectedDataPoint: null,
                     },
                     this.getTestData,
                   )

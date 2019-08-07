@@ -36,19 +36,16 @@ class GraphsContainer extends React.Component {
         item.visible ? item.data : [],
       ),
       entireDomain: this.getEntireDomain(),
-      selectedDataPoint: null,
       showTooltip: false,
       lockTooltip: false,
     };
   }
 
-  // TODO should there be only one selectedDataPoint state?
-
   componentDidMount() {
     this.addHighlights();
     this.updateData();
-    const { partialSelectedData } = this.props;
-    if (partialSelectedData) this.showTooltip(partialSelectedData, true);
+    const { selectedDataPoint } = this.props;
+    if (selectedDataPoint) this.showTooltip(selectedDataPoint, true);
   }
 
   componentDidUpdate(prevProps) {
@@ -147,7 +144,6 @@ class GraphsContainer extends React.Component {
 
     this.setState({
       showTooltip: true,
-      selectedDataPoint: dataPoint,
       lockTooltip: lock,
     });
   };
@@ -165,7 +161,7 @@ class GraphsContainer extends React.Component {
 
     if (lock) {
       updateStateParams({
-        partialSelectedData: {
+        selectedDataPoint: {
           signature_id: dataPoint.datum.signature_id,
           pushId: dataPoint.datum.pushId,
           x: dataPoint.x,
@@ -178,10 +174,9 @@ class GraphsContainer extends React.Component {
   closeTooltip = () => {
     this.setState({
       showTooltip: false,
-      selectedDataPoint: null,
       lockTooltip: false,
     });
-    this.props.updateStateParams({ partialSelectedData: null });
+    this.props.updateStateParams({ selectedDataPoint: null });
   };
 
   // debounced
@@ -225,7 +220,7 @@ class GraphsContainer extends React.Component {
   }
 
   render() {
-    const { testData, zoom } = this.props;
+    const { testData, zoom, selectedDataPoint } = this.props;
     const {
       selectedDomain,
       highlights,
@@ -233,7 +228,6 @@ class GraphsContainer extends React.Component {
       entireDomain,
       showTooltip,
       lockTooltip,
-      selectedDataPoint,
     } = this.state;
 
     const highlightPoints = Boolean(highlights.length);
@@ -402,7 +396,7 @@ GraphsContainer.propTypes = {
   testData: PropTypes.arrayOf(PropTypes.shape({})),
   updateStateParams: PropTypes.func.isRequired,
   zoom: PropTypes.shape({}),
-  partialSelectedData: PropTypes.shape({}),
+  selectedDataPoint: PropTypes.shape({}),
   highlightAlerts: PropTypes.bool,
   highlightedRevisions: PropTypes.oneOfType([
     PropTypes.string,
@@ -413,7 +407,7 @@ GraphsContainer.propTypes = {
 GraphsContainer.defaultProps = {
   testData: [],
   zoom: {},
-  partialSelectedData: undefined,
+  selectedDataPoint: undefined,
   highlightAlerts: true,
   highlightedRevisions: ['', ''],
 };
