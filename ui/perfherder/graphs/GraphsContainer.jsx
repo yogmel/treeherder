@@ -27,6 +27,7 @@ class GraphsContainer extends React.Component {
     super(props);
     this.updateZoom = debounce(this.updateZoom.bind(this), 500);
     this.updateSelection = debounce(this.updateSelection.bind(this), 500);
+    this.hideTooltip = debounce(this.hideTooltip.bind(this), 250);
     this.tooltip = React.createRef();
     this.state = {
       selectedDomain: this.props.zoom,
@@ -157,6 +158,7 @@ class GraphsContainer extends React.Component {
 
     if (lockTooltip && !lock) {
       // we don't want the mouseOver event to reposition the tooltip
+      // if it's been locked
       return;
     }
     this.showTooltip(dataPoint, lock);
@@ -173,15 +175,6 @@ class GraphsContainer extends React.Component {
     }
   };
 
-  // eslint-disable-next-line react/sort-comp
-  hideTooltip = debounce(() => {
-    const { showTooltip, lockTooltip } = this.state;
-
-    if (showTooltip && !lockTooltip) {
-      this.setState({ showTooltip: false });
-    }
-  }, 250);
-
   closeTooltip = () => {
     this.setState({
       showTooltip: false,
@@ -190,6 +183,15 @@ class GraphsContainer extends React.Component {
     });
     this.props.updateStateParams({ partialSelectedData: null });
   };
+
+  // debounced
+  hideTooltip() {
+    const { showTooltip, lockTooltip } = this.state;
+
+    if (showTooltip && !lockTooltip) {
+      this.setState({ showTooltip: false });
+    }
+  }
 
   updateData() {
     const { selectedDomain } = this.state;
@@ -235,7 +237,10 @@ class GraphsContainer extends React.Component {
     } = this.state;
 
     const highlightPoints = Boolean(highlights.length);
-
+    const axisStyle = {
+      grid: { stroke: 'lightgray', strokeWidth: 0.5 },
+      tickLabels: { fontSize: 13 },
+    };
     return (
       <React.Fragment>
         <div
@@ -278,20 +283,11 @@ class GraphsContainer extends React.Component {
               />
             }
           >
-            <VictoryAxis
-              dependentAxis
-              tickCount={5}
-              style={{
-                grid: { stroke: 'lightgray', strokeWidth: 0.5 },
-              }}
-            />
+            <VictoryAxis dependentAxis tickCount={5} style={axisStyle} />
             <VictoryAxis
               tickCount={10}
               tickFormat={x => moment.utc(x).format('MMM DD')}
-              style={{
-                grid: { stroke: 'lightgray', strokeWidth: 0.5 },
-                tickLabels: { fontSize: 13 },
-              }}
+              style={axisStyle}
             />
             {testData.map((item, i) => (
               <VictoryLine
@@ -389,20 +385,11 @@ class GraphsContainer extends React.Component {
                 },
               ]}
             />
-            <VictoryAxis
-              dependentAxis
-              tickCount={9}
-              style={{
-                grid: { stroke: 'lightgray', strokeWidth: 0.5 },
-              }}
-            />
+            <VictoryAxis dependentAxis tickCount={9} style={axisStyle} />
             <VictoryAxis
               tickCount={10}
               tickFormat={x => moment.utc(x).format('MMM DD hh:mm')}
-              style={{
-                grid: { stroke: 'lightgray', strokeWidth: 0.5 },
-                tickLabels: { fontSize: 13 },
-              }}
+              style={axisStyle}
             />
           </VictoryChart>
         </Row>
