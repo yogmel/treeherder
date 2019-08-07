@@ -217,7 +217,7 @@ class GraphsContainer extends React.Component {
   }
 
   render() {
-    const { testData, zoom, selectedDataPoint } = this.props;
+    const { testData, zoom, selectedDataPoint, highlightedRevisions } = this.props;
     const {
       selectedDomain,
       highlights,
@@ -228,6 +228,11 @@ class GraphsContainer extends React.Component {
     } = this.state;
 
     const highlightPoints = Boolean(highlights.length);
+
+    const hasHighlightedRevision = (point) => highlightedRevisions.find(
+      rev => point.revision.indexOf(rev) !== -1,
+    );
+  
     const axisStyle = {
       grid: { stroke: 'lightgray', strokeWidth: 0.5 },
       tickLabels: { fontSize: 13 },
@@ -333,17 +338,16 @@ class GraphsContainer extends React.Component {
             <VictoryScatter
               style={{
                 data: {
-                  fill: d => d.z,
-                  fillOpacity: data =>
-                    data.alertSummary && highlightPoints ? 100 : 0.3,
+                  fill: data =>
+                  (data.alertSummary || hasHighlightedRevision(data) ) && highlightPoints ? data.z : '#fff',
                   strokeOpacity: data =>
-                    data.alertSummary && highlightPoints ? 0.3 : 100,
+                  (data.alertSummary || hasHighlightedRevision(data) ) && highlightPoints ? 0.3 : 100,
                   stroke: d => d.z,
                   strokeWidth: data =>
-                    data.alertSummary && highlightPoints ? 12 : 2,
+                  (data.alertSummary || hasHighlightedRevision(data) ) && highlightPoints ? 12 : 2,
                 },
               }}
-              size={() => 5}
+              size={() => 4}
               data={scatterPlotData}
               events={[
                 {
