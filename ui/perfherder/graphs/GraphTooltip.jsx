@@ -12,11 +12,10 @@ import { create } from '../../helpers/http';
 import RepositoryModel from '../../models/repository';
 import { displayNumber, getStatus } from '../helpers';
 
-const GraphTooltip = ({ selectedDataPoint, testData, user, updateData }) => {
+const GraphTooltip = ({ selectedDataPoint, testData, user, updateData, projects }) => {
   // we either have partial information provided by the selected
   // query parameter or the full selectedDataPoint object provided from the
   // graph library
-
   const datum = selectedDataPoint.datum
     ? selectedDataPoint.datum
     : selectedDataPoint;
@@ -34,11 +33,9 @@ const GraphTooltip = ({ selectedDataPoint, testData, user, updateData }) => {
     resultSetId === selectedDataPoint.pushId ? 'retrigger' : 'original',
   );
   const retriggerNum = retriggers.retrigger - 1;
-
   const prevFlotDataPointIndex = flotIndex - 1;
-
   const value = dataPointDetails.y;
-  //     value: Math.round(v * 1000) / 1000,
+
   const v0 =
     prevFlotDataPointIndex >= 0
       ? testDetails.data[prevFlotDataPointIndex].y
@@ -63,7 +60,6 @@ const GraphTooltip = ({ selectedDataPoint, testData, user, updateData }) => {
 
   const prevRevision = testDetails.data[prevFlotDataPointIndex].revision;
   const prevPushId = testDetails.data[prevFlotDataPointIndex].pushId;
-  const repoModel = new RepositoryModel(testDetails.project);
   const jobsUrl = `${getJobsUrl({
     repo: testDetails.project,
     revision: dataPointDetails.revision,
@@ -72,7 +68,8 @@ const GraphTooltip = ({ selectedDataPoint, testData, user, updateData }) => {
     group_state: 'expanded',
   })}`;
 
-  // TODO this is broken
+  const project = projects.find(project => project.name === testDetails.project);
+  const repoModel = new RepositoryModel(project);
   const pushLogUrl = repoModel.getPushLogRangeHref({
     fromchange: prevRevision,
     tochange: dataPointDetails.revision,

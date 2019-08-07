@@ -419,6 +419,7 @@ class GraphsView extends React.Component {
                       }
                       user={this.props.user}
                       updateData={this.updateData}
+                      projects={projects}
                     />
                   )
                 }
