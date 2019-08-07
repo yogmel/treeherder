@@ -41,6 +41,7 @@ class GraphsContainer extends React.Component {
   }
 
   // TODO should there be only one selectedDataPoint state?
+  // TODO fix lower graph date format? Can that be shown in UTC?
   componentDidMount() {
     this.addHighlights();
     this.updateData();
@@ -172,6 +173,24 @@ class GraphsContainer extends React.Component {
     }
   };
 
+  // eslint-disable-next-line react/sort-comp
+  hideTooltip = debounce(() => {
+    const { showTooltip, lockTooltip } = this.state;
+
+    if (showTooltip && !lockTooltip) {
+      this.setState({ showTooltip: false });
+    }
+  }, 250);
+
+  closeTooltip = () => {
+    this.setState({
+      showTooltip: false,
+      selectedDataPoint: null,
+      lockTooltip: false,
+    });
+    this.props.updateStateParams({ partialSelectedData: null });
+  };
+
   updateData() {
     const { selectedDomain } = this.state;
     const { testData } = this.props;
@@ -192,24 +211,6 @@ class GraphsContainer extends React.Component {
       this.setState({ scatterPlotData });
     }
   }
-
-  // eslint-disable-next-line react/sort-comp
-  hideTooltip = debounce(() => {
-    const { showTooltip, lockTooltip } = this.state;
-
-    if (showTooltip && !lockTooltip) {
-      this.setState({ showTooltip: false });
-    }
-  }, 250);
-
-  closeTooltip = () => {
-    this.setState({
-      showTooltip: false,
-      selectedDataPoint: null,
-      lockTooltip: false,
-    });
-    this.props.updateStateParams({ partialSelectedData: null });
-  };
 
   // debounced
   updateSelection(selectedDomain) {
@@ -232,6 +233,8 @@ class GraphsContainer extends React.Component {
       lockTooltip,
       selectedDataPoint,
     } = this.state;
+
+    const highlightPoints = Boolean(highlights.length);
 
     return (
       <React.Fragment>
@@ -331,10 +334,13 @@ class GraphsContainer extends React.Component {
               style={{
                 data: {
                   fill: d => d.z,
-                  fillOpacity: data => (data.alertSummary ? 100 : 0.3),
-                  strokeOpacity: data => (data.alertSummary ? 0.3 : 100),
+                  fillOpacity: data =>
+                    data.alertSummary && highlightPoints ? 100 : 0.3,
+                  strokeOpacity: data =>
+                    data.alertSummary && highlightPoints ? 0.3 : 100,
                   stroke: d => d.z,
-                  strokeWidth: data => (data.alertSummary ? 12 : 2),
+                  strokeWidth: data =>
+                    data.alertSummary && highlightPoints ? 12 : 2,
                 },
               }}
               size={() => 4}

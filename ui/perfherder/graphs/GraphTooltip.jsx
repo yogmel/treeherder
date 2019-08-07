@@ -12,7 +12,13 @@ import { create } from '../../helpers/http';
 import RepositoryModel from '../../models/repository';
 import { displayNumber, getStatus } from '../helpers';
 
-const GraphTooltip = ({ selectedDataPoint, testData, user, updateData, projects }) => {
+const GraphTooltip = ({
+  selectedDataPoint,
+  testData,
+  user,
+  updateData,
+  projects,
+}) => {
   // we either have partial information provided by the selected
   // query parameter or the full selectedDataPoint object provided from the
   // graph library
@@ -68,7 +74,9 @@ const GraphTooltip = ({ selectedDataPoint, testData, user, updateData, projects 
     group_state: 'expanded',
   })}`;
 
-  const project = projects.find(project => project.name === testDetails.project);
+  const project = projects.find(
+    project => project.name === testDetails.project,
+  );
   const repoModel = new RepositoryModel(project);
   const pushLogUrl = repoModel.getPushLogRangeHref({
     fromchange: prevRevision,
@@ -125,7 +133,8 @@ const GraphTooltip = ({ selectedDataPoint, testData, user, updateData, projects 
           <span>
             <a href={pushLogUrl} target="_blank" rel="noopener noreferrer">
               {dataPointDetails.revision.slice(0, 13)}
-            </a>{' '}(
+            </a>{' '}
+            (
             {dataPointDetails.jobId && (
               <a href={jobsUrl} target="_blank" rel="noopener noreferrer">
                 job
@@ -205,6 +214,11 @@ GraphTooltip.propTypes = {
   testData: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   user: PropTypes.shape({}).isRequired,
   updateData: PropTypes.func.isRequired,
+  projects: PropTypes.arrayOf(PropTypes.shape({})),
+};
+
+GraphTooltip.defaultProps = {
+  projects: [],
 };
 
 export default GraphTooltip;
