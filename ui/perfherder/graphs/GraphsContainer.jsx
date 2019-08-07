@@ -15,9 +15,10 @@ import moment from 'moment';
 import debounce from 'lodash/debounce';
 import last from 'lodash/last';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { graphColors } from '../constants';
+import SimpleTooltip from '../../shared/SimpleTooltip';
 
 import GraphTooltip from './GraphTooltip';
 
@@ -264,8 +265,8 @@ class GraphsContainer extends React.Component {
         </div>
         <Row>
           <VictoryChart
-            padding={{ top: 10, left: 50, right: 50, bottom: 30 }}
-            width={1200}
+            padding={{ top: 10, left: 50, right: 0, bottom: 50 }}
+            width={1250}
             height={125}
             scale={{ x: 'time', y: 'linear' }}
             domain={entireDomain}
@@ -303,11 +304,23 @@ class GraphsContainer extends React.Component {
               />
             ))}
           </VictoryChart>
+          <SimpleTooltip
+            text={
+              <FontAwesomeIcon
+                className="pointer text-secondary"
+                icon={faQuestionCircle}
+                size="sm"
+                title="graph tips"
+              />
+            }
+            tooltipText="The bottom graph has mouse zoom and click 'n' drag pan enabled. For best results, when there's a high concentration of data points use the overview graph's selection marquee to narrow the x and y range first."
+          />
         </Row>
 
         <Row>
           <VictoryChart
-            width={1200}
+            padding={{ top: 10, left: 50, right: 0, bottom: 50 }}
+            width={1250}
             height={350}
             scale={{ x: 'time', y: 'linear' }}
             domain={entireDomain}
@@ -344,7 +357,7 @@ class GraphsContainer extends React.Component {
                     data.alertSummary && highlightPoints ? 12 : 2,
                 },
               }}
-              size={() => 4}
+              size={() => 5}
               data={scatterPlotData}
               events={[
                 {
