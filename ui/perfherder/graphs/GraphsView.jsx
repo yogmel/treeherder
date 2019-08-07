@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { react2angular } from 'react2angular/index.es2015';
 import { Container, Col, Row } from 'reactstrap';
+import unionBy from 'lodash/unionBy';
 
 import { getData, processResponse, processErrors } from '../../helpers/http';
 import {
@@ -204,6 +205,7 @@ class GraphsView extends React.Component {
         frameworkId: series.framework_id,
         platform: series.platform,
         project: series.repository_name,
+        projectId: series.repository_id,
         id: `${series.repository_name} ${series.name}`,
         data: series.data.map(dataPoint => ({
           x: new Date(dataPoint.push_timestamp),
@@ -248,6 +250,20 @@ class GraphsView extends React.Component {
     }
     this.setState({ errorMessages: response.errorMessages });
     return [];
+  };
+
+  updateData = async (signatureId, project, alertSummaryId, dataPointIndex) => {
+    const { testData } = this.state;
+
+    const updatedData = testData.find(test => test.signatureId === signatureId);
+    const alertSummaries = await this.getAlertSummaries(signatureId, project);
+    const alertSummary = alertSummaries.find(
+      result => result.id === alertSummaryId,
+    );
+    updatedData.data[dataPointIndex].alertSummary = alertSummary;
+    const newTestData = unionBy([updatedData], testData, 'signatureId');
+
+    this.setState({ testData: newTestData });
   };
 
   parseSeriesParam = series =>
@@ -402,6 +418,7 @@ class GraphsView extends React.Component {
                         this.setState(state, this.changeParams)
                       }
                       user={this.props.user}
+                      updateData={this.updateData}
                     />
                   )
                 }

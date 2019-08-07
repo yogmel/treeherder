@@ -251,7 +251,7 @@ export const phAlertSummaryStatusMap = {
   BACKEDOUT: { id: 8, text: 'backedout' },
   CONFIRMING: { id: 9, text: 'confirming' },
 };
-// TODO move into perfherder constants file
+// TODO replace with alertStatusMap
 export const phAlertStatusMap = {
   UNTRIAGED: { id: 0, text: 'untriaged' },
   DOWNSTREAM: { id: 1, text: 'downstream' },

@@ -2,18 +2,21 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import countBy from 'lodash/countBy';
 import moment from 'moment';
+import { Button } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 
-import { alertStatusMap } from '../constants';
-import { getJobsUrl, createQueryParams } from '../../helpers/url';
+import { alertStatusMap, endpoints } from '../constants';
+import { getJobsUrl, createQueryParams, getApiUrl } from '../../helpers/url';
+import { create } from '../../helpers/http';
 import RepositoryModel from '../../models/repository';
 import { displayNumber, getStatus } from '../helpers';
 
-const GraphTooltip = ({ selectedDataPoint, testData, user }) => {
+const GraphTooltip = ({ selectedDataPoint, testData, user, updateData }) => {
   // we either have partial information provided by the selected
   // query parameter or the full selectedDataPoint object provided from the
   // graph library
+
   const datum = selectedDataPoint.datum
     ? selectedDataPoint.datum
     : selectedDataPoint;
@@ -59,6 +62,7 @@ const GraphTooltip = ({ selectedDataPoint, testData, user }) => {
 
   const revisionUrl = `/#/jobs?repo=${testDetails.project}`;
   const prevRevision = testDetails.data[prevFlotDataPointIndex].revision;
+  const prevPushId = testDetails.data[prevFlotDataPointIndex].pushId;
   //     resultSetId: dataPoint.resultSetId,
   //     jobId: dataPoint.jobId,
   //     series: phSeries,
@@ -70,10 +74,49 @@ const GraphTooltip = ({ selectedDataPoint, testData, user }) => {
   // };
   const repoModel = new RepositoryModel(testDetails.project);
 
+  // TODO this is broken
   const pushLogUrl = repoModel.getPushLogRangeHref({
     fromchange: prevRevision,
     tochange: dataPointDetails.revision,
   });
+
+  // TODO refactor create to use getData wrapper
+  const createAlert = () =>
+    create(getApiUrl(endpoints.alertSummary), {
+      repository_id: testDetails.projectId,
+      framework_id: testDetails.frameworkId,
+      push_id: dataPointDetails.pushId,
+      prev_push_id: prevPushId,
+    })
+      .then(response => response.json())
+      .then(response => {
+        const newAlertSummaryId = response.alert_summary_id;
+        return create(getApiUrl('/performance/alert/'), {
+          summary_id: newAlertSummaryId,
+          signature_id: testDetails.signatureId,
+        }).then(() =>
+          updateData(
+            testDetails.signatureId,
+            testDetails.projectId,
+            newAlertSummaryId,
+            flotIndex,
+          ),
+        );
+      });
+
+  //   function refreshGraphData(alertSummaryId, dataPoint) {
+  //     return getAlertSummaries({
+  //         signatureId: dataPoint.series.id,
+  //         repository: dataPoint.project.id,
+  //     }).then(function (alertSummaryData) {
+  //         var alertSummary = alertSummaryData.results.find(result =>
+  //             result.id === alertSummaryId);
+  //         $scope.tooltipContent.alertSummary = alertSummary;
+
+  //         dataPoint.series.relatedAlertSummaries = alertSummaryData.results;
+  //         plotGraph();
+  //     });
+  // }
 
   return (
     <div className="body">
@@ -145,47 +188,45 @@ const GraphTooltip = ({ selectedDataPoint, testData, user }) => {
             )
           </span>
         )}
-        {dataPointDetails.alertSummary && (
-          <React.Fragment>
-            <p>
-              <a
-                href={`perf.html#/alerts?id=${dataPointDetails.alertSummary.id}`}
-              >
-                <FontAwesomeIcon
-                  className="text-warning"
-                  icon={faExclamationCircle}
-                  size="sm"
-                />
-                {` Alert # ${dataPointDetails.alertSummary.id}`}
-              </a>
-              <span className="text-muted">
-                {` - ${alertStatus} `}
-                {alert.related_summary_id && (
-                  <span>
-                    {alert.related_summary_id !==
-                    dataPointDetails.alertSummary.id
-                      ? 'to'
-                      : 'from'}
-                    <a
-                      href={`#/alerts?id=${alert.related_summary_id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >{` alert # ${alert.related_summary_id}`}</a>
-                  </span>
-                )}
-              </span>
-            </p>
-            {/* <p className="text-muted">
-              {/* {!creatingAlert && <span>No alert<span>}
-              {user.isStaff ? (
-                <a href="" onClick={createAlert(testDetails)}>
-                  create
-                </a>
-              ) : (
-                <span>(log in as a a sheriff to create)</span>
+        {dataPointDetails.alertSummary ? (
+          <p>
+            <a
+              href={`perf.html#/alerts?id=${dataPointDetails.alertSummary.id}`}
+            >
+              <FontAwesomeIcon
+                className="text-warning"
+                icon={faExclamationCircle}
+                size="sm"
+              />
+              {` Alert # ${dataPointDetails.alertSummary.id}`}
+            </a>
+            <span className="text-muted">
+              {` - ${alertStatus} `}
+              {alert.related_summary_id && (
+                <span>
+                  {alert.related_summary_id !== dataPointDetails.alertSummary.id
+                    ? 'to'
+                    : 'from'}
+                  <a
+                    href={`#/alerts?id=${alert.related_summary_id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >{` alert # ${alert.related_summary_id}`}</a>
+                </span>
               )}
-            </p> */}
-          </React.Fragment>
+            </span>
+          </p>
+        ) : (
+          <p className="text-muted">
+            {/* {!creatingAlert && <span>No alert<span>} */}
+            {user.isStaff ? (
+              <Button outline onClick={createAlert}>
+                create alert
+              </Button>
+            ) : (
+              <span>(log in as a a sheriff to create)</span>
+            )}
+          </p>
         )}
         {/*
               <p class="text-muted" ng-if="!testDetails.alertSummary">

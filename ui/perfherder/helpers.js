@@ -627,6 +627,7 @@ export const getAlertSummaries = options => {
   );
 };
 
+// TODO remove
 export const createAlert = data =>
   create(getApiUrl(endpoints.alertSummary), {
     repository_id: data.project.id,
