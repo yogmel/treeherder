@@ -219,11 +219,7 @@ class GraphsView extends React.Component {
           jobId: dataPoint.job_id,
         })),
         lowerIsBetter: series.lower_is_better,
-        // TODO Are these needed?
         resultSetData: series.data.map(dataPoint => dataPoint.push_id),
-        jobIdData: series.data.map(dataPoint => dataPoint.job_id),
-        idData: series.data.map(dataPoint => dataPoint.id),
-        highlightedPoints: [],
       };
     });
 

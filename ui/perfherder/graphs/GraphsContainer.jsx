@@ -103,7 +103,6 @@ class GraphsContainer extends React.Component {
     };
   };
 
-  // TODO add ? icon to chart to explain how zoom/pan works?
   addHighlights = () => {
     const { testData, highlightAlerts, highlightedRevisions } = this.props;
     let highlights = [];
@@ -265,7 +264,7 @@ class GraphsContainer extends React.Component {
         </div>
         <Row>
           <VictoryChart
-            padding={{ top: 10, left: 50, right: 0, bottom: 50 }}
+            padding={{ top: 10, left: 50, right: 10, bottom: 50 }}
             width={1250}
             height={125}
             scale={{ x: 'time', y: 'linear' }}
@@ -310,16 +309,15 @@ class GraphsContainer extends React.Component {
                 className="pointer text-secondary"
                 icon={faQuestionCircle}
                 size="sm"
-                title="graph tips"
               />
             }
-            tooltipText="The bottom graph has mouse zoom and click 'n' drag pan enabled. For best results, when there's a high concentration of data points use the overview graph's selection marquee to narrow the x and y range first."
+            tooltipText="The bottom graph has mouse zoom and pan (click 'n' drag) enabled. For best results, when there's a high concentration of data points use the overview graph's selection marquee to narrow the x and y range first."
           />
         </Row>
 
         <Row>
           <VictoryChart
-            padding={{ top: 10, left: 50, right: 0, bottom: 50 }}
+            padding={{ top: 10, left: 50, right: 10, bottom: 50 }}
             width={1250}
             height={350}
             scale={{ x: 'time', y: 'linear' }}

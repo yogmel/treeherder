@@ -16,7 +16,6 @@ const LegendCard = ({
     const newTestData = [...testData].map(item => {
       if (item.signature_id === series.signature_id) {
         item.visible = !item.visible;
-        item.highlightedPoints = [];
       }
       return item;
     });
