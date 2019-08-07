@@ -25,7 +25,11 @@ export default class TestDataModal extends React.Component {
     this.state = {
       platforms: [],
       framework: { name: 'talos', id: 1 },
-      project: this.findObject(this.props.projects, 'name', 'mozilla-central'),
+      repository_name: this.findObject(
+        this.props.projects,
+        'name',
+        'mozilla-central',
+      ),
       platform: 'linux64',
       errorMessages: [],
       includeSubtests: false,
@@ -64,12 +68,12 @@ export default class TestDataModal extends React.Component {
   }
 
   getInitialData = async () => {
-    const { errorMessages, project, framework } = this.state;
+    const { errorMessages, repository_name, framework } = this.state;
     const { timeRange } = this.props;
 
     const params = { interval: timeRange, framework: framework.id };
     const platforms = await PerfSeriesModel.getPlatformList(
-      project.name,
+      repository_name.name,
       params,
     );
 
@@ -81,7 +85,7 @@ export default class TestDataModal extends React.Component {
   };
 
   getSeriesData = async params => {
-    const { errorMessages, project } = this.state;
+    const { errorMessages, repository_name } = this.state;
 
     let updates = {
       filteredData: [],
@@ -89,7 +93,10 @@ export default class TestDataModal extends React.Component {
       showNoRelatedTests: false,
       loading: false,
     };
-    const response = await PerfSeriesModel.getSeriesList(project.name, params);
+    const response = await PerfSeriesModel.getSeriesList(
+      repository_name.name,
+      params,
+    );
     updates = {
       ...updates,
       ...processResponse(response, 'seriesData', errorMessages),
@@ -99,12 +106,12 @@ export default class TestDataModal extends React.Component {
   };
 
   async getPlatforms() {
-    const { project, framework, errorMessages } = this.state;
+    const { repository_name, framework, errorMessages } = this.state;
     const { timeRange } = this.props;
 
     const params = { interval: timeRange, framework: framework.id };
     const response = await PerfSeriesModel.getPlatformList(
-      project.name,
+      repository_name.name,
       params,
     );
 
@@ -128,9 +135,12 @@ export default class TestDataModal extends React.Component {
 
   addRelatedConfigs = async params => {
     const { relatedSeries } = this.props.options;
-    const { errorMessages, project } = this.state;
+    const { errorMessages, repository_name } = this.state;
 
-    const response = await PerfSeriesModel.getSeriesList(project.name, params);
+    const response = await PerfSeriesModel.getSeriesList(
+      repository_name.name,
+      params,
+    );
     const updates = processResponse(response, 'relatedTests', errorMessages);
 
     if (updates.relatedTests.length) {
@@ -152,9 +162,12 @@ export default class TestDataModal extends React.Component {
 
   addRelatedPlatforms = async params => {
     const { relatedSeries } = this.props.options;
-    const { errorMessages, project } = this.state;
+    const { errorMessages, repository_name } = this.state;
 
-    const response = await PerfSeriesModel.getSeriesList(project.name, params);
+    const response = await PerfSeriesModel.getSeriesList(
+      repository_name.name,
+      params,
+    );
     const updates = processResponse(response, 'relatedTests', errorMessages);
 
     if (updates.relatedTests.length) {
@@ -178,7 +191,7 @@ export default class TestDataModal extends React.Component {
     const errorMessages = [];
 
     const relatedProjects = thPerformanceBranches.filter(
-      project => project !== relatedSeries.repository_name,
+      repository_name => repository_name !== relatedSeries.repository_name,
     );
     const requests = relatedProjects.map(projectName =>
       PerfSeriesModel.getSeriesList(projectName, params),
@@ -286,7 +299,7 @@ export default class TestDataModal extends React.Component {
       platforms,
       seriesData,
       framework,
-      project,
+      repository_name,
       platform,
       includeSubtests,
       selectedTests,
@@ -313,10 +326,10 @@ export default class TestDataModal extends React.Component {
       },
       {
         options: projects.length ? projects.map(item => item.name) : [],
-        selectedItem: project.name || '',
+        selectedItem: repository_name.name || '',
         updateData: value =>
           this.setState(
-            { project: this.findObject(projects, 'name', value) },
+            { repository_name: this.findObject(projects, 'name', value) },
             this.getPlatforms,
           ),
         title: 'Project',

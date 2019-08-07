@@ -164,7 +164,7 @@ class GraphsContainer extends React.Component {
     if (lock) {
       updateStateParams({
         partialSelectedData: {
-          signatureId: dataPoint.datum.signatureId,
+          signature_id: dataPoint.datum.signature_id,
           pushId: dataPoint.datum.pushId,
           x: dataPoint.x,
           y: dataPoint.y,

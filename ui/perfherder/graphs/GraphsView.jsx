@@ -120,7 +120,7 @@ class GraphsView extends React.Component {
     if (selected) {
       const tooltipArray = selected.replace(/[[]"]/g, '').split(',');
       const tooltipValues = {
-        signatureId: parseInt(tooltipArray[0], 10),
+        signature_id: parseInt(tooltipArray[0], 10),
         pushId: parseInt(tooltipArray[1], 10),
         x: parseFloat(tooltipArray[2]),
         y: parseFloat(tooltipArray[3]),
@@ -132,13 +132,13 @@ class GraphsView extends React.Component {
   };
 
   createSeriesParams = series => {
-    const { project, signatureId, frameworkId } = series;
+    const { repository_name, signature_id, framework_id } = series;
     const { timeRange } = this.state;
 
     return {
-      repository: project,
-      signature: signatureId,
-      framework: frameworkId,
+      repository: repository_name,
+      signature: signature_id,
+      framework: framework_id,
       interval: timeRange.value,
       all_data: true,
     };
@@ -194,16 +194,19 @@ class GraphsView extends React.Component {
       relatedAlertSummaries = alertSummaries.find(
         item => item.id === series.id,
       );
-
+      // signature_id, framework_id and repository_name are
+      // not renamed in camel case in order to match the fields
+      // returned by the performance/summary API (since we only fetch
+      // new data if a user adds additional tests to the graph)
       return {
         relatedAlertSummaries,
         visible: true,
         name: series.name,
-        signatureId: series.signature_id,
+        signature_id: series.signature_id,
         signatureHash: series.signature_hash,
-        frameworkId: series.framework_id,
+        framework_id: series.framework_id,
         platform: series.platform,
-        project: series.repository_name,
+        repository_name: series.repository_name,
         projectId: series.repository_id,
         id: `${series.repository_name} ${series.name}`,
         data: series.data.map(dataPoint => ({
@@ -214,7 +217,7 @@ class GraphsView extends React.Component {
           alertSummary: alertSummaries.find(
             item => item.revision === dataPoint.revision,
           ),
-          signatureId: series.signature_id,
+          signature_id: series.signature_id,
           pushId: dataPoint.push_id,
           jobId: dataPoint.job_id,
         })),
@@ -227,12 +230,12 @@ class GraphsView extends React.Component {
   };
 
   // TODO possibly move to helpers file
-  getAlertSummaries = async (signatureId, repository) => {
+  getAlertSummaries = async (signature_id, repository) => {
     const { errorMessages } = this.state;
 
     const url = getApiUrl(
       `${endpoints.alertSummary}${createQueryParams({
-        alerts__series_signature: signatureId,
+        alerts__series_signature: signature_id,
         repository,
       })}`,
     );
@@ -247,16 +250,26 @@ class GraphsView extends React.Component {
     return [];
   };
 
-  updateData = async (signatureId, project, alertSummaryId, dataPointIndex) => {
+  updateData = async (
+    signature_id,
+    repository_name,
+    alertSummaryId,
+    dataPointIndex,
+  ) => {
     const { testData } = this.state;
 
-    const updatedData = testData.find(test => test.signatureId === signatureId);
-    const alertSummaries = await this.getAlertSummaries(signatureId, project);
+    const updatedData = testData.find(
+      test => test.signature_id === signature_id,
+    );
+    const alertSummaries = await this.getAlertSummaries(
+      signature_id,
+      repository_name,
+    );
     const alertSummary = alertSummaries.find(
       result => result.id === alertSummaryId,
     );
     updatedData.data[dataPointIndex].alertSummary = alertSummary;
-    const newTestData = unionBy([updatedData], testData, 'signatureId');
+    const newTestData = unionBy([updatedData], testData, 'signature_id');
 
     this.setState({ testData: newTestData });
   };
@@ -269,13 +282,13 @@ class GraphsView extends React.Component {
       );
       const partialSeriesArray = partialSeriesString.split(',');
       const partialSeriesObject = {
-        project: partialSeriesArray[0],
+        repository_name: partialSeriesArray[0],
         // TODO deprecate signature_hash
-        signatureId:
+        signature_id:
           partialSeriesArray[1].length === 40
             ? partialSeriesArray[1]
             : parseInt(partialSeriesArray[1], 10),
-        frameworkId: parseInt(partialSeriesArray[2], 10),
+        framework_id: parseInt(partialSeriesArray[2], 10),
       };
       return partialSeriesObject;
     });
@@ -306,7 +319,8 @@ class GraphsView extends React.Component {
     } = this.state;
 
     const newSeries = testData.map(
-      series => `${series.project},${series.signatureId},${series.frameworkId}`,
+      series =>
+        `${series.repository_name},${series.signature_id},${series.framework_id}`,
     );
     const params = {
       series: newSeries,
@@ -319,8 +333,8 @@ class GraphsView extends React.Component {
     if (!partialSelectedData) {
       params.selected = null;
     } else {
-      const { signatureId, pushId, x, y } = partialSelectedData;
-      params.selected = [signatureId, pushId, x, y].join(',');
+      const { signature_id, pushId, x, y } = partialSelectedData;
+      params.selected = [signature_id, pushId, x, y].join(',');
     }
 
     if (Object.keys(zoom).length === 0) {
@@ -380,7 +394,7 @@ class GraphsView extends React.Component {
                 {testData.length > 0 &&
                   testData.map((series, i) => (
                     <div
-                      key={`${series.name} ${series.project} ${series.platform}`}
+                      key={`${series.name} ${series.repository_name} ${series.platform}`}
                     >
                       <LegendCard
                         series={series}

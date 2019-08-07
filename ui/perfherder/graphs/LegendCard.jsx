@@ -32,7 +32,7 @@ const LegendCard = ({
 
     if (
       selectedDataPoint &&
-      selectedDataPoint.signatureId === series.signature_id
+      selectedDataPoint.signature_id === series.signature_id
     ) {
       updates.selectedDataPoint = null;
     }
@@ -89,7 +89,7 @@ const LegendCard = ({
           title="Add related branches"
           type="button"
         >
-          {series.project}
+          {series.repository_name}
         </p>
         <p
           className={subtitleStyle}

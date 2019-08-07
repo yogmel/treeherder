@@ -27,7 +27,7 @@ const GraphTooltip = ({
     : selectedDataPoint;
 
   const testDetails = testData.find(
-    item => item.signatureId === datum.signatureId,
+    item => item.signature_id === datum.signature_id,
   );
 
   const flotIndex = testDetails.data.findIndex(
@@ -53,7 +53,7 @@ const GraphTooltip = ({
 
   if (dataPointDetails.alertSummary && dataPointDetails.alertSummary.alerts) {
     alert = dataPointDetails.alertSummary.alerts.find(
-      alert => alert.series_signature.id === testDetails.signatureId,
+      alert => alert.series_signature.id === testDetails.signature_id,
     );
   }
 
@@ -67,17 +67,17 @@ const GraphTooltip = ({
   const prevRevision = testDetails.data[prevFlotDataPointIndex].revision;
   const prevPushId = testDetails.data[prevFlotDataPointIndex].pushId;
   const jobsUrl = `${getJobsUrl({
-    repo: testDetails.project,
+    repo: testDetails.repository_name,
     revision: dataPointDetails.revision,
   })}${createQueryParams({
     selectedJob: dataPointDetails.jobId,
     group_state: 'expanded',
   })}`;
 
-  const project = projects.find(
-    project => project.name === testDetails.project,
+  const repository_name = projects.find(
+    repository_name => repository_name.name === testDetails.repository_name,
   );
-  const repoModel = new RepositoryModel(project);
+  const repoModel = new RepositoryModel(repository_name);
   const pushLogUrl = repoModel.getPushLogRangeHref({
     fromchange: prevRevision,
     tochange: dataPointDetails.revision,
@@ -87,7 +87,7 @@ const GraphTooltip = ({
   const createAlert = () =>
     create(getApiUrl(endpoints.alertSummary), {
       repository_id: testDetails.projectId,
-      framework_id: testDetails.frameworkId,
+      framework_id: testDetails.framework_id,
       push_id: dataPointDetails.pushId,
       prev_push_id: prevPushId,
     })
@@ -96,10 +96,10 @@ const GraphTooltip = ({
         const newAlertSummaryId = response.alert_summary_id;
         return create(getApiUrl('/performance/alert/'), {
           summary_id: newAlertSummaryId,
-          signature_id: testDetails.signatureId,
+          signature_id: testDetails.signature_id,
         }).then(() =>
           updateData(
-            testDetails.signatureId,
+            testDetails.signature_id,
             testDetails.projectId,
             newAlertSummaryId,
             flotIndex,
@@ -110,7 +110,7 @@ const GraphTooltip = ({
   return (
     <div className="body">
       <div>
-        <p>({testDetails.project})</p>
+        <p>({testDetails.repository_name})</p>
         <p className="small">{testDetails.platform}</p>
       </div>
       <div>
@@ -143,13 +143,13 @@ const GraphTooltip = ({
             ,{' '}
             <a
               href={`#/comparesubtest${createQueryParams({
-                originalProject: testDetails.project,
-                newProject: testDetails.project,
+                originalProject: testDetails.repository_name,
+                newProject: testDetails.repository_name,
                 originalRevision: prevRevision,
                 newRevision: dataPointDetails.revision,
-                originalSignature: testDetails.signatureId,
-                newSignature: testDetails.signatureId,
-                framework: testDetails.frameworkId,
+                originalSignature: testDetails.signature_id,
+                newSignature: testDetails.signature_id,
+                framework: testDetails.framework_id,
               })}`}
               target="_blank"
               rel="noopener noreferrer"
