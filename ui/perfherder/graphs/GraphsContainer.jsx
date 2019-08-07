@@ -139,11 +139,6 @@ class GraphsContainer extends React.Component {
     top: point.y - yOffset,
   });
 
-  // debounced
-  updateZoom(zoom) {
-    this.props.updateStateParams({ zoom });
-  }
-
   showTooltip = (dataPoint, lock) => {
     const position = this.getTooltipPosition(dataPoint);
     this.hideTooltip.cancel();
@@ -177,11 +172,6 @@ class GraphsContainer extends React.Component {
       });
     }
   };
-
-  // debounced
-  updateSelection(selectedDomain) {
-    this.setState({ selectedDomain }, this.updateData);
-  }
 
   updateData() {
     const { selectedDomain } = this.state;
@@ -221,6 +211,16 @@ class GraphsContainer extends React.Component {
     });
     this.props.updateStateParams({ partialSelectedData: null });
   };
+
+  // debounced
+  updateSelection(selectedDomain) {
+    this.setState({ selectedDomain }, this.updateData);
+  }
+
+  // debounced
+  updateZoom(zoom) {
+    this.props.updateStateParams({ zoom });
+  }
 
   render() {
     const { testData, zoom } = this.props;

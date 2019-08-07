@@ -30,12 +30,13 @@ const GraphTooltip = ({ selectedDataPoint, testData, user, updateData }) => {
   );
   const dataPointDetails = testDetails.data[flotIndex];
 
-  const retriggerNum = countBy(testDetails.resultSetData, resultSetId =>
+  const retriggers = countBy(testDetails.resultSetData, resultSetId =>
     resultSetId === selectedDataPoint.pushId ? 'retrigger' : 'original',
   );
+  const retriggerNum = retriggers.retrigger - 1;
+
   const prevFlotDataPointIndex = flotIndex - 1;
 
-  const date = dataPointDetails.x;
   const value = dataPointDetails.y;
   //     value: Math.round(v * 1000) / 1000,
   const v0 =
@@ -60,19 +61,16 @@ const GraphTooltip = ({ selectedDataPoint, testData, user, updateData }) => {
         : getStatus(alert.status, alertStatusMap);
   }
 
-  const revisionUrl = `/#/jobs?repo=${testDetails.project}`;
   const prevRevision = testDetails.data[prevFlotDataPointIndex].revision;
   const prevPushId = testDetails.data[prevFlotDataPointIndex].pushId;
-  //     resultSetId: dataPoint.resultSetId,
-  //     jobId: dataPoint.jobId,
-  //     series: phSeries,
-  //     date: $.plot.formatDate(new Date(t), '%a %b %d, %H:%M:%S'),
-  //     retriggers: (retriggerNum.retrigger - 1),
-  //     alertSummary: alertSummary,
-  //     revisionInfoAvailable: true,
-  //     alert: alert,
-  // };
   const repoModel = new RepositoryModel(testDetails.project);
+  const jobsUrl = `${getJobsUrl({
+    repo: testDetails.project,
+    revision: dataPointDetails.revision,
+  })}${createQueryParams({
+    selectedJob: dataPointDetails.jobId,
+    group_state: 'expanded',
+  })}`;
 
   // TODO this is broken
   const pushLogUrl = repoModel.getPushLogRangeHref({
@@ -104,30 +102,14 @@ const GraphTooltip = ({ selectedDataPoint, testData, user, updateData }) => {
         );
       });
 
-  //   function refreshGraphData(alertSummaryId, dataPoint) {
-  //     return getAlertSummaries({
-  //         signatureId: dataPoint.series.id,
-  //         repository: dataPoint.project.id,
-  //     }).then(function (alertSummaryData) {
-  //         var alertSummary = alertSummaryData.results.find(result =>
-  //             result.id === alertSummaryId);
-  //         $scope.tooltipContent.alertSummary = alertSummary;
-
-  //         dataPoint.series.relatedAlertSummaries = alertSummaryData.results;
-  //         plotGraph();
-  //     });
-  // }
-
   return (
     <div className="body">
       <div>
-        <p id="tt-series">({testDetails.project})</p>
-        <p id="tt-series2" className="small">
-          {testDetails.platform}
-        </p>
+        <p>({testDetails.project})</p>
+        <p className="small">{testDetails.platform}</p>
       </div>
       <div>
-        <p id="tt-v">
+        <p>
           {displayNumber(value)}
           <span className="text-muted">
             {testDetails.lowerIsBetter
@@ -135,7 +117,7 @@ const GraphTooltip = ({ selectedDataPoint, testData, user, updateData }) => {
               : ' (higher is better)'}
           </span>
         </p>
-        <p id="tt-dv" className="small">
+        <p className="small">
           &Delta; {displayNumber(deltaValue.toFixed(1))} (
           {(100 * deltaPercent).toFixed(1)}%)
         </p>
@@ -144,27 +126,11 @@ const GraphTooltip = ({ selectedDataPoint, testData, user, updateData }) => {
       <div>
         {prevRevision && (
           <span>
-            <a
-              id="tt-cset"
-              href={pushLogUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href={pushLogUrl} target="_blank" rel="noopener noreferrer">
               {dataPointDetails.revision.slice(0, 13)}
             </a>
             {dataPointDetails.jobId && (
-              <a
-                id="tt-cset"
-                href={`${getJobsUrl({
-                  repo: testDetails.project,
-                  revision: dataPointDetails.revision,
-                })}${createQueryParams({
-                  selectedJob: dataPointDetails.jobId,
-                  group_state: 'expanded',
-                })}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a href={jobsUrl} target="_blank" rel="noopener noreferrer">
                 {' '}
                 (job
               </a>
@@ -217,10 +183,9 @@ const GraphTooltip = ({ selectedDataPoint, testData, user, updateData }) => {
             </span>
           </p>
         ) : (
-          <p className="text-muted">
-            {/* {!creatingAlert && <span>No alert<span>} */}
+          <p className="pt-2">
             {user.isStaff ? (
-              <Button outline onClick={createAlert}>
+              <Button color="info" outline size="sm" onClick={createAlert}>
                 create alert
               </Button>
             ) : (
@@ -228,27 +193,12 @@ const GraphTooltip = ({ selectedDataPoint, testData, user, updateData }) => {
             )}
           </p>
         )}
-        {/*
-              <p class="text-muted" ng-if="!testDetails.alertSummary">
-                <span ng-if="!creatingAlert">
-                  No alert
-                  <span ng-if="user.isStaff">
-                    (<a href="" ng-click="createAlert(testDetails)" ng-disabled="user.isStaff">create</a>)
-                  </span>
-                  <span ng-if="!user.isStaff">
-                    (log in as a a sheriff to create)
-                  </span>
-                </span>
-                <span ng-if="creatingAlert">
-                  Creating alert... <i class="fas fa-spinner fa-pulse" title="creating alert"></i>
-                </span>
-              </p>
-              <p ng-hide="testDetails.revision">
-                <span ng-hide="testDetails.revisionInfoAvailable">Revision info unavailable</span>
-                <span ng-show="testDetails.revisionInfoAvailable">Loading revision...</span>
-              </p>
-              <p id="tt-t" class="small" ng-bind="testDetails.date"></p>
-              <p id="tt-v" class="small" ng-show="testDetails.retriggers > 0">Retriggers: {{testDetails.retriggers}}</p> */}
+        <p className="small text-white pt-2">{`${moment
+          .utc(dataPointDetails.x)
+          .format('MMM DD hh:mm:ss')} UTC`}</p>
+        {Boolean(retriggerNum) && (
+          <p className="small">{`Retriggers: ${retriggerNum}`}</p>
+        )}
       </div>
     </div>
   );
@@ -258,6 +208,7 @@ GraphTooltip.propTypes = {
   selectedDataPoint: PropTypes.shape({}).isRequired,
   testData: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   user: PropTypes.shape({}).isRequired,
+  updateData: PropTypes.func.isRequired,
 };
 
 export default GraphTooltip;
