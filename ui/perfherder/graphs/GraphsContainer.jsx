@@ -133,9 +133,8 @@ class GraphsContainer extends React.Component {
     this.setState({ highlights });
   };
 
-  // Not sure if this is needed
-  getTooltipPosition = (point, yOffset = 10) => ({
-    left: point.x - 250 / 2,
+  getTooltipPosition = (point, yOffset = 15) => ({
+    left: point.x - 280 / 2,
     top: point.y - yOffset,
   });
 

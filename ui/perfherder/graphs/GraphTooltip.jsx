@@ -128,11 +128,10 @@ const GraphTooltip = ({ selectedDataPoint, testData, user, updateData }) => {
           <span>
             <a href={pushLogUrl} target="_blank" rel="noopener noreferrer">
               {dataPointDetails.revision.slice(0, 13)}
-            </a>
+            </a>{' '}(
             {dataPointDetails.jobId && (
               <a href={jobsUrl} target="_blank" rel="noopener noreferrer">
-                {' '}
-                (job
+                job
               </a>
             )}
             ,{' '}
