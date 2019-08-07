@@ -41,7 +41,7 @@ class GraphsContainer extends React.Component {
   }
 
   // TODO should there be only one selectedDataPoint state?
-  // TODO fix lower graph date format? Can that be shown in UTC?
+
   componentDidMount() {
     this.addHighlights();
     this.updateData();
@@ -287,9 +287,10 @@ class GraphsContainer extends React.Component {
             />
             <VictoryAxis
               tickCount={10}
-              tickFormat={x => moment(x).format('MMM DD')}
+              tickFormat={x => moment.utc(x).format('MMM DD')}
               style={{
                 grid: { stroke: 'lightgray', strokeWidth: 0.5 },
+                tickLabels: { fontSize: 13 },
               }}
             />
             {testData.map((item, i) => (
@@ -386,9 +387,10 @@ class GraphsContainer extends React.Component {
             />
             <VictoryAxis
               tickCount={10}
-              // tickFormat={x => moment(x).format('MMM DD')}
+              tickFormat={x => moment.utc(x).format('MMM DD hh:mm')}
               style={{
                 grid: { stroke: 'lightgray', strokeWidth: 0.5 },
+                tickLabels: { fontSize: 13 },
               }}
             />
           </VictoryChart>

@@ -110,7 +110,6 @@ class GraphsView extends React.Component {
 
     if (zoom) {
       const zoomArray = zoom.replace(/[[{}\]"]+/g, '').split(',');
-      // TODO change to UTC
       const zoomObject = {
         x: zoomArray.map(x => new Date(parseInt(x, 10))).slice(0, 2),
         y: zoomArray.slice(2, 4),
