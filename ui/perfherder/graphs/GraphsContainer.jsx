@@ -29,6 +29,7 @@ class GraphsContainer extends React.Component {
     this.updateSelection = debounce(this.updateSelection.bind(this), 500);
     this.hideTooltip = debounce(this.hideTooltip.bind(this), 250);
     this.tooltip = React.createRef();
+    this.leftChartPadding = 25;
     this.state = {
       selectedDomain: this.props.zoom,
       highlights: [],
@@ -176,14 +177,16 @@ class GraphsContainer extends React.Component {
     this.props.updateStateParams({ selectedDataPoint: null });
   };
 
-  // debounced
-  hideTooltip() {
-    const { showTooltip, lockTooltip } = this.state;
+  // The Victory library doesn't provide a way of dynamically setting the left
+  // padding for the y axis tick labels, so this is a workaround (setting state
+  // doesn't work with this callback, which is why a class property is used instead)
+  setLeftPadding = (tick, index, ticks) => {
+    const highestTickLength = ticks[ticks.length - 1].toString();
+    this.leftChartPadding = highestTickLength.length * 8 + 10;
+    const numberFormat = new Intl.NumberFormat();
 
-    if (showTooltip && !lockTooltip) {
-      this.setState({ showTooltip: false });
-    }
-  }
+    return numberFormat.format(tick);
+  };
 
   updateData() {
     const { selectedDomain } = this.state;
@@ -203,6 +206,15 @@ class GraphsContainer extends React.Component {
             data.y <= selectedDomain.y[1],
         );
       this.setState({ scatterPlotData });
+    }
+  }
+
+  // debounced
+  hideTooltip() {
+    const { showTooltip, lockTooltip } = this.state;
+
+    if (showTooltip && !lockTooltip) {
+      this.setState({ showTooltip: false });
     }
   }
 
@@ -250,7 +262,8 @@ class GraphsContainer extends React.Component {
       tickLabels: { fontSize: 13 },
     };
 
-    const chartPadding = { top: 10, left: 50, right: 10, bottom: 50 };
+    const chartPadding = { top: 10, right: 10, bottom: 50 };
+    chartPadding.left = this.leftChartPadding;
 
     return (
       <React.Fragment>
@@ -279,49 +292,47 @@ class GraphsContainer extends React.Component {
           <div className="tip" />
         </div>
         <Row>
-          <div>
-            <VictoryChart
-              padding={chartPadding}
-              width={1250}
-              height={125}
-              scale={{ x: 'time', y: 'linear' }}
-              domain={entireDomain}
-              domainPadding={{ y: 30 }}
-              containerComponent={
-                <VictoryBrushContainer
-                  responsive={false}
-                  brushDomain={selectedDomain}
-                  onBrushDomainChange={this.updateZoom}
-                />
-              }
-            >
-              <VictoryAxis dependentAxis tickCount={4} style={axisStyle} />
-              <VictoryAxis
-                tickCount={10}
-                tickFormat={x => moment.utc(x).format('MMM DD')}
-                style={axisStyle}
+          <VictoryChart
+            padding={chartPadding}
+            width={1250}
+            height={125}
+            scale={{ x: 'time', y: 'linear' }}
+            domain={entireDomain}
+            domainPadding={{ y: 30 }}
+            containerComponent={
+              <VictoryBrushContainer
+                responsive={false}
+                brushDomain={selectedDomain}
+                onBrushDomainChange={this.updateZoom}
               />
-              {testData.map((item, i) => (
-                <VictoryLine
-                  key={item.name}
-                  data={item.visible ? item.data : []}
-                  style={{
-                    data: { stroke: graphColors[i][1] },
-                  }}
-                />
-              ))}
-            </VictoryChart>
-            <SimpleTooltip
-              text={
-                <FontAwesomeIcon
-                  className="pointer text-secondary"
-                  icon={faQuestionCircle}
-                  size="sm"
-                />
-              }
-              tooltipText="The bottom graph has mouse zoom and pan (click 'n' drag) enabled. For best results, when there's a high concentration of data points use the overview graph's selection marquee to narrow the x and y range first."
+            }
+          >
+            <VictoryAxis dependentAxis tickCount={4} style={axisStyle} />
+            <VictoryAxis
+              tickCount={10}
+              tickFormat={x => moment.utc(x).format('MMM DD')}
+              style={axisStyle}
             />
-          </div>
+            {testData.map((item, i) => (
+              <VictoryLine
+                key={item.name}
+                data={item.visible ? item.data : []}
+                style={{
+                  data: { stroke: graphColors[i][1] },
+                }}
+              />
+            ))}
+          </VictoryChart>
+          <SimpleTooltip
+            text={
+              <FontAwesomeIcon
+                className="pointer text-secondary"
+                icon={faQuestionCircle}
+                size="sm"
+              />
+            }
+            tooltipText="The bottom graph has mouse zoom and pan (click 'n' drag) enabled. For best results, when there's a high concentration of data points use the overview graph's selection marquee to narrow the x and y range first."
+          />
         </Row>
 
         <Row>
@@ -372,7 +383,7 @@ class GraphsContainer extends React.Component {
                       : 2,
                 },
               }}
-              size={() => 4}
+              size={() => 5}
               data={scatterPlotData}
               events={[
                 {
@@ -406,7 +417,12 @@ class GraphsContainer extends React.Component {
                 },
               ]}
             />
-            <VictoryAxis dependentAxis tickCount={9} style={axisStyle} />
+            <VictoryAxis
+              dependentAxis
+              tickCount={9}
+              style={axisStyle}
+              tickFormat={this.setLeftPadding}
+            />
             <VictoryAxis
               tickCount={8}
               tickFormat={x => moment.utc(x).format('MMM DD hh:mm')}
