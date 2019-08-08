@@ -69,7 +69,7 @@ const GraphsViewControls = ({
             {highlightedRevisions.length > 0 &&
               highlightedRevisions.map((revision, index) => (
                 // eslint-disable-next-line react/no-array-index-key
-                <Col sm="3" className="pl-0 pr-3" key={index}>
+                <Col sm="2" className="pl-0 pr-3" key={index}>
                   <Input
                     type="text"
                     name={`revision ${revision}`}

@@ -1,7 +1,7 @@
 /* eslint-disable react/no-did-update-set-state
  */
 import React from 'react';
-import { Row } from 'reactstrap';
+import { Row, Col } from 'reactstrap';
 import PropTypes from 'prop-types';
 import {
   VictoryChart,
@@ -323,16 +323,18 @@ class GraphsContainer extends React.Component {
               />
             ))}
           </VictoryChart>
-          <SimpleTooltip
-            text={
-              <FontAwesomeIcon
-                className="pointer text-secondary"
-                icon={faQuestionCircle}
-                size="sm"
-              />
-            }
-            tooltipText="The bottom graph has mouse zoom and pan (click 'n' drag) enabled. For best results, when there's a high concentration of data points use the overview graph's selection marquee to narrow the x and y range first."
-          />
+          <Col className="pl-0">
+            <SimpleTooltip
+              text={
+                <FontAwesomeIcon
+                  className="pointer text-secondary"
+                  icon={faQuestionCircle}
+                  size="sm"
+                />
+              }
+              tooltipText="The bottom graph has mouse zoom and pan (click 'n' drag) enabled. For best results, when there's a high concentration of data points use the overview graph's selection marquee to narrow the x and y range first."
+            />
+          </Col>
         </Row>
 
         <Row>
@@ -427,6 +429,7 @@ class GraphsContainer extends React.Component {
               tickCount={8}
               tickFormat={x => moment.utc(x).format('MMM DD hh:mm')}
               style={axisStyle}
+              fixLabelOverlap
             />
           </VictoryChart>
         </Row>
