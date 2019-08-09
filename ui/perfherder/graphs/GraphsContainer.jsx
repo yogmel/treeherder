@@ -39,6 +39,7 @@ class GraphsContainer extends React.Component {
       entireDomain: this.getEntireDomain(),
       showTooltip: false,
       lockTooltip: false,
+      fullSelectedDataPoint: null,
     };
   }
 
@@ -146,6 +147,7 @@ class GraphsContainer extends React.Component {
     this.setState({
       showTooltip: true,
       lockTooltip: lock,
+      fullSelectedDataPoint: dataPoint
     });
   };
 
@@ -209,6 +211,23 @@ class GraphsContainer extends React.Component {
     }
   }
 
+  checkTooltip = (selectedDomain, updates) => {
+    const { fullSelectedDataPoint } = this.state;
+    const { updateStateParams } = this.props;
+    const { stateUpdates, paramUpdates } = updates;
+
+    if (fullSelectedDataPoint && ((fullSelectedDataPoint.datum.x < selectedDomain.x[0] ||
+      fullSelectedDataPoint.datum.x > selectedDomain.x[1]) ||
+      (fullSelectedDataPoint.datum.y < selectedDomain.y[0] ||
+      fullSelectedDataPoint.datum.y > selectedDomain.y[1])))
+    {
+      paramUpdates.selectedDataPoint = null;
+      stateUpdates.showTooltip = false;
+      stateUpdates.lockTooltip = false;
+    }
+    return [stateUpdates, paramUpdates];
+  }
+
   // debounced
   hideTooltip() {
     const { showTooltip, lockTooltip } = this.state;
@@ -220,20 +239,23 @@ class GraphsContainer extends React.Component {
 
   // debounced
   updateSelection(selectedDomain) {
-    this.props.updateStateParams({
+    let stateUpdates = { selectedDomain };
+    let paramUpdates = {
       zoom: selectedDomain,
-      selectedDataPoint: null,
-    });
+    };
+
+    ([stateUpdates, paramUpdates]) = this.checkTooltip(selectedDomain, [stateUpdates, paramUpdates]);
+    this.props.updateStateParams(paramUpdates);
+    this.checkTooltip(selectedDomain)
     this.setState(
-      { selectedDomain, showTooltip: false, lockTooltip: false },
+      stateUpdates,
       this.updateData,
     );
   }
 
   // debounced
   updateZoom(zoom) {
-    this.props.updateStateParams({ zoom, selectedDataPoint: null });
-    this.setState({ showTooltip: false, lockTooltip: false });
+    this.props.updateStateParams({ zoom });
   }
 
   render() {
