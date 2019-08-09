@@ -356,7 +356,7 @@ class GraphsContainer extends React.Component {
                   size="sm"
                 />
               }
-              tooltipText="The bottom graph has mouse zoom and pan (click 'n' drag) enabled. For best results, when there's a high concentration of data points use the overview graph's selection marquee to narrow the x and y range first."
+              tooltipText="The bottom graph has mouse zoom enabled. When there's a large amount of data points, use the overview graph's selection marquee to narrow the x and y range before zooming with the mouse."
             />
           </Col>
         </Row>
