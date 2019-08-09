@@ -39,7 +39,6 @@ class GraphsContainer extends React.Component {
       entireDomain: this.getEntireDomain(),
       showTooltip: false,
       lockTooltip: false,
-      fullSelectedDataPoint: null,
     };
   }
 
@@ -147,7 +146,6 @@ class GraphsContainer extends React.Component {
     this.setState({
       showTooltip: true,
       lockTooltip: lock,
-      fullSelectedDataPoint: dataPoint,
     });
   };
 
@@ -190,29 +188,6 @@ class GraphsContainer extends React.Component {
     return numberFormat.format(tick);
   };
 
-  // close the tooltip when the selected datapoint moves outside of the domain boundary
-  // during zoom and selection actions
-  checkTooltipLocation = selectedDomain => {
-    const { fullSelectedDataPoint, showTooltip } = this.state;
-    const { updateStateParams } = this.props;
-
-    if (
-      showTooltip &&
-      fullSelectedDataPoint &&
-      (fullSelectedDataPoint.datum.x < selectedDomain.x[0] ||
-        fullSelectedDataPoint.datum.x > selectedDomain.x[1] ||
-        (fullSelectedDataPoint.datum.y < selectedDomain.y[0] ||
-          fullSelectedDataPoint.datum.y > selectedDomain.y[1]))
-    ) {
-      this.setState({
-        fullSelectedDataPoint: null,
-        showTooltip: false,
-        lockTooltip: false,
-      });
-      updateStateParams({ selectedDataPoint: null });
-    }
-  };
-
   updateData() {
     const { selectedDomain } = this.state;
     const { testData } = this.props;
@@ -245,18 +220,21 @@ class GraphsContainer extends React.Component {
 
   // debounced
   updateSelection(selectedDomain) {
-    this.checkTooltipLocation(selectedDomain);
-    this.setState(
-      {
-        selectedDomain,
-      },
-      this.updateData,
-    );
+    const { showTooltip, lockTooltip } = this.state;
+
+    if (showTooltip && lockTooltip) {
+      this.closeTooltip();
+    }
+    this.setState({ selectedDomain }, this.updateData);
   }
 
   // debounced
   updateZoom(selectedDomain) {
-    this.checkTooltipLocation(selectedDomain);
+    const { showTooltip, lockTooltip } = this.state;
+
+    if (showTooltip && lockTooltip) {
+      this.closeTooltip();
+    }
     this.props.updateStateParams({ zoom: selectedDomain });
   }
 
