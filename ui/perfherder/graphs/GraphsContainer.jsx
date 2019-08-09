@@ -147,7 +147,7 @@ class GraphsContainer extends React.Component {
     this.setState({
       showTooltip: true,
       lockTooltip: lock,
-      fullSelectedDataPoint: dataPoint
+      fullSelectedDataPoint: dataPoint,
     });
   };
 
@@ -190,6 +190,29 @@ class GraphsContainer extends React.Component {
     return numberFormat.format(tick);
   };
 
+  // close the tooltip when the selected datapoint moves outside of the domain boundary
+  // during zoom and selection actions
+  checkTooltipLocation = selectedDomain => {
+    const { fullSelectedDataPoint, showTooltip } = this.state;
+    const { updateStateParams } = this.props;
+
+    if (
+      showTooltip &&
+      fullSelectedDataPoint &&
+      (fullSelectedDataPoint.datum.x < selectedDomain.x[0] ||
+        fullSelectedDataPoint.datum.x > selectedDomain.x[1] ||
+        (fullSelectedDataPoint.datum.y < selectedDomain.y[0] ||
+          fullSelectedDataPoint.datum.y > selectedDomain.y[1]))
+    ) {
+      this.setState({
+        fullSelectedDataPoint: null,
+        showTooltip: false,
+        lockTooltip: false,
+      });
+      updateStateParams({ selectedDataPoint: null });
+    }
+  };
+
   updateData() {
     const { selectedDomain } = this.state;
     const { testData } = this.props;
@@ -211,23 +234,6 @@ class GraphsContainer extends React.Component {
     }
   }
 
-  checkTooltip = (selectedDomain, updates) => {
-    const { fullSelectedDataPoint } = this.state;
-    const { updateStateParams } = this.props;
-    const { stateUpdates, paramUpdates } = updates;
-
-    if (fullSelectedDataPoint && ((fullSelectedDataPoint.datum.x < selectedDomain.x[0] ||
-      fullSelectedDataPoint.datum.x > selectedDomain.x[1]) ||
-      (fullSelectedDataPoint.datum.y < selectedDomain.y[0] ||
-      fullSelectedDataPoint.datum.y > selectedDomain.y[1])))
-    {
-      paramUpdates.selectedDataPoint = null;
-      stateUpdates.showTooltip = false;
-      stateUpdates.lockTooltip = false;
-    }
-    return [stateUpdates, paramUpdates];
-  }
-
   // debounced
   hideTooltip() {
     const { showTooltip, lockTooltip } = this.state;
@@ -239,23 +245,19 @@ class GraphsContainer extends React.Component {
 
   // debounced
   updateSelection(selectedDomain) {
-    let stateUpdates = { selectedDomain };
-    let paramUpdates = {
-      zoom: selectedDomain,
-    };
-
-    ([stateUpdates, paramUpdates]) = this.checkTooltip(selectedDomain, [stateUpdates, paramUpdates]);
-    this.props.updateStateParams(paramUpdates);
-    this.checkTooltip(selectedDomain)
+    this.checkTooltipLocation(selectedDomain);
     this.setState(
-      stateUpdates,
+      {
+        selectedDomain,
+      },
       this.updateData,
     );
   }
 
   // debounced
-  updateZoom(zoom) {
-    this.props.updateStateParams({ zoom });
+  updateZoom(selectedDomain) {
+    this.checkTooltipLocation(selectedDomain);
+    this.props.updateStateParams({ zoom: selectedDomain });
   }
 
   render() {
@@ -372,6 +374,7 @@ class GraphsContainer extends React.Component {
                 responsive={false}
                 zoomDomain={zoom}
                 onZoomDomainChange={this.updateSelection}
+                allowPan={false}
               />
             }
           >
