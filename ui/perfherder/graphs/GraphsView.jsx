@@ -25,7 +25,6 @@ import ErrorBoundary from '../../shared/ErrorBoundary';
 import LoadingSpinner from '../../shared/LoadingSpinner';
 
 import GraphsContainer from './GraphsContainer';
-import TestDataModal from './TestDataModal';
 import LegendCard from './LegendCard';
 import GraphsViewControls from './GraphsViewControls';
 
@@ -40,7 +39,6 @@ class GraphsView extends React.Component {
       selectedDataPoint: null,
       highlightAlerts: true,
       highlightedRevisions: ['', ''],
-      showModal: false,
       testData: [],
       errorMessages: [],
       options: {},
@@ -351,15 +349,14 @@ class GraphsView extends React.Component {
       timeRange,
       projects,
       frameworks,
-      showModal,
       testData,
-      options,
       highlightAlerts,
       highlightedRevisions,
       selectedDataPoint,
       loading,
       errorMessages,
       zoom,
+      options,
     } = this.state;
 
     return (
@@ -402,21 +399,11 @@ class GraphsView extends React.Component {
             <Col className="pl-0">
               <GraphsViewControls
                 timeRange={timeRange}
-                testDataModal={
-                  projects.length > 0 &&
-                  frameworks.length > 0 && (
-                    <TestDataModal
-                      showModal={showModal}
-                      frameworks={frameworks}
-                      projects={projects}
-                      timeRange={timeRange.value}
-                      options={options}
-                      getTestData={this.getTestData}
-                      toggle={() => this.toggle('showModal')}
-                      testData={testData}
-                    />
-                  )
-                }
+                frameworks={frameworks}
+                projects={projects}
+                options={options}
+                getTestData={this.getTestData}
+                testData={testData}
                 graphs={
                   testData.length > 0 && (
                     <GraphsContainer
@@ -435,7 +422,6 @@ class GraphsView extends React.Component {
                     />
                   )
                 }
-                updateState={state => this.setState(state)}
                 updateStateParams={state =>
                   this.setState(state, this.changeParams)
                 }

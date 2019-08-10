@@ -71,7 +71,7 @@ export default class TestDataModal extends React.Component {
     const { errorMessages, repository_name, framework } = this.state;
     const { timeRange } = this.props;
 
-    const params = { interval: timeRange, framework: framework.id };
+    const params = { interval: timeRange.value, framework: framework.id };
     const platforms = await PerfSeriesModel.getPlatformList(
       repository_name.name,
       params,
@@ -109,7 +109,7 @@ export default class TestDataModal extends React.Component {
     const { repository_name, framework, errorMessages } = this.state;
     const { timeRange } = this.props;
 
-    const params = { interval: timeRange, framework: framework.id };
+    const params = { interval: timeRange.value, framework: framework.id };
     const response = await PerfSeriesModel.getPlatformList(
       repository_name.name,
       params,
@@ -220,7 +220,7 @@ export default class TestDataModal extends React.Component {
     const { timeRange } = this.props;
 
     const params = {
-      interval: timeRange,
+      interval: timeRange.value,
       framework: framework.id,
       subtests: +includeSubtests,
     };
@@ -462,7 +462,7 @@ export default class TestDataModal extends React.Component {
 
 TestDataModal.propTypes = {
   projects: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  timeRange: PropTypes.number.isRequired,
+  timeRange: PropTypes.shape({}).isRequired,
   getTestData: PropTypes.func.isRequired,
   options: PropTypes.shape({
     option: PropTypes.string,
