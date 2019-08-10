@@ -22,7 +22,7 @@ const GraphsViewControls = ({
   highlightedRevisions,
   updateTimeRange,
   hasNoData,
-  TestDataModal,
+  testDataModal,
 }) => {
   const changeHighlightedRevision = (index, newValue) => {
     const newRevisions = [...highlightedRevisions];
@@ -33,8 +33,8 @@ const GraphsViewControls = ({
 
   return (
     <Container fluid className="justify-content-start">
+      {testDataModal}
       <Row className="pb-3">
-        {TestDataModal}
         <Col sm="auto" className="pl-0 py-2 pr-2" key={timeRange}>
           <UncontrolledDropdown
             className="mr-0 text-nowrap"

@@ -20,10 +20,10 @@ const frameworks = [
   { id: 3, name: 'autophone' },
 ];
 
-let showModal = false;
-function toggle() {
-  showModal = !showModal;
-}
+
+// closeModal
+const toggleMock = jest.fn();
+toggleMock.mockReturnValueOnce(false);
 
 const graphsViewControls = () =>
   render(
@@ -38,15 +38,26 @@ const graphsViewControls = () =>
       hasNoData
       TestDataModal={
         <TestDataModal
-          showModal={showModal}
+          showModal={false}
           frameworks={frameworks}
           projects={repos}
           timeRange={172800}
           options={{}}
           getTestData={() => {}}
-          toggle={toggle}
+          toggle={() => toggleMock()}
           testData={testData}
         />
       }
     />,
   );
+
+afterEach(cleanup)
+
+test('changing framework and repository from the test data modal shows the correct test', async () => {
+  const { getByText, getBy } = graphsViewControls();
+  const addTestData = getByText('Add test data');
+
+  fireEvent.click(addTestData);
+
+  // const testDataModal = await waitForElement(() => getByText('Add Test Data'));
+});
