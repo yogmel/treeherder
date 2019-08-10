@@ -389,6 +389,7 @@ export default class TestDataModal extends React.Component {
                   {relatedTests.length > 0 ? 'Related tests' : 'Tests'}
                 </Label>
                 <Input
+                  data-testid="tests"
                   type="select"
                   name="selectMulti"
                   id="selectTests"
@@ -398,6 +399,7 @@ export default class TestDataModal extends React.Component {
                     tests.sort().map(test => (
                       <option
                         key={test.id}
+                        data-testid={test.id}
                         onClick={() => this.updateSelectedTests(test)}
                         title={this.getOriginalTestName(test)}
                       >
@@ -417,6 +419,7 @@ export default class TestDataModal extends React.Component {
                   <span className="small">(click a test to remove it)</span>
                 </Label>
                 <Input
+                  data-testid="selectedTests"
                   type="select"
                   name="selectMulti"
                   id="selectTests"

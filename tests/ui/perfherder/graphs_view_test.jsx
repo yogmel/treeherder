@@ -4,8 +4,8 @@ import {
   cleanup,
   fireEvent,
   waitForElement,
-  waitForElementToBeRemoved,
-  wait,
+  // waitForElementToBeRemoved,
+  // wait,
 } from '@testing-library/react';
 
 import GraphsViewControls from '../../../ui/perfherder/graphs/GraphsViewControls';
@@ -20,15 +20,9 @@ const frameworks = [
   { id: 3, name: 'autophone' },
 ];
 
-
-// closeModal
-const toggleMock = jest.fn();
-toggleMock.mockReturnValueOnce(false);
-
 const graphsViewControls = () =>
   render(
     <GraphsViewControls
-      updateState={() => {}}
       updateStateParams={() => {}}
       graphs={false}
       timeRange={{}}
@@ -36,28 +30,38 @@ const graphsViewControls = () =>
       highlightedRevisions={['', '']}
       updateTimeRange={() => {}}
       hasNoData
-      TestDataModal={
-        <TestDataModal
-          showModal={false}
-          frameworks={frameworks}
-          projects={repos}
-          timeRange={172800}
-          options={{}}
-          getTestData={() => {}}
-          toggle={() => toggleMock()}
-          testData={testData}
-        />
-      }
+      frameworks={frameworks}
+      projects={repos}
+      timeRange={{ value: 172800, text: 'Last two days' }}
+      options={{}}
+      getTestData={() => {}}
+      testData={testData}
     />,
   );
 
-afterEach(cleanup)
+afterEach(cleanup);
+
+// Tests:
+// testDataModal is opened when add test data is clicked
+// testDataModal shows all tests in Tests text area except for what's in legend (testData)
+// changing a dropdown updates Test list
+// clicking on a test adds it to selectedTests
+// clicking submit closes the modal
 
 test('changing framework and repository from the test data modal shows the correct test', async () => {
-  const { getByText, getBy } = graphsViewControls();
+  const { getByText, getByTestId, queryByTestId } = graphsViewControls();
   const addTestData = getByText('Add test data');
 
   fireEvent.click(addTestData);
+  const testDataModal = getByText('Add Test Data');
+  expect(testDataModal).toBeInTheDocument();
 
-  // const testDataModal = await waitForElement(() => getByText('Add Test Data'));
+  const tests = getByTestId('tests');
+  const selectedTests = getByTestId('selectedTests');
+
+  // check that if a test has already been added to the legend (testData),
+  // then it's not included in the TestDataModals' list of Tests
+  // if they belong to the same frameworks, repository and platform
+  const existingTest = queryByTestId(testData[0].signature_id.toString());
+  expect(existingTest).toBeInTheDocument();
 });
