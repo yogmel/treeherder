@@ -376,18 +376,6 @@ class GraphsView extends React.Component {
             </Container>
           )}
 
-          {projects.length > 0 && frameworks.length > 0 && (
-            <TestDataModal
-              showModal={showModal}
-              frameworks={frameworks}
-              projects={projects}
-              timeRange={timeRange.value}
-              options={options}
-              getTestData={this.getTestData}
-              toggle={() => this.toggle('showModal')}
-              testData={testData}
-            />
-          )}
           <Row>
             <Col id="graph-chooser">
               <Container className="graph-legend pl-0 pb-4">
@@ -414,6 +402,21 @@ class GraphsView extends React.Component {
             <Col className="pl-0">
               <GraphsViewControls
                 timeRange={timeRange}
+                testDataModal={
+                  projects.length > 0 &&
+                  frameworks.length > 0 && (
+                    <TestDataModal
+                      showModal={showModal}
+                      frameworks={frameworks}
+                      projects={projects}
+                      timeRange={timeRange.value}
+                      options={options}
+                      getTestData={this.getTestData}
+                      toggle={() => this.toggle('showModal')}
+                      testData={testData}
+                    />
+                  )
+                }
                 graphs={
                   testData.length > 0 && (
                     <GraphsContainer
