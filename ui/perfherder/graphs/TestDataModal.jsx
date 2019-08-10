@@ -38,6 +38,25 @@ const getInitialData = async (
   return updates;
 };
 
+const getSeriesData = async (params, errorMessages, repository_name) => {
+  let updates = {
+    filteredData: [],
+    relatedTests: [],
+    showNoRelatedTests: false,
+    loading: false,
+  };
+  const response = await PerfSeriesModel.getSeriesList(
+    repository_name.name,
+    params,
+  );
+  updates = {
+    ...updates,
+    ...processResponse(response, 'seriesData', errorMessages),
+  };
+
+  return updates;
+};
+
 export default class TestDataModal extends React.Component {
   constructor(props) {
     super(props);
@@ -62,10 +81,10 @@ export default class TestDataModal extends React.Component {
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const { errorMessages, repository_name, framework } = this.state;
-    const { timeRange } = this.props;
-    const updates = this.props.getInitialData(
+    const { timeRange, getInitialData } = this.props;
+    const updates = await getInitialData(
       errorMessages,
       repository_name,
       framework,
@@ -93,27 +112,6 @@ export default class TestDataModal extends React.Component {
       this.updateSeriesData();
     }
   }
-
-  getSeriesData = async params => {
-    const { errorMessages, repository_name } = this.state;
-
-    let updates = {
-      filteredData: [],
-      relatedTests: [],
-      showNoRelatedTests: false,
-      loading: false,
-    };
-    const response = await PerfSeriesModel.getSeriesList(
-      repository_name.name,
-      params,
-    );
-    updates = {
-      ...updates,
-      ...processResponse(response, 'seriesData', errorMessages),
-    };
-
-    this.setState(updates, this.updateSeriesData);
-  };
 
   async getPlatforms() {
     const { repository_name, framework, errorMessages } = this.state;
@@ -224,10 +222,16 @@ export default class TestDataModal extends React.Component {
     });
   };
 
-  processOptions = (relatedTestsMode = false) => {
+  processOptions = async (relatedTestsMode = false) => {
     const { option, relatedSeries } = this.props.options;
-    const { platform, framework, includeSubtests } = this.state;
-    const { timeRange } = this.props;
+    const {
+      platform,
+      framework,
+      includeSubtests,
+      errorMessages,
+      repository_name,
+    } = this.state;
+    const { timeRange, getSeriesData } = this.props;
 
     const params = {
       interval: timeRange.value,
@@ -238,7 +242,13 @@ export default class TestDataModal extends React.Component {
 
     if (!relatedTestsMode) {
       params.platform = platform;
-      return this.getSeriesData(params);
+      const updates = await getSeriesData(
+        params,
+        errorMessages,
+        repository_name,
+      );
+      this.setState(updates, this.updateSeriesData);
+      return;
     }
 
     params.framework = relatedSeries.framework_id;
@@ -409,7 +419,7 @@ export default class TestDataModal extends React.Component {
                     tests.sort().map(test => (
                       <option
                         key={test.id}
-                        data-testid={test.id}
+                        data-testid={test.id.toString()}
                         onClick={() => this.updateSelectedTests(test)}
                         title={this.getOriginalTestName(test)}
                       >
@@ -486,6 +496,7 @@ TestDataModal.propTypes = {
   showModal: PropTypes.bool.isRequired,
   toggle: PropTypes.func.isRequired,
   getInitialData: PropTypes.func,
+  getSeriesData: PropTypes.func,
 };
 
 TestDataModal.defaultProps = {
@@ -493,4 +504,5 @@ TestDataModal.defaultProps = {
   testData: [],
   frameworks: [],
   getInitialData,
+  getSeriesData,
 };

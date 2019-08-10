@@ -12,10 +12,11 @@ import GraphsViewControls from '../../../ui/perfherder/graphs/GraphsViewControls
 // import { summaryStatusMap } from '../../../ui/perfherder/constants';
 import repos from '../mock/repositories';
 import testData from '../mock/performance_summary.json';
+import seriesData from '../mock/performance_signature.json';
 
 const frameworks = [{ id: 1, name: 'talos' }, { id: 2, name: 'build_metrics' }];
+const platforms = ['linux64', 'windows10-64', 'windows7-32'];
 
-const platforms = [];
 const graphsViewControls = () =>
   render(
     <GraphsViewControls
@@ -34,6 +35,7 @@ const graphsViewControls = () =>
       getInitialData={() => ({
         platforms,
       })}
+      getSeriesData={() => ({ seriesData })}
     />,
   );
 
@@ -58,10 +60,10 @@ test('changing framework and repository from the test data modal shows the corre
   const selectedTests = getByTestId('selectedTests');
 
   // If a test has already been added to the legend (testData),
-  // then it should not included in the TestDataModals' list of Tests
+  // then it should not be included in the TestDataModals' list of Tests
   // (based on framework, repository and platform)
   const existingTest = await waitForElement(() =>
     getByTestId(testData[0].signature_id.toString()),
   );
-  // expect(existingTest).toBeInTheDocument();
+  expect(existingTest).toBeInTheDocument();
 });
