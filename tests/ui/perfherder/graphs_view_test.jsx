@@ -9,23 +9,18 @@ import {
 } from '@testing-library/react';
 
 import GraphsViewControls from '../../../ui/perfherder/graphs/GraphsViewControls';
-import TestDataModal from '../../../ui/perfherder/graphs/TestDataModal';
 // import { summaryStatusMap } from '../../../ui/perfherder/constants';
 import repos from '../mock/repositories';
 import testData from '../mock/performance_summary.json';
 
-const frameworks = [
-  { id: 1, name: 'talos' },
-  { id: 2, name: 'build_metrics' },
-  { id: 3, name: 'autophone' },
-];
+const frameworks = [{ id: 1, name: 'talos' }, { id: 2, name: 'build_metrics' }];
 
+const platforms = [];
 const graphsViewControls = () =>
   render(
     <GraphsViewControls
       updateStateParams={() => {}}
       graphs={false}
-      timeRange={{}}
       highlightAlerts={false}
       highlightedRevisions={['', '']}
       updateTimeRange={() => {}}
@@ -36,6 +31,9 @@ const graphsViewControls = () =>
       options={{}}
       getTestData={() => {}}
       testData={testData}
+      getInitialData={() => ({
+        platforms,
+      })}
     />,
   );
 
@@ -59,9 +57,11 @@ test('changing framework and repository from the test data modal shows the corre
   const tests = getByTestId('tests');
   const selectedTests = getByTestId('selectedTests');
 
-  // check that if a test has already been added to the legend (testData),
-  // then it's not included in the TestDataModals' list of Tests
-  // if they belong to the same frameworks, repository and platform
-  const existingTest = queryByTestId(testData[0].signature_id.toString());
-  expect(existingTest).toBeInTheDocument();
+  // If a test has already been added to the legend (testData),
+  // then it should not included in the TestDataModals' list of Tests
+  // (based on framework, repository and platform)
+  const existingTest = await waitForElement(() =>
+    getByTestId(testData[0].signature_id.toString()),
+  );
+  // expect(existingTest).toBeInTheDocument();
 });

@@ -19,6 +19,25 @@ import PerfSeriesModel from '../../models/perfSeries';
 import { thPerformanceBranches } from '../../helpers/constants';
 import { containsText } from '../helpers';
 
+// set as default prop for testing purposes
+const getInitialData = async (
+  errorMessages,
+  repository_name,
+  framework,
+  timeRange,
+) => {
+  const params = { interval: timeRange.value, framework: framework.id };
+  const platforms = await PerfSeriesModel.getPlatformList(
+    repository_name.name,
+    params,
+  );
+
+  const updates = {
+    ...processResponse(platforms, 'platforms', errorMessages),
+  };
+  return updates;
+};
+
 export default class TestDataModal extends React.Component {
   constructor(props) {
     super(props);
@@ -44,7 +63,15 @@ export default class TestDataModal extends React.Component {
   }
 
   componentDidMount() {
-    this.getInitialData();
+    const { errorMessages, repository_name, framework } = this.state;
+    const { timeRange } = this.props;
+    const updates = this.props.getInitialData(
+      errorMessages,
+      repository_name,
+      framework,
+      timeRange,
+    );
+    this.setState(updates, this.processOptions);
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -66,23 +93,6 @@ export default class TestDataModal extends React.Component {
       this.updateSeriesData();
     }
   }
-
-  getInitialData = async () => {
-    const { errorMessages, repository_name, framework } = this.state;
-    const { timeRange } = this.props;
-
-    const params = { interval: timeRange.value, framework: framework.id };
-    const platforms = await PerfSeriesModel.getPlatformList(
-      repository_name.name,
-      params,
-    );
-
-    const updates = {
-      ...processResponse(platforms, 'platforms', errorMessages),
-    };
-
-    this.setState(updates, this.processOptions);
-  };
 
   getSeriesData = async params => {
     const { errorMessages, repository_name } = this.state;
@@ -475,10 +485,12 @@ TestDataModal.propTypes = {
   frameworks: PropTypes.arrayOf(PropTypes.shape({})),
   showModal: PropTypes.bool.isRequired,
   toggle: PropTypes.func.isRequired,
+  getInitialData: PropTypes.func,
 };
 
 TestDataModal.defaultProps = {
   options: undefined,
   testData: [],
   frameworks: [],
+  getInitialData,
 };
