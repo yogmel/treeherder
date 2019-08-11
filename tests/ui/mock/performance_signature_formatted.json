@@ -1,0 +1,743 @@
+[
+  {
+    "id": 1647494,
+    "name": "a11yr opt e10s stylo",
+    "testName": "a11yr",
+    "suite": "a11yr",
+    "test": null,
+    "signature": "fcefb979eac44d057f9c05434580ce7845f4c2d6",
+    "hasSubtests": true,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1660552,
+    "name": "about_preferences_basic opt e10s stylo",
+    "testName": "about_preferences_basic",
+    "suite": "about_preferences_basic",
+    "test": null,
+    "signature": "9db5c2909418068b3004ea3911675ee3e6e5f6da",
+    "hasSubtests": true,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1648571,
+    "name": "basic_compositor_video opt e10s stylo",
+    "testName": "basic_compositor_video",
+    "suite": "basic_compositor_video",
+    "test": null,
+    "signature": "aaf7d0091b502d1596c9791a47cb25efeda8a5ff",
+    "hasSubtests": true,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1647505,
+    "name": "cpstartup content-process-startup opt e10s stylo",
+    "testName": "cpstartup content-process-startup",
+    "suite": "cpstartup",
+    "test": "content-process-startup",
+    "signature": "27ba9ecfc6793c2a9357cc7c2328f9c4302b7314",
+    "hasSubtests": false,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1663494,
+    "name": "displaylist_mutate opt e10s stylo",
+    "testName": "displaylist_mutate",
+    "suite": "displaylist_mutate",
+    "test": null,
+    "signature": "68894ed53ab6da6517267f12e8650f39e4ad4c78",
+    "hasSubtests": true,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1648839,
+    "name": "dromaeo_css opt e10s stylo",
+    "testName": "dromaeo_css",
+    "suite": "dromaeo_css",
+    "test": null,
+    "signature": "7f412bbe69cac3058f21fab9cc2597b360603ecd",
+    "hasSubtests": true,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": false
+  },
+  {
+    "id": 1646990,
+    "name": "dromaeo_dom opt e10s stylo",
+    "testName": "dromaeo_dom",
+    "suite": "dromaeo_dom",
+    "test": null,
+    "signature": "91ee66e069fdeb63f2aaabf8b4cff8451273c461",
+    "hasSubtests": true,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": false
+  },
+  {
+    "id": 1649264,
+    "name": "glterrain opt e10s stylo",
+    "testName": "glterrain",
+    "suite": "glterrain",
+    "test": null,
+    "signature": "3cd8bad27f46ae6b18a6201ed11d377cff5eac40",
+    "hasSubtests": true,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1648590,
+    "name": "glvideo Mean tick time across 100 ticks:  opt e10s stylo",
+    "testName": "glvideo Mean tick time across 100 ticks: ",
+    "suite": "glvideo",
+    "test": "Mean tick time across 100 ticks: ",
+    "signature": "9ba3d61d0e42594fa1fec680b5b304e839dc8fb8",
+    "hasSubtests": false,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1648846,
+    "name": "kraken opt e10s stylo",
+    "testName": "kraken",
+    "suite": "kraken",
+    "test": null,
+    "signature": "123a08fb5b7095bf46b82502d49f9b71e16aa3ad",
+    "hasSubtests": true,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 2098211,
+    "name": "pdfpaint opt e10s stylo",
+    "testName": "pdfpaint",
+    "suite": "pdfpaint",
+    "test": null,
+    "signature": "51cb2acd3df22c614edf30f83e2d6642f3d93a10",
+    "hasSubtests": false,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1647506,
+    "name": "perf_reftest opt e10s stylo",
+    "testName": "perf_reftest",
+    "suite": "perf_reftest",
+    "test": null,
+    "signature": "ba00a06e08d0481c8b387e5454d141fdf8764631",
+    "hasSubtests": true,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1646973,
+    "name": "perf_reftest_singletons opt e10s stylo",
+    "testName": "perf_reftest_singletons",
+    "suite": "perf_reftest_singletons",
+    "test": null,
+    "signature": "9964ae2a77f38af15e7ddf4cccd6a348c8a27777",
+    "hasSubtests": true,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1648593,
+    "name": "rasterflood_gradient opt e10s stylo",
+    "testName": "rasterflood_gradient",
+    "suite": "rasterflood_gradient",
+    "test": null,
+    "signature": "d5218d77ac61c05d9d4a53125b8a6205f5c54d9a",
+    "hasSubtests": false,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": false
+  },
+  {
+    "id": 1648592,
+    "name": "rasterflood_svg opt e10s stylo",
+    "testName": "rasterflood_svg",
+    "suite": "rasterflood_svg",
+    "test": null,
+    "signature": "0fe481c390d20b45d70f4f585cbb908383786988",
+    "hasSubtests": false,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1647499,
+    "name": "sessionrestore opt e10s stylo",
+    "testName": "sessionrestore",
+    "suite": "sessionrestore",
+    "test": "sessionrestore",
+    "signature": "ff37541093cfbb4e12cebc464dd278aebfc37bb9",
+    "hasSubtests": false,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1647500,
+    "name": "sessionrestore_many_windows opt e10s stylo",
+    "testName": "sessionrestore_many_windows",
+    "suite": "sessionrestore_many_windows",
+    "test": "sessionrestore_many_windows",
+    "signature": "bed99d3fd00fed7e6862316f589bf0ea03dbc97e",
+    "hasSubtests": false,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1647501,
+    "name": "sessionrestore_no_auto_restore opt e10s stylo",
+    "testName": "sessionrestore_no_auto_restore",
+    "suite": "sessionrestore_no_auto_restore",
+    "test": "sessionrestore_no_auto_restore",
+    "signature": "0fb74a3de048e57e1b03cc65c9e5ac3b9d8d531e",
+    "hasSubtests": false,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1899629,
+    "name": "startup_about_home_paint opt e10s stylo",
+    "testName": "startup_about_home_paint",
+    "suite": "startup_about_home_paint",
+    "test": "startup_about_home_paint",
+    "signature": "2a8a5b74bfc943d2d0a68921d85b118a9365465c",
+    "hasSubtests": false,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1647502,
+    "name": "tabpaint opt e10s stylo",
+    "testName": "tabpaint",
+    "suite": "tabpaint",
+    "test": null,
+    "signature": "1599f6a0f2ba60b3621eb8b4134ddc45c28f2fe0",
+    "hasSubtests": true,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1901703,
+    "name": "tabswitch opt e10s stylo",
+    "testName": "tabswitch",
+    "suite": "tabswitch",
+    "test": null,
+    "signature": "7b4e00b4e3a50e27429dbc10594cc6686078fac6",
+    "hasSubtests": true,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1648242,
+    "name": "tart opt e10s stylo",
+    "testName": "tart",
+    "suite": "tart",
+    "test": null,
+    "signature": "0beffdc8b6c1bc5bc0a0292a2947ad260d39e876",
+    "hasSubtests": true,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1647462,
+    "name": "tart_flex opt e10s stylo",
+    "testName": "tart_flex",
+    "suite": "tart_flex",
+    "test": null,
+    "signature": "664c274bfcf996b14aa7771b6f2779531c309868",
+    "hasSubtests": true,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1647786,
+    "name": "tp5o opt e10s stylo",
+    "testName": "tp5o",
+    "suite": "tp5o",
+    "test": null,
+    "signature": "4df0fb2d885655e0f0e3d8a195ad4405588c3154",
+    "hasSubtests": true,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1647838,
+    "name": "tp5o XRes opt e10s stylo",
+    "testName": "tp5o XRes",
+    "suite": "tp5o",
+    "test": "XRes",
+    "signature": "e9e3729af84aaa4cc0afdff9b219d27230cda486",
+    "hasSubtests": false,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1647839,
+    "name": "tp5o responsiveness opt e10s stylo",
+    "testName": "tp5o responsiveness",
+    "suite": "tp5o",
+    "test": "responsiveness",
+    "signature": "d03cdc477d48982ab6bd17158beb7497c8afee75",
+    "hasSubtests": false,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1649161,
+    "name": "tp5o_scroll opt e10s stylo",
+    "testName": "tp5o_scroll",
+    "suite": "tp5o_scroll",
+    "test": null,
+    "signature": "5f1a4586275e5fb76258a4ea869a5f88f77477cc",
+    "hasSubtests": true,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1647944,
+    "name": "tp5o_webext opt e10s stylo",
+    "testName": "tp5o_webext",
+    "suite": "tp5o_webext",
+    "test": null,
+    "signature": "264b7b8ddcd933591a907d605f489f9516b485d6",
+    "hasSubtests": true,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1647996,
+    "name": "tp5o_webext XRes opt e10s stylo",
+    "testName": "tp5o_webext XRes",
+    "suite": "tp5o_webext",
+    "test": "XRes",
+    "signature": "67202fa32f5dfcd6e06340c5df889ebb5b9e3d00",
+    "hasSubtests": false,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1647997,
+    "name": "tp5o_webext responsiveness opt e10s stylo",
+    "testName": "tp5o_webext responsiveness",
+    "suite": "tp5o_webext",
+    "test": "responsiveness",
+    "signature": "fbdc6d1f1096dd7022be9a2a741463d6abab0324",
+    "hasSubtests": false,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1787200,
+    "name": "tresize opt e10s stylo",
+    "testName": "tresize",
+    "suite": "tresize",
+    "test": null,
+    "signature": "4767b31185381dace4da7275d0674e57f52d0572",
+    "hasSubtests": false,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1647497,
+    "name": "ts_paint opt e10s stylo",
+    "testName": "ts_paint",
+    "suite": "ts_paint",
+    "test": "ts_paint",
+    "signature": "38c2a21f5d325d370deac49cbc21af941e231139",
+    "hasSubtests": false,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1647493,
+    "name": "ts_paint_flex opt e10s stylo",
+    "testName": "ts_paint_flex",
+    "suite": "ts_paint_flex",
+    "test": "ts_paint_flex",
+    "signature": "9c0028a9c871b51c8296485c8fc09b21fe41eec0",
+    "hasSubtests": false,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1647943,
+    "name": "ts_paint_webext opt e10s stylo",
+    "testName": "ts_paint_webext",
+    "suite": "ts_paint_webext",
+    "test": "ts_paint_webext",
+    "signature": "8df739bd601cde4f9b80276b0c3572d4b90a0621",
+    "hasSubtests": false,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1648273,
+    "name": "tscrollx opt e10s stylo",
+    "testName": "tscrollx",
+    "suite": "tscrollx",
+    "test": null,
+    "signature": "2c4c53dc1811b9ee562e351313d9787eb5f42372",
+    "hasSubtests": true,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1648286,
+    "name": "tsvg_static opt e10s stylo",
+    "testName": "tsvg_static",
+    "suite": "tsvg_static",
+    "test": null,
+    "signature": "4a6acdde23af8a7e9c9c72263e11ca3acc636074",
+    "hasSubtests": true,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1648239,
+    "name": "tsvgr_opacity opt e10s stylo",
+    "testName": "tsvgr_opacity",
+    "suite": "tsvgr_opacity",
+    "test": null,
+    "signature": "a4c043f3728f97c82cf525ddafcfa88f0252836f",
+    "hasSubtests": true,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1648231,
+    "name": "tsvgx opt e10s stylo",
+    "testName": "tsvgx",
+    "suite": "tsvgx",
+    "test": null,
+    "signature": "e5f11cb4cbef16f01eee10037a37d803eaeb1111",
+    "hasSubtests": true,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  },
+  {
+    "id": 1916031,
+    "name": "twinopen ext+twinopen:twinopen.html opt e10s stylo",
+    "testName": "twinopen ext+twinopen:twinopen.html",
+    "suite": "twinopen",
+    "test": "ext+twinopen:twinopen.html",
+    "signature": "63f90bcfdb78ea24c811c033d8dece7e0431569e",
+    "hasSubtests": false,
+    "parentSignature": null,
+    "projectName": "mozilla-central",
+    "platform": "linux64",
+    "options": [
+      "opt",
+      "e10s",
+      "stylo"
+    ],
+    "frameworkId": 1,
+    "lowerIsBetter": true
+  }
+]

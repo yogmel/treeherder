@@ -247,6 +247,7 @@ export default class TestDataModal extends React.Component {
         errorMessages,
         repository_name,
       );
+
       this.setState(updates, this.updateSeriesData);
       return;
     }
