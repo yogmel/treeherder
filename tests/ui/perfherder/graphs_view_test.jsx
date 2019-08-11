@@ -49,7 +49,12 @@ afterEach(cleanup);
 // clicking submit closes the modal
 
 test('changing framework and repository from the test data modal shows the correct test', async () => {
-  const { getByText, getByTestId, queryByTestId } = graphsViewControls();
+  const {
+    getByText,
+    getByTestId,
+    queryByTestId,
+    getByTitle,
+  } = graphsViewControls();
   const addTestData = getByText('Add test data');
 
   fireEvent.click(addTestData);
@@ -59,11 +64,16 @@ test('changing framework and repository from the test data modal shows the corre
   const tests = getByTestId('tests');
   const selectedTests = getByTestId('selectedTests');
 
+  const platform = getByTitle('Platform');
+  fireEvent.click(platform);
+
+  const windowsPlatform = await waitForElement(() => getByText('windows7-32'));
+
+  fireEvent.click(windowsPlatform);
+
   // If a test has already been added to the legend (testData),
   // then it should not be included in the TestDataModals' list of Tests
   // (based on framework, repository and platform)
-  const existingTest = await waitForElement(() =>
-    getByTestId(testData[0].signature_id.toString()),
-  );
-  expect(existingTest).toBeInTheDocument();
+  const existingTest = queryByTestId(testData[0].signature_id.toString());
+  expect(existingTest).not.toBeInTheDocument();
 });
