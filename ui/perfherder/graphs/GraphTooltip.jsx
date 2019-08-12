@@ -12,19 +12,11 @@ import { create } from '../../helpers/http';
 import RepositoryModel from '../../models/repository';
 import { displayNumber, getStatus } from '../helpers';
 
-const GraphTooltip = ({
-  selectedDataPoint,
-  testData,
-  user,
-  updateData,
-  projects,
-}) => {
+const GraphTooltip = ({ dataPoint, testData, user, updateData, projects }) => {
   // we either have partial information provided by the selected
-  // query parameter or the full selectedDataPoint object provided from the
+  // query parameter or the full dataPoint object provided from the
   // graph library
-  const datum = selectedDataPoint.datum
-    ? selectedDataPoint.datum
-    : selectedDataPoint;
+  const datum = dataPoint.datum ? dataPoint.datum : dataPoint;
 
   // TODO show an error message if not found
   const testDetails = testData.find(
@@ -36,7 +28,7 @@ const GraphTooltip = ({
   const dataPointDetails = testDetails.data[flotIndex];
 
   const retriggers = countBy(testDetails.resultSetData, resultSetId =>
-    resultSetId === selectedDataPoint.pushId ? 'retrigger' : 'original',
+    resultSetId === dataPoint.pushId ? 'retrigger' : 'original',
   );
   const retriggerNum = retriggers.retrigger - 1;
   const prevFlotDataPointIndex = flotIndex - 1;
@@ -210,7 +202,7 @@ const GraphTooltip = ({
 };
 
 GraphTooltip.propTypes = {
-  selectedDataPoint: PropTypes.shape({}).isRequired,
+  dataPoint: PropTypes.shape({}).isRequired,
   testData: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   user: PropTypes.shape({}).isRequired,
   updateData: PropTypes.func.isRequired,

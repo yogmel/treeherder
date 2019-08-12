@@ -309,7 +309,7 @@ class GraphsView extends React.Component {
       inherit: true,
       relative: current,
       notify: false,
-});
+    });
   };
 
   changeParams = () => {

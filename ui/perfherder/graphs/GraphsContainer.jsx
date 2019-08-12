@@ -35,14 +35,16 @@ class GraphsContainer extends React.Component {
       entireDomain: this.getEntireDomain(),
       showTooltip: false,
       lockTooltip: false,
+      dataPoint: this.props.selectedDataPoint,
     };
   }
 
   componentDidMount() {
     this.addHighlights();
     this.updateData(this.props.zoom);
-    const { selectedDataPoint } = this.props;
-    if (selectedDataPoint) this.showTooltip(selectedDataPoint, true);
+
+    const { dataPoint } = this.state;
+    if (dataPoint) this.showTooltip(dataPoint, true);
   }
 
   componentDidUpdate(prevProps) {
@@ -132,6 +134,7 @@ class GraphsContainer extends React.Component {
     this.setState({
       showTooltip: true,
       lockTooltip: lock,
+      dataPoint,
     });
   };
 
@@ -145,20 +148,23 @@ class GraphsContainer extends React.Component {
     }
     this.showTooltip(dataPoint, lock);
 
-    updateStateParams({
-      selectedDataPoint: {
-        signature_id: dataPoint.datum.signature_id,
-        pushId: dataPoint.datum.pushId,
-        x: dataPoint.x,
-        y: dataPoint.y,
-      },
-    });
+    if (lock) {
+      updateStateParams({
+        selectedDataPoint: {
+          signature_id: dataPoint.datum.signature_id,
+          pushId: dataPoint.datum.pushId,
+          x: dataPoint.x,
+          y: dataPoint.y,
+        },
+      });
+    }
   };
 
   closeTooltip = () => {
     this.setState({
       showTooltip: false,
       lockTooltip: false,
+      dataPoint: null,
     });
     this.props.updateStateParams({ selectedDataPoint: null });
   };
@@ -215,18 +221,14 @@ class GraphsContainer extends React.Component {
   }
 
   render() {
-    const {
-      testData,
-      zoom,
-      selectedDataPoint,
-      highlightedRevisions,
-    } = this.props;
+    const { testData, zoom, highlightedRevisions } = this.props;
     const {
       highlights,
       scatterPlotData,
       entireDomain,
       showTooltip,
       lockTooltip,
+      dataPoint,
     } = this.state;
 
     const highlightPoints = Boolean(highlights.length);
@@ -259,9 +261,9 @@ class GraphsContainer extends React.Component {
               title="close tooltip"
             />
           </span>
-          {selectedDataPoint && showTooltip && (
+          {dataPoint && showTooltip && (
             <GraphTooltip
-              selectedDataPoint={selectedDataPoint}
+              dataPoint={dataPoint}
               testData={testData}
               {...this.props}
             />
