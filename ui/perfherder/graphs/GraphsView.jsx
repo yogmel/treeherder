@@ -291,6 +291,7 @@ class GraphsView extends React.Component {
         // to control visibility so it should be removed at some point
         framework_id: parseInt(partialSeriesArray[3], 10),
       };
+
       return partialSeriesObject;
     });
 
@@ -300,13 +301,15 @@ class GraphsView extends React.Component {
     }));
   };
 
-  updateParams = param => {
+  updateParams = params => {
     const { transitionTo, current } = this.props.$state;
 
-    transitionTo(current.name, param, {
+    transitionTo('graphs', params, {
+      location: true,
       inherit: true,
+      relative: current,
       notify: false,
-    });
+});
   };
 
   changeParams = () => {
