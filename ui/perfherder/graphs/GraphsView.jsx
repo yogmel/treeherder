@@ -283,10 +283,13 @@ class GraphsView extends React.Component {
         repository_name: partialSeriesArray[0],
         // TODO deprecate signature_hash
         signature_id:
-          partialSeriesArray[1].length === 40
+          partialSeriesArray[1] && partialSeriesArray[1].length === 40
             ? partialSeriesArray[1]
             : parseInt(partialSeriesArray[1], 10),
-        framework_id: parseInt(partialSeriesArray[2], 10),
+        // TODO partialSeriesArray[2] is for the 1 that's inserted in the url
+        // for visibility of test legend cards but isn't actually being used
+        // to control visibility so it should be removed at some point
+        framework_id: parseInt(partialSeriesArray[3], 10),
       };
       return partialSeriesObject;
     });
@@ -318,7 +321,7 @@ class GraphsView extends React.Component {
 
     const newSeries = testData.map(
       series =>
-        `${series.repository_name},${series.signature_id},${series.framework_id}`,
+        `${series.repository_name},${series.signature_id},1,${series.framework_id}`,
     );
     const params = {
       series: newSeries,

@@ -263,7 +263,7 @@ export const getCounterMap = function getCounterMap(
 
   return cmap;
 };
-
+// TODO remove
 // TODO look into using signature_id instead of the hash
 export const getGraphsLink = function getGraphsLink(
   seriesList,
@@ -315,6 +315,7 @@ export const createNoiseMetric = function createNoiseMetric(
   return compareResults;
 };
 
+// TODO
 export const createGraphsLinks = (
   validatedProps,
   links,
@@ -367,14 +368,14 @@ export const getAlertStatusText = alert =>
   Object.values(phAlertStatusMap).find(status => status.id === alert.status)
     .text;
 
-// TODO look into using signature_id instead of the hash
+// TODO look into using signature_id instead of the hash and remove all other params
 export const getGraphsURL = (
   alert,
   timeRange,
   alertRepository,
   performanceFrameworkId,
 ) => {
-  let url = `#/graphs?timerange=${timeRange}&series=${alertRepository},${alert.series_signature.id},${alert.series_signature.framework_id}`;
+  let url = `#/graphs?timerange=${timeRange}&series=${alertRepository},${alert.series_signature.id},1,${alert.series_signature.framework_id}`;
 
   // TODO deprecate usage of signature hash
   // automatically add related branches (we take advantage of
@@ -389,7 +390,7 @@ export const getGraphsURL = (
     url += branches
       .map(
         branch =>
-          `&series=${branch},${alert.series_signature.signature_hash},${alert.series_signature.framework_id}`,
+          `&series=${branch},${alert.series_signature.signature_hash},1,${alert.series_signature.framework_id}`,
       )
       .join('');
   }
