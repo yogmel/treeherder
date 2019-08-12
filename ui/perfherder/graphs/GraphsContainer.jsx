@@ -1,5 +1,3 @@
-/* eslint-disable react/no-did-update-set-state
- */
 import React from 'react';
 import { Row, Col } from 'reactstrap';
 import PropTypes from 'prop-types';
@@ -26,12 +24,10 @@ class GraphsContainer extends React.Component {
   constructor(props) {
     super(props);
     this.updateZoom = debounce(this.updateZoom.bind(this), 500);
-    this.updateSelection = debounce(this.updateSelection.bind(this), 500);
     this.hideTooltip = debounce(this.hideTooltip.bind(this), 250);
     this.tooltip = React.createRef();
     this.leftChartPadding = 25;
     this.state = {
-      selectedDomain: this.props.zoom,
       highlights: [],
       scatterPlotData: this.props.testData.flatMap(item =>
         item.visible ? item.data : [],
@@ -44,22 +40,13 @@ class GraphsContainer extends React.Component {
 
   componentDidMount() {
     this.addHighlights();
-    this.updateData();
+    this.updateData(this.props.zoom);
     const { selectedDataPoint } = this.props;
     if (selectedDataPoint) this.showTooltip(selectedDataPoint, true);
   }
 
   componentDidUpdate(prevProps) {
-    const {
-      zoom,
-      highlightAlerts,
-      highlightedRevisions,
-      testData,
-    } = this.props;
-
-    if (prevProps.zoom !== zoom) {
-      this.setState({ selectedDomain: zoom });
-    }
+    const { highlightAlerts, highlightedRevisions, testData } = this.props;
 
     if (
       prevProps.highlightAlerts !== highlightAlerts ||
@@ -82,7 +69,6 @@ class GraphsContainer extends React.Component {
     this.addHighlights();
     this.setState({
       entireDomain,
-      selectedDomain: {},
       scatterPlotData,
     });
     updateStateParams({ zoom: {} });
@@ -188,22 +174,20 @@ class GraphsContainer extends React.Component {
     return numberFormat.format(tick);
   };
 
-  updateData() {
-    const { selectedDomain } = this.state;
+  updateData(zoom) {
     const { testData } = this.props;
 
-    // we do this (along with debouncing updateSelection and updateZoom)
-    // to make zooming faster by removing unneeded data points based on
-    // the updated selectedDomain
-    if (selectedDomain.x && selectedDomain.y) {
+    // we do this along with debouncing updateZoom to make zooming
+    // faster by removing unneeded data points based on the updated x,y
+    if (zoom.x && zoom.y) {
       const scatterPlotData = testData
         .flatMap(item => (item.visible ? item.data : []))
         .filter(
           data =>
-            data.x >= selectedDomain.x[0] &&
-            data.x <= selectedDomain.x[1] &&
-            data.y >= selectedDomain.y[0] &&
-            data.y <= selectedDomain.y[1],
+            data.x >= zoom.x[0] &&
+            data.x <= zoom.x[1] &&
+            data.y >= zoom.y[0] &&
+            data.y <= zoom.y[1],
         );
       this.setState({ scatterPlotData });
     }
@@ -219,23 +203,15 @@ class GraphsContainer extends React.Component {
   }
 
   // debounced
-  updateSelection(selectedDomain) {
+  updateZoom(zoom) {
     const { showTooltip, lockTooltip } = this.state;
 
     if (showTooltip && lockTooltip) {
       this.closeTooltip();
     }
-    this.setState({ selectedDomain }, this.updateData);
-  }
 
-  // debounced
-  updateZoom(selectedDomain) {
-    const { showTooltip, lockTooltip } = this.state;
-
-    if (showTooltip && lockTooltip) {
-      this.closeTooltip();
-    }
-    this.props.updateStateParams({ zoom: selectedDomain });
+    this.props.updateStateParams({ zoom });
+    this.updateData(zoom);
   }
 
   render() {
@@ -246,7 +222,6 @@ class GraphsContainer extends React.Component {
       highlightedRevisions,
     } = this.props;
     const {
-      selectedDomain,
       highlights,
       scatterPlotData,
       entireDomain,
@@ -304,7 +279,7 @@ class GraphsContainer extends React.Component {
             containerComponent={
               <VictoryBrushContainer
                 responsive={false}
-                brushDomain={selectedDomain}
+                brushDomain={zoom}
                 onBrushDomainChange={this.updateZoom}
               />
             }
@@ -351,7 +326,7 @@ class GraphsContainer extends React.Component {
               <VictoryZoomContainer
                 responsive={false}
                 zoomDomain={zoom}
-                onZoomDomainChange={this.updateSelection}
+                onZoomDomainChange={this.updateZoom}
                 allowPan={false}
               />
             }
