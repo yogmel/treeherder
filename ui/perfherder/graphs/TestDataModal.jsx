@@ -19,7 +19,7 @@ import PerfSeriesModel from '../../models/perfSeries';
 import { thPerformanceBranches } from '../../helpers/constants';
 import { containsText } from '../helpers';
 
-// set as default prop for testing purposes
+// TODO move to helpers file
 const getInitialData = async (
   errorMessages,
   repository_name,
@@ -38,7 +38,23 @@ const getInitialData = async (
   return updates;
 };
 
-const getSeriesData = async (params, errorMessages, repository_name) => {
+const updateSeriesData = (origSeriesData, testData) => {
+  const newSeriesData = origSeriesData.filter(
+    item => testData.findIndex(test => item.id === test.signature_id) === -1,
+  );
+
+  if (origSeriesData.length !== newSeriesData.length) {
+    return newSeriesData;
+  }
+  return origSeriesData;
+};
+
+const getSeriesData = async (
+  params,
+  errorMessages,
+  repository_name,
+  testData,
+) => {
   let updates = {
     filteredData: [],
     relatedTests: [],
@@ -55,7 +71,7 @@ const getSeriesData = async (params, errorMessages, repository_name) => {
   };
 
   if (updates.origSeriesData) {
-    updates.seriesData = this.updateSeriesData(updates.origSeriesData);
+    updates.seriesData = updateSeriesData(updates.origSeriesData, testData);
   }
   return updates;
 };
@@ -113,7 +129,7 @@ export default class TestDataModal extends React.Component {
     }
 
     if (testData !== prevProps.testData) {
-      this.updateSeriesData(origSeriesData);
+      updateSeriesData(origSeriesData, testData);
     }
   }
 
@@ -131,19 +147,6 @@ export default class TestDataModal extends React.Component {
     this.setState(updates);
     this.processOptions();
   }
-
-  updateSeriesData = origSeriesData => {
-    const newSeriesData = origSeriesData.filter(
-      item =>
-        this.props.testData.findIndex(test => item.id === test.signature_id) ===
-        -1,
-    );
-    console.log(origSeriesData.length, newSeriesData.length);
-    if (origSeriesData.length !== newSeriesData.length) {
-      return newSeriesData;
-    }
-    return origSeriesData;
-  };
 
   addRelatedConfigs = async params => {
     const { relatedSeries } = this.props.options;
@@ -235,7 +238,7 @@ export default class TestDataModal extends React.Component {
       errorMessages,
       repository_name,
     } = this.state;
-    const { timeRange, getSeriesData } = this.props;
+    const { timeRange, getSeriesData, testData } = this.props;
 
     const params = {
       interval: timeRange.value,
@@ -250,6 +253,7 @@ export default class TestDataModal extends React.Component {
         params,
         errorMessages,
         repository_name,
+        testData,
       );
 
       this.setState(updates);
