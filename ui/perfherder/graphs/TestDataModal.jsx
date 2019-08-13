@@ -51,9 +51,12 @@ const getSeriesData = async (params, errorMessages, repository_name) => {
   );
   updates = {
     ...updates,
-    ...processResponse(response, 'seriesData', errorMessages),
+    ...processResponse(response, 'origSeriesData', errorMessages),
   };
 
+  if (updates.origSeriesData) {
+    updates.seriesData = this.updateSeriesData(updates.origSeriesData);
+  }
   return updates;
 };
 
@@ -71,6 +74,7 @@ export default class TestDataModal extends React.Component {
       platform: 'linux64',
       errorMessages: [],
       includeSubtests: false,
+      origSeriesData: [],
       seriesData: [],
       relatedTests: [],
       selectedTests: [],
@@ -94,7 +98,7 @@ export default class TestDataModal extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { platforms, platform } = this.state;
+    const { platforms, platform, origSeriesData } = this.state;
     const { testData } = this.props;
 
     if (prevState.platforms !== platforms) {
@@ -109,7 +113,7 @@ export default class TestDataModal extends React.Component {
     }
 
     if (testData !== prevProps.testData) {
-      this.updateSeriesData();
+      this.updateSeriesData(origSeriesData);
     }
   }
 
@@ -128,17 +132,17 @@ export default class TestDataModal extends React.Component {
     this.processOptions();
   }
 
-  updateSeriesData = () => {
-    const { seriesData } = this.state;
-    const newSeriesData = seriesData.filter(
+  updateSeriesData = origSeriesData => {
+    const newSeriesData = origSeriesData.filter(
       item =>
         this.props.testData.findIndex(test => item.id === test.signature_id) ===
         -1,
     );
-
-    if (seriesData.length !== newSeriesData.length) {
-      this.setState({ seriesData: newSeriesData });
+    console.log(origSeriesData.length, newSeriesData.length);
+    if (origSeriesData.length !== newSeriesData.length) {
+      return newSeriesData;
     }
+    return origSeriesData;
   };
 
   addRelatedConfigs = async params => {
@@ -248,7 +252,7 @@ export default class TestDataModal extends React.Component {
         repository_name,
       );
 
-      this.setState(updates, this.updateSeriesData);
+      this.setState(updates);
       return;
     }
 
