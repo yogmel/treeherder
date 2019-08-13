@@ -17,12 +17,12 @@ import seriesData from '../mock/performance_signature_formatted.json';
 const frameworks = [{ id: 1, name: 'talos' }, { id: 2, name: 'build_metrics' }];
 const platforms = ['linux64', 'windows10-64', 'windows7-32'];
 
-const updates = { 
+const updates = {
   filteredData: [],
   loading: false,
   relatedTests: [],
   seriesData,
-  showNoRelatedTests: false
+  showNoRelatedTests: false,
 };
 
 const graphsViewControls = () =>
@@ -95,27 +95,30 @@ test('Selecting a test in the Test Data Modal adds it to Selected Tests section;
   const tests = getByTestId('tests');
   const selectedTests = getByTestId('selectedTests');
 
-  const testToSelect = await waitForElement(() => getByText('about_preferences_basic opt e10s stylo'));
+  const testToSelect = await waitForElement(() =>
+    getByText('about_preferences_basic opt e10s stylo'),
+  );
   fireEvent.click(testToSelect);
 
-  const fullTestToSelect = await waitForElement(() => getByText('mozilla-central linux64 about_preferences_basic opt e10s stylo'));
+  const fullTestToSelect = await waitForElement(() =>
+    getByText('mozilla-central linux64 about_preferences_basic opt e10s stylo'),
+  );
   fireEvent.click(fullTestToSelect);
 
   expect(selectedTests).not.toContain(fullTestToSelect);
 });
 
-  
-  // const platform = getByTitle('Platform');
-  // fireEvent.click(platform);
+// const platform = getByTitle('Platform');
+// fireEvent.click(platform);
 
-  // const windowsPlatform = await waitForElement(() => getByText('windows7-32'));
+// const windowsPlatform = await waitForElement(() => getByText('windows7-32'));
 
-  // fireEvent.click(windowsPlatform);
+// fireEvent.click(windowsPlatform);
 
-  // // this test is already displayed (testData prop) in the legend and graph
-  // const existingTest = queryByTestId(testData[0].signature_id.toString());
-  // expect(existingTest).not.toBeInTheDocument();
-  
+// // this test is already displayed (testData prop) in the legend and graph
+// const existingTest = queryByTestId(testData[0].signature_id.toString());
+// expect(existingTest).not.toBeInTheDocument();
+
 // [
 //   {
 //     "signature_id": 1538924,

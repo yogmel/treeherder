@@ -210,7 +210,7 @@ class GraphsView extends React.Component {
         data: series.data.map(dataPoint => ({
           x: new Date(dataPoint.push_timestamp),
           y: dataPoint.value,
-          z: graphColors[i][1],
+          z: graphColors[i][1] || '',
           revision: dataPoint.revision,
           alertSummary: alertSummaries.find(
             item => item.revision === dataPoint.revision,
