@@ -10,21 +10,21 @@ const BACKEND = process.env.BACKEND || 'https://treeherder.mozilla.org';
 
 module.exports = {
   options: {
-    source: 'ui/',
+    source: '.',
     mains: {
       index: {
         entry: 'job-view/index.jsx',
-        favicon: 'ui/img/tree_open.png',
+        favicon: 'img/tree_open.png',
         title: 'Treeherder',
       },
       logviewer: {
         entry: 'logviewer/index.jsx',
-        favicon: 'ui/img/logviewerIcon.png',
+        favicon: 'img/logviewerIcon.png',
         title: 'Treeherder Logviewer',
       },
       userguide: {
         entry: 'userguide/index.jsx',
-        favicon: 'ui/img/tree_open.png',
+        favicon: 'img/tree_open.png',
         title: 'Treeherder User Guide',
       },
       login: {
@@ -41,16 +41,16 @@ module.exports = {
       },
       perf: {
         entry: 'entry-perf.js',
-        template: 'ui/perf.html',
+        template: 'perf.html',
       },
       'intermittent-failures': {
         entry: 'intermittent-failures/index.jsx',
-        favicon: 'ui/img/tree_open.png',
+        favicon: 'img/tree_open.png',
         title: 'Intermittent Failures View',
       },
     },
     output: '.build/',
-    tests: 'tests/ui/',
+    tests: 'tests/',
   },
   use: [
     process.env.NODE_ENV === 'development' &&
@@ -119,11 +119,11 @@ module.exports = {
       },
     }),
     require('@neutrinojs/copy')({
-      patterns: ['ui/contribute.json', 'ui/revision.txt', 'ui/robots.txt'],
+      patterns: ['contribute.json', 'revision.txt', 'robots.txt'],
     }),
     process.env.NODE_ENV === 'test' &&
       require('@neutrinojs/jest')({
-        setupFilesAfterEnv: ['<rootDir>/tests/ui/test-setup.js'],
+        setupFilesAfterEnv: ['<rootDir>/tests/test-setup.js'],
         // For more info, see: https://bugzilla.mozilla.org/show_bug.cgi?id=1523376#c3
         moduleNameMapper: {
           // Hawk's browser and Node APIs differ, and taskcluster-client-web uses APIs that
