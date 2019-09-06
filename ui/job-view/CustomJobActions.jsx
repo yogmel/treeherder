@@ -10,6 +10,7 @@ import jsonSchemaDefaults from 'json-schema-defaults';
 // https://github.com/nodeca/js-yaml/pull/462
 import jsyaml from 'js-yaml/dist/js-yaml';
 import { slugid } from 'taskcluster-client-web';
+import tcLibUrls from 'taskcluster-lib-urls';
 import {
   Button,
   Label,
@@ -46,13 +47,13 @@ class CustomJobActions extends React.PureComponent {
   }
 
   async componentDidMount() {
-    const { pushId, job, notify } = this.props;
+    const { pushId, job, notify, currentRepo } = this.props;
     const { id: decisionTaskId } = await PushModel.getDecisionTaskId(
       pushId,
       notify,
     );
 
-    TaskclusterModel.load(decisionTaskId, job).then(results => {
+    TaskclusterModel.load(decisionTaskId, job, currentRepo).then(results => {
       const {
         originalTask,
         originalTaskId,
@@ -127,7 +128,7 @@ class CustomJobActions extends React.PureComponent {
       selectedActionOption,
       staticActionVariables,
     } = this.state;
-    const { notify } = this.props;
+    const { notify, currentRepo } = this.props;
     const action = selectedActionOption.value;
 
     let input = null;
@@ -155,11 +156,12 @@ class CustomJobActions extends React.PureComponent {
       task: originalTask,
       input,
       staticActionVariables,
+      currentRepo,
     }).then(
       taskId => {
         this.setState({ triggering: false });
         let message = 'Custom action request sent successfully:';
-        let url = `https://tools.taskcluster.net/tasks/${taskId}`;
+        let url = tcLibUrls.ui(currentRepo.tc_root_url, `/tasks/${taskId}`);
 
         // For the time being, we are redirecting specific actions to
         // specific urls that are different than usual. At this time, we are
@@ -170,7 +172,7 @@ class CustomJobActions extends React.PureComponent {
           'generic-worker-windows-loaner',
         ];
         if (loaners.includes(action.name)) {
-          message = 'Visit Taskcluster Tools site to access loaner:';
+          message = 'Visit Taskcluster site to access loaner:';
           url = `${url}/connect`;
         }
         notify(message, 'success', { linkText: 'Open in Taskcluster', url });
@@ -309,6 +311,7 @@ CustomJobActions.propTypes = {
   notify: PropTypes.func.isRequired,
   toggle: PropTypes.func.isRequired,
   job: PropTypes.object,
+  currentRepo: PropTypes.object.isRequired,
 };
 
 CustomJobActions.defaultProps = {
